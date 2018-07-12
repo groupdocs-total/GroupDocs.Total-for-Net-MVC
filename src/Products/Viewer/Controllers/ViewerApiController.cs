@@ -40,7 +40,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             globalConfiguration = new Common.Config.GlobalConfiguration();
             if (!File.Exists(globalConfiguration.Viewer.FilesDirectory))
             {
-                globalConfiguration.Viewer.FilesDirectory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + globalConfiguration.Viewer.FilesDirectory);
+                globalConfiguration.Viewer.FilesDirectory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "/../" + globalConfiguration.Viewer.FilesDirectory);
             }     
             // create viewer application configuration
             ViewerConfig config = new ViewerConfig();

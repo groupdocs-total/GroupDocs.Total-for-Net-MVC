@@ -23,7 +23,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             // set files directory
             if (!File.Exists(signatureConfiguration.FilesDirectory))
             {
-                signatureConfiguration.FilesDirectory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + signatureConfiguration.FilesDirectory);
+                signatureConfiguration.FilesDirectory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "/../" + signatureConfiguration.FilesDirectory);
             }
         }
 
