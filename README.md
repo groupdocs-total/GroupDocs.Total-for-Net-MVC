@@ -3,8 +3,8 @@
 
 
 ## System Requirements
-- .NET 8 (JDK 1.8)
-- Maven 3
+- .NET Framework 4.5
+- Visual Studio 2015
 
 
 ## Description
