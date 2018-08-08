@@ -161,9 +161,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     // get current page size
                     Size pageSize = signatureHandler.GetDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
                     // set current page info for result
-                    description.Height = pageSize.Height;
-                    description.Width = pageSize.Width;
-                    description.Number = i;
+                    description.height = pageSize.Height;
+                    description.width = pageSize.Width;
+                    description.number = i;
                     pagesDescription.Add(description);
                 }
                 // return document description

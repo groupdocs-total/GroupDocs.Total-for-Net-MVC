@@ -153,6 +153,7 @@
     <Compile Include="Products\Common\Config\ApplicationConfiguration.cs" />
     <Compile Include="Products\Common\Config\GlobalConfiguration.cs" />
     <Compile Include="Products\Common\Config\ServerConfiguration.cs" />
+    <Compile Include="Products\Common\Entity\Web\DocumentDescriptionEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\ExceptionEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\FileDescriptionEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\LoadedPageEntity.cs" />
@@ -167,7 +168,6 @@
     <Compile Include="Products\Signature\Entity\Directory\QrCodeDataDirectoryEntity.cs" />
     <Compile Include="Products\Signature\Entity\Directory\StampDataDirectoryEntity.cs" />
     <Compile Include="Products\Signature\Entity\Directory\TextDataDirectoryEntity.cs" />
-    <Compile Include="Products\Signature\Entity\Web\DocumentDescriptionEntity.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignatureDataEntity.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignatureFileDescriptionEntity.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignaturePostedDataEntity.cs" />

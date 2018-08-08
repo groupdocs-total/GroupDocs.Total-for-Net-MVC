@@ -1,5 +1,6 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Viewer.Entity.Web;
 using GroupDocs.Viewer.Config;
 using GroupDocs.Viewer.Converter.Options;
@@ -49,9 +50,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             config.ForcePasswordValidation = true;
             List<string> fontsDirectory = new List<string>();
             fontsDirectory.Add(globalConfiguration.Viewer.FontsDirectory);
-            config.FontDirectories = fontsDirectory;
-            // set GroupDocs license           
-            //viewerLicense.SetLicense(globalConfiguration.Application.LicensePath);
+            config.FontDirectories = fontsDirectory;           
             // initialize viewer instance for the HTML mode
             viewerHtmlHandler = new ViewerHtmlHandler(config);
             // initialize viewer instance for the Image mode
@@ -156,8 +155,21 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 {
                     documentInfoContainer = viewerImageHandler.GetDocumentInfo(documentGuid, documentInfoOptions);
                 }
+                List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
+                // get info about each document page
+                for (int i = 0; i < documentInfoContainer.Pages.Count; i++)
+                {
+                    //initiate custom Document description object
+                    DocumentDescriptionEntity description = new DocumentDescriptionEntity();             
+                   
+                    // set current page info for result
+                    description.height = documentInfoContainer.Pages[i].Height;
+                    description.width = documentInfoContainer.Pages[i].Width;
+                    description.number = i + 1;
+                    pagesDescription.Add(description);
+                }
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, documentInfoContainer.Pages);
+                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);            
             }
             catch (InvalidPasswordException ex)
             {
