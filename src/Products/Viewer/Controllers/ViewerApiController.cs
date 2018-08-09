@@ -39,10 +39,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         {            
             // Check if filesDirectory is relative or absolute path           
             globalConfiguration = new Common.Config.GlobalConfiguration();
-            if (!File.Exists(globalConfiguration.Viewer.FilesDirectory))
-            {
-                globalConfiguration.Viewer.FilesDirectory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "/../" + globalConfiguration.Viewer.FilesDirectory);
-            }     
+               
             // create viewer application configuration
             ViewerConfig config = new ViewerConfig();
             config.StoragePath = globalConfiguration.Viewer.FilesDirectory;
@@ -78,33 +75,35 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             string tempDirectoryName = new ViewerConfig().CacheFolderName;
             try
             {
-                FileListContainer fileListContainer = viewerHtmlHandler.GetFileList(fileListOptions);
-
                 List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
-                // parse files/folders list
-                foreach (FileDescription fd in fileListContainer.Files)
+                if (!String.IsNullOrEmpty(fileListOptions.Path))
                 {
-                    FileDescriptionEntity fileDescription = new FileDescriptionEntity();
-                    fileDescription.guid = fd.Guid;
-                    // check if current file/folder is temp directory or is hidden
-                    if (tempDirectoryName.Equals(fd.Name) || new FileInfo(fileDescription.guid).Attributes.HasFlag(FileAttributes.Hidden))
+                    FileListContainer fileListContainer = viewerHtmlHandler.GetFileList(fileListOptions);                   
+                    // parse files/folders list
+                    foreach (FileDescription fd in fileListContainer.Files)
                     {
-                        // ignore current file and skip to next one
-                        continue;
+                        FileDescriptionEntity fileDescription = new FileDescriptionEntity();
+                        fileDescription.guid = fd.Guid;
+                        // check if current file/folder is temp directory or is hidden
+                        if (tempDirectoryName.Equals(fd.Name) || new FileInfo(fileDescription.guid).Attributes.HasFlag(FileAttributes.Hidden))
+                        {
+                            // ignore current file and skip to next one
+                            continue;
+                        }
+                        else
+                        {
+                            // set file/folder name
+                            fileDescription.name = fd.Name;
+                        }
+                        // set file type
+                        fileDescription.docType = fd.DocumentType;
+                        // set is directory true/false
+                        fileDescription.isDirectory = fd.IsDirectory;
+                        // set file size
+                        fileDescription.size = fd.Size;
+                        // add object to array list
+                        fileList.Add(fileDescription);
                     }
-                    else
-                    {
-                        // set file/folder name
-                        fileDescription.name = fd.Name;
-                    }
-                    // set file type
-                    fileDescription.docType = fd.DocumentType;
-                    // set is directory true/false
-                    fileDescription.isDirectory = fd.IsDirectory;
-                    // set file size
-                    fileDescription.size = fd.Size;
-                    // add object to array list
-                    fileList.Add(fileDescription);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, fileList);
             }

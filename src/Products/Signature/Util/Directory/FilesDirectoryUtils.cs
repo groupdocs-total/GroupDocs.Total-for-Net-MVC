@@ -18,13 +18,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
         /// <param name="signatureConfiguration">SignatureConfiguration</param>
         public FilesDirectoryUtils(SignatureConfiguration signatureConfiguration)
         {
-            this.signatureConfiguration = signatureConfiguration;
-
-            // set files directory
-            if (!File.Exists(signatureConfiguration.FilesDirectory))
-            {
-                signatureConfiguration.FilesDirectory = Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "/../" + signatureConfiguration.FilesDirectory);
-            }
+            this.signatureConfiguration = signatureConfiguration;            
         }
 
         /// <summary>
