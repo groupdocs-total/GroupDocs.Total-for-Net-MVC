@@ -76,7 +76,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             try
             {
                 List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
-                if (!String.IsNullOrEmpty(fileListOptions.Path))
+                if (!String.IsNullOrEmpty(globalConfiguration.Viewer.FilesDirectory))
                 {
                     FileListContainer fileListContainer = viewerHtmlHandler.GetFileList(fileListOptions);                   
                     // parse files/folders list
