@@ -10,6 +10,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
     {
         public ServerConfiguration Server;
         public ApplicationConfiguration Application;
+        public CommonConfiguration Common;
         public SignatureConfiguration Signature;
         public ViewerConfiguration Viewer;
 
@@ -22,6 +23,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             Application = new ApplicationConfiguration();
             Signature = new SignatureConfiguration();
             Viewer = new ViewerConfiguration();
+            Common = new CommonConfiguration();
         }
     }
 }
