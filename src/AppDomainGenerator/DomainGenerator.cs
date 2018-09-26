@@ -10,13 +10,18 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
     public class DomainGenerator
     {
         private Products.Common.Config.GlobalConfiguration globalConfiguration;
+        public Type CurrentType;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public DomainGenerator()
+        public DomainGenerator(string assemblyName, string className)
         {
-            globalConfiguration = new Products.Common.Config.GlobalConfiguration();
+            globalConfiguration = new Products.Common.Config.GlobalConfiguration();           
+            // Get assembly path
+            string assemblyPath = this.GetAssemblyPath(assemblyName);
+            // Initiate GroupDocs license class
+            CurrentType = this.CreateDomain(assemblyName + "Domain", assemblyPath, className);            
         }
 
         /// <summary>
@@ -24,7 +29,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// </summary>
         /// <param name="assemblyName">string</param>
         /// <returns></returns>
-        public string GetAssemblyPath(string assemblyName)
+        private string GetAssemblyPath(string assemblyName)
         {
             string path = "";
             // Get path of the executable
@@ -43,7 +48,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// <param name="assemblyPath">string</param>
         /// <param name="className">string</param>
         /// <returns></returns>
-        public Type CreateDomain(string domainName, string assemblyPath, string className)
+        private Type CreateDomain(string domainName, string assemblyPath, string className)
         {
             // Create domain
             AppDomain dom = AppDomain.CreateDomain(domainName);
@@ -75,6 +80,18 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         {
             // Initiate license class
             var obj = (GroupDocs.Signature.License)Activator.CreateInstance(type);
+            // Set license
+            obj.SetLicense(globalConfiguration.Application.LicensePath);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Annotation license
+        /// </summary>
+        /// <param name="type">Type</param>
+        public void SetAnnotationLicense(Type type)
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(type);
             // Set license
             obj.SetLicense(globalConfiguration.Application.LicensePath);
         }

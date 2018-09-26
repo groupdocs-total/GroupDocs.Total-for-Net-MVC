@@ -1,8 +1,6 @@
-﻿using GroupDocs.Total.MVC.Products.Signature.Config;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Directory;
+using GroupDocs.Total.MVC.Products.Signature.Config;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
 {

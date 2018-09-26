@@ -234,9 +234,9 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                         bytes = memoryStream.ToArray();
                     }
 
-                    string incodedImage = Convert.ToBase64String(bytes);
+                    string encodedImage = Convert.ToBase64String(bytes);
 
-                    loadedPage.pageImage = incodedImage;
+                    loadedPage.pageImage = encodedImage;
                     // get page rotation angle
                     angle = viewerImageHandler.GetDocumentInfo(documentGuid).Pages[pageNumber - 1].Angle.ToString();
                 }

@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GroupDocs.Annotation, Version=18.8.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Annotation.18.8.0\lib\GroupDocs.Annotation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GroupDocs.Signature, Version=18.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.18.6.0\lib\GroupDocs.Signature.dll</HintPath>
       <Private>True</Private>
@@ -147,9 +151,41 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AnnotationController.cs" />
     <Compile Include="Controllers\TotalController.cs" />
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
+    <Compile Include="Products\Annotation\Annotator\AreaAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\ArrowAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\BaseAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\DistanceAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\PointAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\PolylineAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\ResourceRedactionAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TexStrikeoutAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextFieldAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextRedactionAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextReplacementAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TexUnderlineAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\WatermarkAnnotator.cs" />
+    <Compile Include="Products\Annotation\Config\AnnotationConfiguration.cs" />
+    <Compile Include="Products\Annotation\Controllers\AnnotationApiController.cs" />
+    <Compile Include="Products\Annotation\Entity\Web\AnnotatedDocumentEntity.cs" />
+    <Compile Include="Products\Annotation\Entity\Web\AnnotationDataEntity.cs" />
+    <Compile Include="Products\Annotation\Entity\Web\CommentsEntity.cs" />
+    <Compile Include="Products\Annotation\Entity\Web\AnnotationPostedDataEntity.cs" />
+    <Compile Include="Products\Annotation\Entity\Web\TextRowEntity.cs" />
+    <Compile Include="Products\Annotation\Importer\BaseImporter.cs" />
+    <Compile Include="Products\Annotation\Importer\WordImporter.cs" />
+    <Compile Include="Products\Annotation\Importer\SlidesImporter.cs" />
+    <Compile Include="Products\Annotation\Importer\PdfImporter.cs" />
+    <Compile Include="Products\Annotation\Importer\ImageImporter.cs" />
+    <Compile Include="Products\Annotation\Importer\DiagramImporter.cs" />
+    <Compile Include="Products\Annotation\Importer\CellsImporter.cs" />
+    <Compile Include="Products\Annotation\Util\Directory\DirectoryUtils.cs" />
+    <Compile Include="Products\Annotation\Util\Directory\FilesDirectoryUtils.cs" />
+    <Compile Include="Products\Annotation\Util\Directory\OutputDirectoryUtils.cs" />
     <Compile Include="Products\Common\Config\ApplicationConfiguration.cs" />
     <Compile Include="Products\Common\Config\GlobalConfiguration.cs" />
     <Compile Include="Products\Common\Config\ServerConfiguration.cs" />
@@ -190,7 +226,7 @@
     <Compile Include="Products\Signature\Util\Directory\DataDirectoryUtils.cs" />
     <Compile Include="Products\Signature\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Util\Directory\FilesDirectoryUtils.cs" />
-    <Compile Include="Products\Signature\Util\Directory\IDirectoryUtils.cs" />
+    <Compile Include="Products\Common\Util\Directory\IDirectoryUtils.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -203,6 +239,41 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="Resources\annotation\css\annotation.css" />
+    <Content Include="Resources\annotation\css\annotation.mobile.css" />
+    <Content Include="Resources\annotation\images\area.png" />
+    <Content Include="Resources\annotation\images\area_active.png" />
+    <Content Include="Resources\annotation\images\arrow.png" />
+    <Content Include="Resources\annotation\images\arrow_active.png" />
+    <Content Include="Resources\annotation\images\distance.png" />
+    <Content Include="Resources\annotation\images\distance_active.png" />
+    <Content Include="Resources\annotation\images\logo.png" />
+    <Content Include="Resources\annotation\images\point.png" />
+    <Content Include="Resources\annotation\images\point_active.png" />
+    <Content Include="Resources\annotation\images\polyline.png" />
+    <Content Include="Resources\annotation\images\polyline_active.png" />
+    <Content Include="Resources\annotation\images\resource_redaction.png" />
+    <Content Include="Resources\annotation\images\resource_redaction_active.png" />
+    <Content Include="Resources\annotation\images\strike_out_text.png" />
+    <Content Include="Resources\annotation\images\strike_out_text_active.png" />
+    <Content Include="Resources\annotation\images\text.png" />
+    <Content Include="Resources\annotation\images\text_active.png" />
+    <Content Include="Resources\annotation\images\text_redaction.png" />
+    <Content Include="Resources\annotation\images\text_redaction_active.png" />
+    <Content Include="Resources\annotation\images\text_replace.png" />
+    <Content Include="Resources\annotation\images\text_replace_active.png" />
+    <Content Include="Resources\annotation\images\type_writer.png" />
+    <Content Include="Resources\annotation\images\type_writer_active.png" />
+    <Content Include="Resources\annotation\images\underline.png" />
+    <Content Include="Resources\annotation\images\underline_active.png" />
+    <Content Include="Resources\annotation\images\watermark.png" />
+    <Content Include="Resources\annotation\images\watermark_active.png" />
+    <Content Include="Resources\annotation\js\annotation.js" />
+    <Content Include="Resources\annotation\js\drawFieldAnnotation.js" />
+    <Content Include="Resources\annotation\js\drawSvgAnnotation.js" />
+    <Content Include="Resources\annotation\js\drawTextAnnotation.js" />
+    <Content Include="Resources\annotation\js\svg.draw.js" />
+    <Content Include="Resources\annotation\js\svg.min.js" />
     <Content Include="Resources\common\css\circle-progress.css" />
     <Content Include="Resources\common\css\font-awesome.min.css" />
     <Content Include="Resources\common\css\images\ui-icons_444444_256x240.png" />
@@ -216,6 +287,7 @@
     <Content Include="Resources\common\fonts\fontawesome-webfont.svg" />
     <Content Include="Resources\common\images\banner.png" />
     <Content Include="Resources\common\js\jquery-ui.min.js" />
+    <Content Include="Resources\common\js\jquery.initialize.min.js" />
     <Content Include="Resources\common\js\jquery.min.js" />
     <Content Include="Resources\common\js\jquery.ui.touch-punch.min.js" />
     <Content Include="Resources\common\js\swiper.min.js" />
@@ -295,6 +367,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Signature\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Annotation\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

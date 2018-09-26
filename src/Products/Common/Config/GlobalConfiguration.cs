@@ -1,4 +1,5 @@
-﻿using GroupDocs.Total.MVC.Products.Signature.Config;
+﻿using GroupDocs.Total.MVC.Products.Annotation.Config;
+using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Viewer.Config;
 
 namespace GroupDocs.Total.MVC.Products.Common.Config
@@ -13,6 +14,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         public CommonConfiguration Common;
         public SignatureConfiguration Signature;
         public ViewerConfiguration Viewer;
+        public AnnotationConfiguration Annotation;
 
         /// <summary>
         /// Get all configurations
@@ -24,6 +26,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             Signature = new SignatureConfiguration();
             Viewer = new ViewerConfiguration();
             Common = new CommonConfiguration();
+            Annotation = new AnnotationConfiguration();
         }
     }
 }

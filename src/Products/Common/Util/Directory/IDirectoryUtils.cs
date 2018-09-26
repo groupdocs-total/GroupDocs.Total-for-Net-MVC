@@ -1,4 +1,4 @@
-﻿namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
+﻿namespace GroupDocs.Total.MVC.Products.Common.Util.Directory
 {
     /// <summary>
     /// IDirectoryUtils

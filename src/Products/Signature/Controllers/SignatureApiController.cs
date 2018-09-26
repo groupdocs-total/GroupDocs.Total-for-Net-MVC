@@ -33,10 +33,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class SignatureApiController : ApiController
     {
-        private static Common.Config.GlobalConfiguration globalConfiguration;
-        private List<string> supportedImageFormats = new List<string>() { ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png" };
-        private static SignatureHandler signatureHandler;
-        private DirectoryUtils directoryUtils;
+        private static Common.Config.GlobalConfiguration GlobalConfiguration;
+        private List<string> SupportedImageFormats = new List<string>() { ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png" };
+        private static SignatureHandler SignatureHandler;
+        private DirectoryUtils DirectoryUtils;
 
         /// <summary>
         /// Constructor
@@ -44,17 +44,17 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         public SignatureApiController()
         {
             // get global configurations 
-            globalConfiguration = new Common.Config.GlobalConfiguration();
+            GlobalConfiguration = new Common.Config.GlobalConfiguration();
             // initiate DirectoryUtils
-            directoryUtils = new DirectoryUtils(globalConfiguration.Signature);
+            DirectoryUtils = new DirectoryUtils(GlobalConfiguration.Signature);
             // create signature application configuration
             SignatureConfig config = new SignatureConfig();
-            config.StoragePath = directoryUtils.FilesDirectory.GetPath();
-            config.CertificatesPath = directoryUtils.DataDirectory.CertificateDirectory.Path;
-            config.ImagesPath = directoryUtils.DataDirectory.ImageDirectory.Path;
-            config.OutputPath = directoryUtils.OutputDirectory.GetPath();
+            config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();
+            config.CertificatesPath = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
+            config.ImagesPath = DirectoryUtils.DataDirectory.ImageDirectory.Path;
+            config.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
             // initialize instance for the Image mode
-            signatureHandler = new SignatureHandler(config);
+            SignatureHandler = new SignatureHandler(config);
         }
 
 
@@ -81,19 +81,19 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 switch (signatureType)
                 {
                     case "digital":
-                        rootDirectory = directoryUtils.DataDirectory.CertificateDirectory.Path;
+                        rootDirectory = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
                         break;
                     case "image":
-                        rootDirectory = directoryUtils.DataDirectory.ImageDirectory.Path;
+                        rootDirectory = DirectoryUtils.DataDirectory.ImageDirectory.Path;
                         break;
                     case "stamp":
-                        rootDirectory = directoryUtils.DataDirectory.StampDirectory.Path;
+                        rootDirectory = DirectoryUtils.DataDirectory.StampDirectory.Path;
                         break;
                     case "text":
-                        rootDirectory = directoryUtils.DataDirectory.TextDirectory.Path;
+                        rootDirectory = DirectoryUtils.DataDirectory.TextDirectory.Path;
                         break;
                     default:
-                        rootDirectory = directoryUtils.FilesDirectory.GetPath();
+                        rootDirectory = DirectoryUtils.FilesDirectory.GetPath();
                         break;
                 }
                 // get all the files from a directory
@@ -105,7 +105,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 {
                     relDirPath = Path.Combine(rootDirectory, relDirPath);
                 }
-                SignatureLoader signatureLoader = new SignatureLoader(relDirPath, globalConfiguration);
+                SignatureLoader signatureLoader = new SignatureLoader(relDirPath, GlobalConfiguration);
                 List<SignatureFileDescriptionEntity> fileList;
                 switch (signatureType)
                 {
@@ -151,7 +151,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 password = postedData.password;
                 DocumentDescription documentDescription;
                 // get document info container
-                documentDescription = signatureHandler.GetDocumentDescription(documentGuid, password);
+                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);
                 List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
                 // get info about each document page
                 for (int i = 1; i <= documentDescription.PageCount; i++)
@@ -159,7 +159,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     //initiate custom Document description object
                     DocumentDescriptionEntity description = new DocumentDescriptionEntity();
                     // get current page size
-                    Size pageSize = signatureHandler.GetDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
+                    Size pageSize = SignatureHandler.GetDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
                     // set current page info for result
                     description.height = pageSize.Height;
                     description.width = pageSize.Width;
@@ -192,7 +192,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string password = postedData.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
                 // get page image
-                byte[] bytes = signatureHandler.GetPageImage(documentGuid, pageNumber, password, null, 100);
+                byte[] bytes = SignatureHandler.GetPageImage(documentGuid, pageNumber, password, null, 100);
                 // encode ByteArray into string
                 string encodedImage = Convert.ToBase64String(bytes);
                 loadedPage.pageImage = encodedImage;
@@ -227,11 +227,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     // check if signed document should be downloaded or original
                     if (signed)
                     {
-                        pathToDownload = Path.Combine(directoryUtils.OutputDirectory.GetPath(), fileName);
+                        pathToDownload = Path.Combine(DirectoryUtils.OutputDirectory.GetPath(), fileName);
                     }
                     else
                     {
-                        pathToDownload = Path.Combine(directoryUtils.FilesDirectory.GetPath(), fileName);
+                        pathToDownload = Path.Combine(DirectoryUtils.FilesDirectory.GetPath(), fileName);
                     }
                     // add file into the response
                     var fileStream = new FileStream(path, FileMode.Open);
@@ -264,13 +264,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 switch (signatureType)
                 {
                     case "digital":
-                        fileSavePath = directoryUtils.DataDirectory.CertificateDirectory.Path;
+                        fileSavePath = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
                         break;
                     case "image":
-                        fileSavePath = directoryUtils.DataDirectory.ImageDirectory.Path;
+                        fileSavePath = DirectoryUtils.DataDirectory.ImageDirectory.Path;
                         break;
                     default:
-                        fileSavePath = directoryUtils.FilesDirectory.GetPath();
+                        fileSavePath = DirectoryUtils.FilesDirectory.GetPath();
                         break;
                 }
                 // check if file selected or URL
@@ -409,15 +409,15 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 {
                     case "Portable Document Format":
                         // sign document
-                        signedDocument.guid = signatureHandler.Sign<string>(documentGuid, signer.SignPdf(), loadOptions, saveOptions);
+                        signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signer.SignPdf(), loadOptions, saveOptions);
                         break;
                     case "Microsoft Word":
                         // sign document
-                        signedDocument.guid = signatureHandler.Sign<string>(documentGuid, signer.SignWord(), loadOptions, saveOptions);
+                        signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signer.SignWord(), loadOptions, saveOptions);
                         break;
                     case "Microsoft Excel":
                         // sign document
-                        signedDocument.guid = signatureHandler.Sign<string>(documentGuid, signer.SignCells(), loadOptions, saveOptions);
+                        signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signer.SignCells(), loadOptions, saveOptions);
                         break;
                 }
                 // return loaded page object
@@ -458,7 +458,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     else
                     {
                         // check if document type is image
-                        if (supportedImageFormats.Contains(Path.GetExtension(documentGuid)))
+                        if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                         {
                             signaturesData[i].DocumentType = "image";
                         }
@@ -489,7 +489,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         public HttpResponseMessage SignStamp(SignaturePostedDataEntity postedData)
         {
             string password = "";
-            string xmlPath = directoryUtils.DataDirectory.StampDirectory.XmlPath;
+            string xmlPath = DirectoryUtils.DataDirectory.StampDirectory.XmlPath;
             try
             {
                 // get/set parameters
@@ -499,7 +499,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
 
                 SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
                 // mimeType should now be something like "image/png" if the document is image
-                if (supportedImageFormats.Contains(Path.GetExtension(documentGuid)))
+                if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                 {
                     signaturesData[0].DocumentType = "image";
                 }
@@ -554,7 +554,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
 
                 SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
                 // get xml files root path
-                string xmlPath = (signatureType.Equals("qrCode")) ? directoryUtils.DataDirectory.QrCodeDirectory.XmlPath : directoryUtils.DataDirectory.BarcodeDirectory.XmlPath;
+                string xmlPath = (signatureType.Equals("qrCode")) ? DirectoryUtils.DataDirectory.QrCodeDirectory.XmlPath : DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath;
                 // prepare signing options and sign document
                 for (int i = 0; i < signaturesData.Length; i++)
                 {
@@ -569,7 +569,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         // Load xml data
                         OpticalXmlEntity opticalCodeData = LoadXmlData<OpticalXmlEntity>(xmlPath, xmlFileName);
                         // check if document type is image
-                        if (supportedImageFormats.Contains(Path.GetExtension(documentGuid)))
+                        if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                         {
                             signaturesData[i].DocumentType = "image";
                         }
@@ -608,7 +608,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         public HttpResponseMessage SignText(SignaturePostedDataEntity postedData)
         {
             string password = "";
-            string xmlPath = directoryUtils.DataDirectory.TextDirectory.XmlPath;
+            string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
             try
             {
                 // get/set parameters
@@ -631,7 +631,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         // Load xml data
                         TextXmlEntity textData = LoadXmlData<TextXmlEntity>(xmlPath, xmlFileName);
                         // check if document type is image
-                        if (supportedImageFormats.Contains(Path.GetExtension(documentGuid)))
+                        if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                         {
                             signaturesData[i].DocumentType = "image";
                         }
@@ -703,7 +703,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
 
             // sign document
             SignedDocumentEntity signedDocument = new SignedDocumentEntity();
-            signedDocument.guid = signatureHandler.Sign<string>(documentGuid, signsCollection, loadOptions, saveOptions);
+            signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signsCollection, loadOptions, saveOptions);
             return signedDocument;
         }
 
@@ -722,11 +722,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string encodedImage = postedData.image.Replace("data:image/png;base64,", "");
                 FileDescriptionEntity savedImage = new FileDescriptionEntity();
                 string imageName = "drawn signature.png";
-                string imagePath = Path.Combine(directoryUtils.DataDirectory.ImageDirectory.Path, imageName);
+                string imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
                 if (System.IO.File.Exists(imagePath))
                 {
-                    imageName = Path.GetFileName(new Resources().GetFreeFileName(directoryUtils.DataDirectory.ImageDirectory.Path, imageName));
-                    imagePath = Path.Combine(directoryUtils.DataDirectory.ImageDirectory.Path, imageName);
+                    imageName = Path.GetFileName(new Resources().GetFreeFileName(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName));
+                    imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
                 }
                 System.IO.File.WriteAllBytes(imagePath, Convert.FromBase64String(encodedImage));
                 savedImage.guid = imagePath;
@@ -749,8 +749,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         [Route("signature/saveStamp")]
         public HttpResponseMessage SaveStamp(SignaturePostedDataEntity postedData)
         {
-            string previewPath = directoryUtils.DataDirectory.StampDirectory.PreviewPath;
-            string xmlPath = directoryUtils.DataDirectory.StampDirectory.XmlPath;
+            string previewPath = DirectoryUtils.DataDirectory.StampDirectory.PreviewPath;
+            string xmlPath = DirectoryUtils.DataDirectory.StampDirectory.XmlPath;
             try
             {
                 // get/set parameters
@@ -820,9 +820,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 {
                     qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);
                     // get preview path
-                    previewPath = directoryUtils.DataDirectory.QrCodeDirectory.PreviewPath;
+                    previewPath = DirectoryUtils.DataDirectory.QrCodeDirectory.PreviewPath;
                     // get xml file path
-                    xmlPath = directoryUtils.DataDirectory.QrCodeDirectory.XmlPath;
+                    xmlPath = DirectoryUtils.DataDirectory.QrCodeDirectory.XmlPath;
                     // generate unique file names for preview image and xml file
                     collection.Add(qrSigner.SignImage());
                 }
@@ -830,9 +830,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 {
                     barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);
                     // get preview path
-                    previewPath = directoryUtils.DataDirectory.BarcodeDirectory.PreviewPath;
+                    previewPath = DirectoryUtils.DataDirectory.BarcodeDirectory.PreviewPath;
                     // get xml file path
-                    xmlPath = directoryUtils.DataDirectory.BarcodeDirectory.XmlPath;
+                    xmlPath = DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath;
                     // generate unique file names for preview image and xml file
                     collection.Add(barCodeSigner.SignImage());
                 }
@@ -884,14 +884,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 saveOptions.OutputFileName = fileName + "signed";
                 saveOptions.OverwriteExistingFiles = true;
                 // set temporary signed documents path to QR-Code/BarCode image previews folder
-                signatureHandler.SignatureConfig.OutputPath = previewPath;
+                SignatureHandler.SignatureConfig.OutputPath = previewPath;
                 // sign generated image with Optical signature
-                signatureHandler.Sign<string>(filePath, collection, saveOptions);
+                SignatureHandler.Sign<string>(filePath, collection, saveOptions);
                 System.IO.File.Delete(filePath);
                 string tempFile = Path.Combine(previewPath, fileName + "signed.png");
                 System.IO.File.Move(tempFile, filePath);
                 // set signed documents path back to correct path
-                signatureHandler.SignatureConfig.OutputPath = directoryUtils.OutputDirectory.GetPath();
+                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
                 // set data for response
                 opticalCodeData.imageGuid = filePath;
                 opticalCodeData.height = 200;
@@ -919,8 +919,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         [Route("signature/saveText")]
         public HttpResponseMessage SaveText([FromBody] dynamic postedData)
         {
-            string previewPath = directoryUtils.DataDirectory.TextDirectory.PreviewPath;
-            string xmlPath = directoryUtils.DataDirectory.TextDirectory.XmlPath;
+            string previewPath = DirectoryUtils.DataDirectory.TextDirectory.PreviewPath;
+            string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
             try
             {
                 TextXmlEntity textData = JsonConvert.DeserializeObject<TextXmlEntity>(postedData.properties.ToString());
@@ -984,14 +984,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 saveOptions.OutputFileName = fileName + "signed";
                 saveOptions.OverwriteExistingFiles = true;
                 // set temporary signed documents path to Text/BarCode image previews folder
-                signatureHandler.SignatureConfig.OutputPath = previewPath;
+                SignatureHandler.SignatureConfig.OutputPath = previewPath;
                 // sign generated image with Text
-                signatureHandler.Sign<string>(filePath, collection, saveOptions);
+                SignatureHandler.Sign<string>(filePath, collection, saveOptions);
                 System.IO.File.Delete(filePath);
                 string tempFile = Path.Combine(previewPath, fileName + "signed.png");
                 System.IO.File.Move(tempFile, filePath);
                 // set signed documents path back to correct path
-                signatureHandler.SignatureConfig.OutputPath = directoryUtils.OutputDirectory.GetPath();
+                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
                 // set Text data for response
                 textData.imageGuid = filePath;
                 // get signature preview as Base64 string
