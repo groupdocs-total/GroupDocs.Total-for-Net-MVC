@@ -1,5 +1,5 @@
 # GroupDocs.Total for .NET MVC Example
-###### version 0.3.1
+###### version 0.3.2
 
 
 ## System Requirements

@@ -46,7 +46,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             config.EnableCaching = true;
             config.ForcePasswordValidation = true;
             List<string> fontsDirectory = new List<string>();
-            fontsDirectory.Add(globalConfiguration.Viewer.FontsDirectory);
+            if (!String.IsNullOrEmpty(globalConfiguration.Viewer.FontsDirectory))
+            {
+                fontsDirectory.Add(globalConfiguration.Viewer.FontsDirectory);
+            }
             config.FontDirectories = fontsDirectory;           
             // initialize viewer instance for the HTML mode
             viewerHtmlHandler = new ViewerHtmlHandler(config);
