@@ -31,9 +31,9 @@
         <script type="text/javascript">
                  $('#element').viewer({
                     applicationPath: 'http://@config.Server.HostAddress:@config.Server.HttpPort/annotation',
-                    defaultDocument: '@config.Signature.DefaultDocument',
+                    defaultDocument: '@config.Annotation.DefaultDocument',
                     htmlMode: false,
-                    preloadPageCount: @config.Signature.PreloadPageCount,
+                    preloadPageCount: @config.Annotation.PreloadPageCount,
                     zoom : false,
                     pageSelector: @config.Common.isPageSelector.ToString().ToLowerInvariant(),
                     search: false,

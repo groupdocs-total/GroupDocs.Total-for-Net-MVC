@@ -1,5 +1,4 @@
-﻿
-using GroupDocs.Annotation.Config;
+﻿using GroupDocs.Annotation.Config;
 using GroupDocs.Annotation.Domain;
 using GroupDocs.Annotation.Domain.Containers;
 using GroupDocs.Annotation.Domain.Image;
@@ -21,7 +20,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
-namespace GroupDocs.Total.MVC.Products.Signature.Controllers
+namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 {
     /// <summary>
     /// SignatureApiController
