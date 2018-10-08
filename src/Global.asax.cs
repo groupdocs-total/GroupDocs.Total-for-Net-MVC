@@ -1,5 +1,4 @@
 ﻿using GroupDocs.Total.MVC.AppDomainGenerator;
-using System;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -15,6 +14,7 @@ namespace GroupDocs.Total.MVC
             string viewerAssemblyName = "GroupDocs.Viewer.dll";
             string signatureAssemblyName = "GroupDocs.Signature.dll";
             string annotationAssemblyName = "GroupDocs.Annotation.dll";
+            string comparisonAssemblyName = "GroupDocs.Comparison.dll";
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
             viewerDomainGenerator.SetViewerLicense(viewerDomainGenerator.CurrentType);
@@ -24,7 +24,10 @@ namespace GroupDocs.Total.MVC
             // set GroupDocs.Annotation license
             DomainGenerator annotationDomainGenerator = new DomainGenerator(annotationAssemblyName, "GroupDocs.Annotation.Common.License.License");
             annotationDomainGenerator.SetAnnotationLicense(annotationDomainGenerator.CurrentType);
-           
+            // set GroupDocs.Comparison license
+            DomainGenerator comparisonDomainGenerator = new DomainGenerator(comparisonAssemblyName, "GroupDocs.Comparison.Common.License.License");
+            comparisonDomainGenerator.SetComparisonLicense(comparisonDomainGenerator.CurrentType);
+            
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

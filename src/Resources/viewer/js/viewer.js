@@ -1636,7 +1636,7 @@ function getHtmlFileBrowser(){
 						    '<td class="gd-filetree-up gd-go-up">...</td>'+
 						    '<td></td>'+
 						    '<td></td>'+
-						'</tr>'
+						'</tr>' +
 						// list of files
 					'</tbody>'+
 				'</table>'+

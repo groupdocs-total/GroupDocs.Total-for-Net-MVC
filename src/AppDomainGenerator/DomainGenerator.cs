@@ -95,5 +95,17 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             // Set license
             obj.SetLicense(globalConfiguration.Application.LicensePath);
         }
+
+        /// <summary>
+        /// Set GroupDocs.Comparison license
+        /// </summary>
+        /// <param name="type">Type</param>
+        public void SetComparisonLicense(Type type)
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Comparison.Common.License.License)Activator.CreateInstance(type);
+            // Set license
+            obj.SetLicense(globalConfiguration.Application.LicensePath);
+        }
     }
 }

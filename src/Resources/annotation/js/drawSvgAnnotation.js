@@ -25,6 +25,7 @@
 	};
 	
 	var canvas = null;
+	var zoomLevel = 1;
 	var currentAnnotation = null;
 	var canvasTopOffset = null;
 	var currentPrefix = "";
@@ -37,14 +38,15 @@
 	$.fn.drawSvgAnnotation = function(documentPage, prefix) {	
 		// get current data required to draw and positioning the annotation
 		canvas = documentPage;
+		zoomLevel = (typeof $(canvas).css("zoom") == "undefined") ? 1 : $(canvas).css("zoom");
 		currentAnnotation = annotation;
 		// get coordinates correction - this is required since the document page is zoomed
-		zoomCorrection.x = ($(canvas).offset().left * $(canvas).css("zoom")) - $(canvas).offset().left;
-		zoomCorrection.y = ($(canvas).offset().top * $(canvas).css("zoom")) - $(canvas).offset().top;	
-		canvasTopOffset = $(canvas).offset().top * $(canvas).css("zoom");	
+		zoomCorrection.x = ($(canvas).offset().left * zoomLevel) - $(canvas).offset().left;
+		zoomCorrection.y = ($(canvas).offset().top * zoomLevel) - $(canvas).offset().top;
+		canvasTopOffset = $(canvas).offset().top * zoomLevel;
 		currentPrefix = prefix;
 	}
-	
+
 	/**
 	* Extend plugin
 	**/
@@ -56,7 +58,7 @@
 		drawPoint: function(event){			
 			mouse = getMousePosition(event);
 			// get current x and y coordinates
-			var x = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
+			var x = mouse.x - ($(canvas).offset().left * zoomLevel) - (parseInt($(canvas).css("margin-left")) * 2);
 			var y = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);	
 			// set annotation data
 			currentAnnotation.id = annotationsCounter;	
@@ -86,7 +88,7 @@
 		drawPolyline: function(event){
 			mouse = getMousePosition(event);	
 			// get x and y coordinates
-			var x = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
+			var x = mouse.x - ($(canvas).offset().left * zoomLevel) - (parseInt($(canvas).css("margin-left")) * 2);
 			var y = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);	
 			currentAnnotation.id = annotationsCounter;		
 			// set polyline draw options
@@ -96,9 +98,9 @@
 				'fill-opacity': 0,
 				'id': 'gd-polyline-annotation-' + annotationsCounter,
 				'class': 'gd-annotation annotation svg'						  
-			}
+			};
 			// initiate svg object
-			let line = null;		
+			var line = null;
 			line = svgList[canvas.id].polyline().attr(option);			
 			line.draw(event);			
 			// set mouse move event handler
@@ -124,19 +126,32 @@
 					// prepare SVG path string, important note: all point coordinates except the first one are not coordinates, 
 					//but the number of pixels that need to be added or subtracted from the previous point in order to obtain the amount of displacement.
 					// This is required by the GRoupDocs.Annotation library to draw the SVG path
-					$.each(line.node.points, function(index, point){										
-						if(index == 0){
-							currentAnnotation.svgPath = currentAnnotation.svgPath + point.x + "," + point.y + "l";							
-							previousX = point.x;
-							previousY = point.y;
-						} else {				
-							previousX =  point.x - previousX;
-							previousY =  point.y - previousY;
-							currentAnnotation.svgPath = currentAnnotation.svgPath + previousX + "," + previousY + "l";	
-							previousX = point.x;
-							previousY = point.y;							
-						}
-					});
+                	if (line.node.points.numberOfItems) { // for safari
+                        for (i = 0; i < line.node.points.numberOfItems; i++) {
+							var point = line.node.points.getItem(i);
+                            if (i == 0) {
+                                currentAnnotation.svgPath = currentAnnotation.svgPath + point.x + "," + point.y + "l";
+                            } else {
+                                previousX = point.x - previousX;
+                                previousY = point.y - previousY;
+                                currentAnnotation.svgPath = currentAnnotation.svgPath + previousX + "," + previousY + "l";
+                            }
+                            previousX = point.x;
+                            previousY = point.y;
+                        }
+					} else { // for other browsers
+                        $.each(line.node.points, function (index, point) {
+                            if (index == 0) {
+                                currentAnnotation.svgPath = currentAnnotation.svgPath + point.x + "," + point.y + "l";
+                            } else {
+                                previousX = point.x - previousX;
+                                previousY = point.y - previousY;
+                                currentAnnotation.svgPath = currentAnnotation.svgPath + previousX + "," + previousY + "l";
+                            }
+                            previousX = point.x;
+                            previousY = point.y;
+                        });
+                    }
 					currentAnnotation.svgPath = currentAnnotation.svgPath.slice(0,-1);
 					// add annotation into the annotations list
 					annotationsList.push(currentAnnotation);
@@ -153,7 +168,7 @@
 		drawArrow: function(event){
 			mouse = getMousePosition(event);	
 			// get coordinates
-			var x = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
+			var x = mouse.x - ($(canvas).offset().left * zoomLevel) - (parseInt($(canvas).css("margin-left")) * 2);
 			var y = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);	
 			currentAnnotation.id = annotationsCounter;	
 			// set draw options
@@ -164,16 +179,16 @@
 				'id': 'gd-arrow-annotation-' + annotationsCounter,
 				'class': 'gd-annotation annotation svg'
 							  
-			}
+			};
 			// draw start point
-			let path = null;		 
+			var path = null;
 			path = svgList[canvas.id].path("M" + x + "," + y + " L" + x + "," + y).attr(option);			
 			// set mouse move event handler
 			svgList[canvas.id].on(userMouseMove, event => {
 				if (path) {
 					// get current coordinates after mouse move
 					mouse = getMousePosition(event);
-					var endX = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
+					var endX = mouse.x - ($(canvas).offset().left * zoomLevel) - (parseInt($(canvas).css("margin-left")) * 2);
 					var endY = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);
 					// update svg with the end point and draw line between
 					path.plot("M" + x + "," + y + " L" + endX + "," + endY);
@@ -209,7 +224,7 @@
 		drawDistance: function(event){
 			// get coordinates
 			mouse = getMousePosition(event);	
-			var x = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
+			var x = mouse.x - ($(canvas).offset().left * zoomLevel) - (parseInt($(canvas).css("margin-left")) * 2);
 			var y = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);	
 			currentAnnotation.id = annotationsCounter;	
 			// set draw options
@@ -227,17 +242,17 @@
 				'data-id': currentAnnotation.id 
 			};
 			// draw start point
-			let path = null;		 
+			var path = null;
 			path = svgList[canvas.id].path("M" + x + "," + y + " L" + x + "," + y).attr(option);	
 			// add text svg element - used to display the distance value
-			let text = null;
+			var text = null;
 			text = svgList[canvas.id].text("0px").attr(textOptions);
 			// set mouse move event
 			svgList[canvas.id].on(userMouseMove, event => {
 				if (path) {
 					// get end coordinates
 					mouse = getMousePosition(event);
-					var endX = mouse.x - ($(canvas).offset().left * $(canvas).css("zoom")) - (parseInt($(canvas).css("margin-left")) * 2);
+					var endX = mouse.x - ($(canvas).offset().left * zoomLevel) - (parseInt($(canvas).css("margin-left")) * 2);
 					var endY = mouse.y - canvasTopOffset - (parseInt($(canvas).css("margin-top")) * 2);
 					// draw the last point and the line between
 					path.plot("M" + x + "," + y + " L" + endX + "," + endY);
@@ -311,7 +326,7 @@
 				'id': 'gd-polyline-annotation-' + annotationsCounter,
 				'class': 'gd-annotation annotation svg'						  
 			}
-			let line = null;
+			var line = null;
 			var svgPath = "";			
 			// recalculate path points coordinates from the offset values back to the coordinates values - why we need this described above in the draw polyline action
 			var points = annotation.svgPath.replace("M", "").split('l');
@@ -384,10 +399,10 @@
 				'font-size': "12px",
 				'data-id': currentAnnotation.id 
 			};
-			let text = null;	
+			var text = null;
 			// prepare svg path coordinates
-			var svgPath = annotation.svgPath.split(" ")[0];						
-			var points = annotation.svgPath.replace("M", "").split('l');
+			var svgPath = annotation.svgPath.split("L")[0];						
+			var points = annotation.svgPath.replace("M", "").split('L');
 			var x = parseFloat(points[0].split(",")[0]);
 			var y = parseFloat(points[0].split(",")[1]);
 			// recalculate path points coordinates from the offset values back to the coordinates values

@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace GroupDocs.Total.MVC.Products.Signature.Util.Comparator
+namespace GroupDocs.Total.MVC.Products.Common.Util.Comparator
 {
     /// <summary>
-    /// FileTypeComparator
+    /// FileNameComparator
     /// </summary>
-    public class FileTypeComparator : IComparer<string>
+    public class FileNameComparator : IComparer<string>
     {
         /// <summary>
-        /// Compare file types
+        /// Compare file names
         /// </summary>
         /// <param name="x">string</param>
         /// <param name="y">string</param>
         /// <returns></returns>
         public int Compare(string x, string y)
         {
-            string strExt1 = Path.GetExtension(x);
-            string strExt2 = Path.GetExtension(y);
+            string strExt1 = Path.GetFileName(x);
+            string strExt2 = Path.GetFileName(y);
 
             if (strExt1.Equals(strExt2))
             {
