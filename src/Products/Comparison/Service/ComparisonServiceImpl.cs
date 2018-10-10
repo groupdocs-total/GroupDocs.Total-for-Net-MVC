@@ -241,7 +241,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
-                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.Signature.DataDirectory)))
+                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.Comparison.FilesDirectory)))
                     {
                         // ignore current file and skip to next one
                         continue;
