@@ -253,11 +253,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             // add file into the response
             if (File.Exists(pathToDownload))
             {
-                var fileStream = new FileStream(pathToDownload, FileMode.Open);
+                var fileStream = new FileStream(pathToDownload, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 response.Content = new StreamContent(fileStream);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                response.Content.Headers.ContentDisposition.FileName = path;
+                response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
                 return response;
             }
             else
@@ -351,7 +351,21 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 password = textCoordinatesRequest.password;
                 int pageNumber = textCoordinatesRequest.pageNumber;
                 // get document info
-                DocumentInfoContainer info = AnnotationImageHandler.GetDocumentInfo(Path.GetFileName(documentGuid), password);
+                string fileName = System.IO.Path.GetFileName(documentGuid);
+                FileInfo fi = new FileInfo(documentGuid);
+                DirectoryInfo parentDir = fi.Directory;
+
+                string documentPath = "";
+                string parentDirName = parentDir.Name;
+                if (parentDir.FullName == GlobalConfiguration.Annotation.FilesDirectory.Replace("/", "\\"))
+                {
+                    documentPath = fileName;
+                }
+                else
+                {
+                    documentPath = Path.Combine(parentDirName, fileName);
+                }
+                DocumentInfoContainer info = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 // get all rows info for specific page
                 List<RowData> rows = info.Pages[pageNumber - 1].Rows;
                 // initiate list of the TextRowEntity
@@ -393,7 +407,21 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // initiate list of annotations to add
                 List<AnnotationInfo> annotations = new List<AnnotationInfo>();
                 // get document info - required to get document page height and calculate annotation top position
-                DocumentInfoContainer documentInfo = AnnotationImageHandler.GetDocumentInfo(Path.GetFileName(documentGuid), password);
+                string fileName = System.IO.Path.GetFileName(documentGuid);
+                FileInfo fi = new FileInfo(documentGuid);
+                DirectoryInfo parentDir = fi.Directory;
+
+                string documentPath = "";
+                string parentDirName = parentDir.Name;
+                if (parentDir.FullName == GlobalConfiguration.Annotation.FilesDirectory.Replace("/", "\\"))
+                {
+                    documentPath = fileName;
+                }
+                else
+                {
+                    documentPath = Path.Combine(parentDirName, fileName);
+                }
+                DocumentInfoContainer documentInfo = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 // check if document type is image
                 if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                 {
@@ -426,7 +454,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     // Add annotation to the document
                     DocumentType type = DocumentTypesConverter.GetDocumentType(documentType);
                     // Save result stream to file.
-                    string fileName = Path.GetFileName(documentGuid);
+                   
                     string path = GlobalConfiguration.Annotation.OutputDirectory + Path.DirectorySeparatorChar + fileName;
                     Stream cleanDoc = new FileStream(documentGuid, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                     Stream result = AnnotationImageHandler.ExportAnnotationsToDocument(cleanDoc, annotations, type);
