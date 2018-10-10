@@ -7,7 +7,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Entity.Web
     /// </summary>
     public class AnnotationPostedDataEntity : PostedDataEntity
     {
-        public int pageNumber { get; set; }
+        public string documentType { get; set; }
         public AnnotationDataEntity[] annotationsData { get; set;}
     }
 }

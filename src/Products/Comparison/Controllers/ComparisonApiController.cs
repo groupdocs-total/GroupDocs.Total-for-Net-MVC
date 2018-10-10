@@ -53,10 +53,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         /// Download results
         /// </summary>
         /// <param name=""></param>
-        [HttpPost]
+        [HttpGet]
         [Route("comparison/downloadDocument")]
-        public HttpResponseMessage DownloadDocument(string guid, string index, string ext)
+        public HttpResponseMessage DownloadDocument(string guid, string ext, string index = "")
         {
+            ext = (ext.Contains(".")) ? ext : "." + ext;
             string filePath = comparisonService.CalculateResultFileName(guid, index, ext);
             if (!string.IsNullOrEmpty(filePath))
             {
