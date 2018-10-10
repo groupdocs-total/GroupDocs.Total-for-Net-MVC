@@ -125,10 +125,22 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 string documentGuid = loadDocumentRequest.guid;
                 string password = loadDocumentRequest.password;
                 DocumentInfoContainer documentDescription;
-                // get document info container
-                string fileName = Path.GetFileName(documentGuid);
-                documentDescription = AnnotationImageHandler.GetDocumentInfo(fileName, password);
-
+                // get document info container              
+                string fileName = System.IO.Path.GetFileName(documentGuid);
+                FileInfo fi = new FileInfo(documentGuid);
+                DirectoryInfo parentDir = fi.Directory;
+              
+                string documentPath = "";
+                string parentDirName = parentDir.Name;
+                if (parentDir.FullName == GlobalConfiguration.Annotation.FilesDirectory.Replace("/", "\\"))
+                {
+                    documentPath = fileName;
+                } else
+                {
+                    documentPath = Path.Combine(parentDirName, fileName);
+                }
+                
+                documentDescription = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 string documentType = documentDescription.DocumentType;
                 string fileExtension = Path.GetExtension(documentGuid);
                 // check if document type is image
@@ -236,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
             // check if signed document should be downloaded or original
             string pathToDownload = annotated ?
-                 String.Format("{1}{2}{3}", DirectoryUtils.OutputDirectory.GetPath(), Path.DirectorySeparatorChar, Path.GetFileName(path)) :
+                 String.Format("{0}{1}{2}", DirectoryUtils.OutputDirectory.GetPath(), Path.DirectorySeparatorChar, Path.GetFileName(path)) :
                  path;
             // add file into the response
             if (File.Exists(pathToDownload))
