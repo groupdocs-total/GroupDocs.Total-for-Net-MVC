@@ -52,6 +52,9 @@
       <HintPath>..\packages\GroupDocs.Comparison.18.9.0\lib\GroupDocs.Comparison.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="GroupDocs.Metadata">
+      <HintPath>.\GroupDocs.Metadata.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Signature, Version=18.9.1.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.18.9.1\lib\GroupDocs.Signature.dll</HintPath>
       <Private>True</Private>
@@ -157,6 +160,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ComparisonController.cs" />
     <Compile Include="Controllers\AnnotationController.cs" />
+    <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\TotalController.cs" />
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
@@ -210,6 +214,11 @@
     <Compile Include="Products\Comparison\Service\ComparisonServiceImpl.cs" />
     <Compile Include="Products\Comparison\Service\IComparisonService.cs" />
     <Compile Include="Products\Comparison\Util\TransformFiles.cs" />
+    <Compile Include="Products\Metadata\Config\MetadataConfiguration.cs" />
+    <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
+    <Compile Include="Products\Metadata\Entity\Web\MetadataFileDescriptionEntity.cs" />
+    <Compile Include="Products\Metadata\Entity\Web\MetadataPostedDataEntity.cs" />
+    <Compile Include="Products\Metadata\Loader\FilesTreeLoader.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\BarcodeDataDirectoryEntity.cs" />
@@ -314,6 +323,11 @@
     <Content Include="Resources\comparison\webfonts\fa-brands-400.svg" />
     <Content Include="Resources\comparison\webfonts\fa-regular-400.svg" />
     <Content Include="Resources\comparison\webfonts\fa-solid-900.svg" />
+    <Content Include="Resources\metadata\css\metadata.css" />
+    <Content Include="Resources\metadata\css\metadata.mobile.css" />
+    <Content Include="Resources\metadata\images\banner.png" />
+    <Content Include="Resources\metadata\images\logo.png" />
+    <Content Include="Resources\metadata\js\metadata.js" />
     <Content Include="Resources\signature\css\bcPaint.css" />
     <Content Include="Resources\signature\css\bcPaint.mobile.css" />
     <Content Include="Resources\signature\css\bcPicker.css" />
@@ -410,6 +424,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Comparison\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Metadata\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

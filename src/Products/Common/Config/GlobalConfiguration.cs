@@ -2,6 +2,7 @@
 using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Viewer.Config;
 using GroupDocs.Total.MVC.Products.Comparison.Config;
+using GroupDocs.Total.MVC.Products.Metadata.Config;
 
 namespace GroupDocs.Total.MVC.Products.Common.Config
 {
@@ -17,6 +18,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         public ViewerConfiguration Viewer;
         public AnnotationConfiguration Annotation;
         public ComparisonConfiguration Comparison;
+        public MetadataConfiguration Metadata;
 
         /// <summary>
         /// Get all configurations
@@ -30,6 +32,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             Common = new CommonConfiguration();
             Annotation = new AnnotationConfiguration();
             Comparison = new ComparisonConfiguration();
+            Metadata = new MetadataConfiguration();
         }
     }
 }

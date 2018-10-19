@@ -1,0 +1,50 @@
+﻿@{
+    GroupDocs.Total.MVC.Products.Common.Config.GlobalConfiguration config = new GroupDocs.Total.MVC.Products.Common.Config.GlobalConfiguration();
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Metadata for .NET MVC</title>
+    <link type="text/css" rel="stylesheet" href="~/resources/common/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/resources/common/css/swiper.min.css">
+    <link type="text/css" rel="stylesheet" href="~/resources/common/css/jquery-ui.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/resources/common/css/circle-progress.css" />
+    <link type="text/css" rel="stylesheet" href="~/resources/viewer/css/viewer.css" />
+    <link type="text/css" rel="stylesheet" href="~/resources/viewer/css/viewer.mobile.css" />
+    <link type="text/css" rel="stylesheet" href="~/resources/viewer/css/viewer-dark.css" />    
+    <link type="text/css" rel="stylesheet" href="~/resources/metadata/css/metadata.css" />
+    <script type="text/javascript" src="~/resources/common/js/jquery.min.js"></script>
+    <script type="text/javascript" src="~/resources/common/js/swiper.min.js"></script>
+    <script type="text/javascript" src="~/resources/common/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/resources/common/js/es6-promise.auto.js"></script>
+    <script type="text/javascript" src="~/resources/viewer/js/viewer.js"></script>   
+    <script type="text/javascript" src="~/resources/metadata/js/metadata.js"></script>
+    <script type="text/javascript" src="~/resources/common/js/jquery.ui.touch-punch.min.js"></script>
+</head>
+<body>
+    <div id="element"></div>
+    <script type="text/javascript">
+        $('#element').viewer({
+            applicationPath: 'http://@config.Server.HostAddress:@config.Server.HttpPort/metadata',
+            defaultDocument: '@config.Signature.DefaultDocument',
+            htmlMode: false,
+            preloadPageCount: @config.Signature.PreloadPageCount,
+            zoom : false,
+            pageSelector: @config.Common.isPageSelector.ToString().ToLowerInvariant(),
+            search: false,
+            thumbnails: false,
+            rotate: false,
+            download: @config.Common.isDownload.ToString().ToLowerInvariant(),
+            upload: @config.Common.isUpload.ToString().ToLowerInvariant(),
+            print: @config.Common.isPrint.ToString().ToLowerInvariant(),
+            browse: @config.Common.isBrowse.ToString().ToLowerInvariant(),
+            rewrite: @config.Common.isRewrite.ToString().ToLowerInvariant()
+            });
+        $('#element').metadata({
+            isHidden: @config.Metadata.isHidden.ToString().ToLowerInvariant(),
+            isCustom: @config.Metadata.isCustom.ToString().ToLowerInvariant(),
+            isMultimedia: @config.Metadata.isMultimedia.ToString().ToLowerInvariant(),
+        });
+    </script>
+</body>
+</html>

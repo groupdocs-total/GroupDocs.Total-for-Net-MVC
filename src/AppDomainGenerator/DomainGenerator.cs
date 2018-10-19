@@ -107,5 +107,17 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             // Set license
             obj.SetLicense(globalConfiguration.Application.LicensePath);
         }
+
+        /// <summary>
+        /// Set GroupDocs.Metadata license
+        /// </summary>
+        /// <param name="type">Type</param>
+        public void SetMetadataLicense(Type type)
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Metadata.License)Activator.CreateInstance(type);
+            // Set license
+            obj.SetLicense(globalConfiguration.Application.LicensePath);
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace GroupDocs.Total.MVC
             string signatureAssemblyName = "GroupDocs.Signature.dll";
             string annotationAssemblyName = "GroupDocs.Annotation.dll";
             string comparisonAssemblyName = "GroupDocs.Comparison.dll";
+            string metadataAssemblyName = "GroupDocs.Metadata.dll";
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
             viewerDomainGenerator.SetViewerLicense(viewerDomainGenerator.CurrentType);
@@ -27,7 +28,10 @@ namespace GroupDocs.Total.MVC
             // set GroupDocs.Comparison license
             DomainGenerator comparisonDomainGenerator = new DomainGenerator(comparisonAssemblyName, "GroupDocs.Comparison.Common.License.License");
             comparisonDomainGenerator.SetComparisonLicense(comparisonDomainGenerator.CurrentType);
-            
+            // set GroupDocs.Metadata license
+            DomainGenerator metadataDomainGenerator = new DomainGenerator(metadataAssemblyName, "GroupDocs.Metadata.License");
+            metadataDomainGenerator.SetMetadataLicense(metadataDomainGenerator.CurrentType);
+
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
