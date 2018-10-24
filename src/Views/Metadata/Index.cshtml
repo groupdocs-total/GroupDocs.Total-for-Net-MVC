@@ -41,9 +41,11 @@
             rewrite: @config.Common.isRewrite.ToString().ToLowerInvariant()
             });
         $('#element').metadata({
-            isHidden: @config.Metadata.isHidden.ToString().ToLowerInvariant(),
-            isCustom: @config.Metadata.isCustom.ToString().ToLowerInvariant(),
-            isMultimedia: @config.Metadata.isMultimedia.ToString().ToLowerInvariant(),
+            hidden: @config.Metadata.isHidden.ToString().ToLowerInvariant(),
+            custom: @config.Metadata.isCustom.ToString().ToLowerInvariant(),
+            multimedia: @config.Metadata.isMultimedia.ToString().ToLowerInvariant(),
+            downloadCsv: @config.Metadata.isDownloadCsv.ToString().ToLowerInvariant(),
+            downloadXml: @config.Metadata.isDownloadXml.ToString().ToLowerInvariant(),
         });
     </script>
 </body>

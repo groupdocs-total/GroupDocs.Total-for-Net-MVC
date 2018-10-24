@@ -3,7 +3,7 @@
 }
 
 .gd-metadata-wrapper.active {
-	width: 310px;
+	width: 334px;
 	display: block;    
 }
 
@@ -46,11 +46,11 @@
 }
 
 .gd-metadata-toggle:checked + .gd-lbl-metadata-toggle + .gd-metadata-sidebar-expanded{
-  width: 300px;
+  width: 334px;
 }
 
 .gd-metadata-toggle:checked + .gd-lbl-metadata-toggle {
-  right: 286px;
+  right: 325px;
   transition: right .25s ease-in-out;
 }
 
@@ -80,10 +80,6 @@
     margin-top: 34px;
 }
 
-.gd-save-button-disabled {
-    cursor: not-allowed;
-}
-
 .gd-save-button {
     border-radius: 0px;
     display: inline-block;
@@ -97,4 +93,52 @@
     font-size: 18px;
     color: #fff;
     padding: 5px 0px;
+}
+
+.gd-metadata-avatar {
+    position: relative;
+    top: 0px;
+    left: 8px;
+    font-size: 22px;
+    color: #959da5;
+}
+
+.gd-metadata-id {
+    position: relative;
+    top: 7px;
+    left: 15px;
+    color: #959da5;
+    float: left;
+    font-size: 21px !important;
+}
+
+.gd-delete-metadata {
+    color: #959da5;
+    position: relative;
+    top: 7px;
+    right: 42px;
+    font-size: 25px;
+    cursor: pointer;
+    float: right;
+}
+
+.gd-metadata-input {
+    margin: 16px 0 0 23px;
+    width: 244px;
+    font-size: 18px;
+}
+
+.gd-add-metadata {
+    padding: 12px 0 13px 16px;
+    width: 58px;
+    cursor: pointer;
+}
+
+.fa-plus-circle {
+    color: #959da5;
+    font-size: 40px;
+}
+
+.gd-metadata-id-input {
+    margin: 30px 0 0 0px;
 }

@@ -1,17 +1,24 @@
-﻿using GroupDocs.Metadata.Preview;
+﻿using GroupDocs.Metadata;
+using GroupDocs.Metadata.Preview;
+using GroupDocs.Metadata.Tools;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Metadata.Entity.Web;
 using GroupDocs.Total.MVC.Products.Metadata.Loader;
+using GroupDocs.Total.MVC.Products.Metadata.Metadata;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Script.Serialization;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
 {
@@ -79,29 +86,36 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         [Route("metadata/loadDocumentDescription")]
         public HttpResponseMessage LoadDocumentDescription(MetadataPostedDataEntity postedData)
         {
-            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
-                password = postedData.password;
-                List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
-                using (PreviewHandler handler = PreviewFactory.Load(documentGuid))
+                DocumentType docType;
+                List<DocumentMetadataDescription> pagesDescription = new List<DocumentMetadataDescription>();
+                using (Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    bool isSupported = handler.PreviewSupported;
-                    PreviewPage[] pages = handler.Pages;
-                    // get info about each document page
-                    for (int i = 0; i < pages.Length; i++)
+                    using (FileFormatChecker fileFormatChecker = new FileFormatChecker(document))
                     {
-                        //initiate custom Document description object
-                        DocumentDescriptionEntity description = new DocumentDescriptionEntity();
-                        // set current page info for result
-                        description.height = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Height * 0.75 : pages[i].Height;
-                        description.width = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Width * 0.75 : pages[i].Width;
-                        description.number = i + 1;
-                        pagesDescription.Add(description);
+                        docType = fileFormatChecker.GetDocumentType();
                     }
-                }
+                    
+                    using (PreviewHandler handler = PreviewFactory.Load(document))
+                    {
+                        bool isSupported = handler.PreviewSupported;
+                        PreviewPage[] pages = handler.Pages;
+                        // get info about each document page
+                        for (int i = 0; i < pages.Length; i++)
+                        {
+                            //initiate custom Document description object
+                            DocumentMetadataDescription description = new DocumentMetadataDescription();
+                            // set current page info for result
+                            description.height = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Height * 0.75 : pages[i].Height;
+                            description.width = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Width * 0.75 : pages[i].Width;
+                            description.number = i + 1;
+                            pagesDescription.Add(description);
+                        }
+                    }
+                }   
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
             }
@@ -109,7 +123,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
-        }
+        }        
 
         /// <summary>
         /// Load document page
@@ -127,17 +141,55 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                 int pageNumber = postedData.page;
                 string password = postedData.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
-                using (PreviewHandler handler = PreviewFactory.Load(documentGuid))
+                using (Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-
-                    // get page image
-                    byte[] bytes = handler.GetPageImage(pageNumber - 1)[0].Contents;
-                    // encode ByteArray into string
-                    string encodedImage = Convert.ToBase64String(bytes);
-                    loadedPage.pageImage = encodedImage;
+                    using (PreviewHandler handler = PreviewFactory.Load(document))
+                    {
+                        // get page image
+                        byte[] bytes = handler.GetPageImage(pageNumber - 1)[0].Contents;
+                        // encode ByteArray into string
+                        string encodedImage = Convert.ToBase64String(bytes);
+                        loadedPage.pageImage = encodedImage;
+                    }
                 }
+
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Load document metadata
+        /// </summary>
+        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <returns>All info about the document</returns>
+        [HttpPost]
+        [Route("metadata/getMetadata")]
+        public HttpResponseMessage GetMetadata(MetadataPostedDataEntity postedData)
+        {
+            try
+            {
+                // get/set parameters
+                string documentGuid = postedData.guid;
+                DocumentType docType;
+                string metadata;
+                using (Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (FileFormatChecker fileFormatChecker = new FileFormatChecker(document))
+                    {
+                        docType = fileFormatChecker.GetDocumentType();
+                    }
+
+                    metadata = MetadataFactory.CreateMetadataImporter(document, docType).ImportMetadata();
+                }
+                DocumentMetadataDescription documentMetadata = new DocumentMetadataDescription();
+                documentMetadata.documentMetadata = metadata;
+                // return document description
+                return Request.CreateResponse(HttpStatusCode.OK, documentMetadata);
             }
             catch (Exception ex)
             {
@@ -164,7 +216,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                 {
                     // prepare response message
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                    pathToDownload = Path.Combine(storagePath, fileName);                   
+                    pathToDownload = Path.Combine(storagePath, fileName);
                     // add file into the response
                     var fileStream = new FileStream(path, FileMode.Open);
                     response.Content = new StreamContent(fileStream);
@@ -254,6 +306,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
-        }       
+        }
     }
 }

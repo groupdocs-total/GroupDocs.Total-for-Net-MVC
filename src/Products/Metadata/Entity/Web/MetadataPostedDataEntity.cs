@@ -7,6 +7,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Entity.Web
     /// </summary>
     public class MetadataPostedDataEntity : PostedDataEntity
     {
-        
+        public string documentType { get; set; }
     }
 }

@@ -13,6 +13,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
         public bool isHidden { get; set; }
         public bool isCustom { get; set; }
         public bool isMultimedia { get; set; }
+        public bool isDownloadCsv { get; set; }
+        public bool isDownloadXml { get; set; }
         private NameValueCollection signatureConfiguration = (NameValueCollection)ConfigurationManager.GetSection("metadataConfiguration");
 
         /// <summary>
@@ -23,7 +25,9 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             FilesDirectory = signatureConfiguration["filesDirectory"];
             isHidden = Convert.ToBoolean(signatureConfiguration["isHidden"]);
             isCustom = Convert.ToBoolean(signatureConfiguration["isCustom"]);
-            isMultimedia = Convert.ToBoolean(signatureConfiguration["isMultimedia"]);           
+            isMultimedia = Convert.ToBoolean(signatureConfiguration["isMultimedia"]);
+            isDownloadCsv = Convert.ToBoolean(signatureConfiguration["isDownloadCsv"]);
+            isDownloadXml = Convert.ToBoolean(signatureConfiguration["isDownloadXml"]);
         }
     }
 }

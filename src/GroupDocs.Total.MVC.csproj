@@ -216,9 +216,14 @@
     <Compile Include="Products\Comparison\Util\TransformFiles.cs" />
     <Compile Include="Products\Metadata\Config\MetadataConfiguration.cs" />
     <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
+    <Compile Include="Products\Metadata\Entity\Web\DocumentMetadataDescription.cs" />
     <Compile Include="Products\Metadata\Entity\Web\MetadataFileDescriptionEntity.cs" />
     <Compile Include="Products\Metadata\Entity\Web\MetadataPostedDataEntity.cs" />
     <Compile Include="Products\Metadata\Loader\FilesTreeLoader.cs" />
+    <Compile Include="Products\Metadata\MetadataSerializer\MetadataConverter.cs" />
+    <Compile Include="Products\Metadata\Metadata\BaseMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\DocMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\MetadataFactory.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\BarcodeDataDirectoryEntity.cs" />
