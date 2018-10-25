@@ -222,6 +222,9 @@
     <Compile Include="Products\Metadata\Loader\FilesTreeLoader.cs" />
     <Compile Include="Products\Metadata\MetadataSerializer\MetadataConverter.cs" />
     <Compile Include="Products\Metadata\Metadata\BaseMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\PdfMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\PowerPointMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\ExcelMetadataImporter.cs" />
     <Compile Include="Products\Metadata\Metadata\DocMetadataImporter.cs" />
     <Compile Include="Products\Metadata\Metadata\MetadataFactory.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />

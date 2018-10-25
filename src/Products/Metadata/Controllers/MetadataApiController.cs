@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -46,7 +47,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         /// <summary>
         /// Get all files and directories from storage
         /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <param name="postedData">MetadataPostedDataEntity</param>
         /// <returns>List of files and directories</returns>
         [HttpPost]
         [Route("metadata/loadFileTree")]
@@ -80,7 +81,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         /// <summary>
         /// Load document description
         /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <param name="postedData">MetadataPostedDataEntity</param>
         /// <returns>All info about the document</returns>
         [HttpPost]
         [Route("metadata/loadDocumentDescription")]
@@ -98,7 +99,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                     {
                         docType = fileFormatChecker.GetDocumentType();
                     }
-                    
+
                     using (PreviewHandler handler = PreviewFactory.Load(document))
                     {
                         bool isSupported = handler.PreviewSupported;
@@ -115,7 +116,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                             pagesDescription.Add(description);
                         }
                     }
-                }   
+                }
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
             }
@@ -123,17 +124,18 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
-        }        
+        }
 
         /// <summary>
         /// Load document page
         /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <param name="postedData">MetadataPostedDataEntity</param>
         /// <returns>Document page image encoded in Base64</returns>
         [HttpPost]
         [Route("metadata/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(MetadataPostedDataEntity postedData)
         {
+            string encodedImage;
             try
             {
                 // get/set parameters
@@ -146,9 +148,22 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                     using (PreviewHandler handler = PreviewFactory.Load(document))
                     {
                         // get page image
-                        byte[] bytes = handler.GetPageImage(pageNumber - 1)[0].Contents;
-                        // encode ByteArray into string
-                        string encodedImage = Convert.ToBase64String(bytes);
+                        if (handler.GetPageImage(pageNumber - 1).Length > 1)
+                        {
+                            Stream[] images = new MemoryStream[handler.GetPageImage(pageNumber - 1).Length];
+                            for (int i = 0; i < handler.GetPageImage(pageNumber - 1).Length; i++)
+                            {
+                                images[i] = new MemoryStream(handler.GetPageImage(pageNumber - 1)[i].Contents);
+                            }
+                            encodedImage = CombineBitmap(images);
+                        }
+                        else
+                        {
+                            byte[] bytes = handler.GetPageImage(pageNumber - 1)[0].Contents;
+                            // encode ByteArray into string
+                            encodedImage = Convert.ToBase64String(bytes);
+                        }
+
                         loadedPage.pageImage = encodedImage;
                     }
                 }
@@ -165,7 +180,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         /// <summary>
         /// Load document metadata
         /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <param name="postedData">MetadataPostedDataEntity</param>
         /// <returns>All info about the document</returns>
         [HttpPost]
         [Route("metadata/getMetadata")]
@@ -305,6 +320,77 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             {
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Combine several images into the one Base64 string
+        /// </summary>
+        /// <param name="files">Stream[]</param>
+        /// <returns>string</returns>
+        private static string CombineBitmap(Stream[] files)
+        {
+            //read all images into memory
+            List<System.Drawing.Bitmap> images = new List<System.Drawing.Bitmap>();
+            System.Drawing.Bitmap finalImage = null;
+            string sigBase64;
+            try
+            {
+                int width = 0;
+                int height = 0;
+
+                foreach (Stream image in files)
+                {
+                    //create a Bitmap from the file and add it to the list
+                    System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(image);
+
+                    //update the size of the final bitmap
+                    width += bitmap.Width;
+                    height = bitmap.Height > height ? bitmap.Height : height;
+
+                    images.Add(bitmap);
+                }
+
+                //create a bitmap to hold the combined image
+                finalImage = new System.Drawing.Bitmap(width, height);
+
+                //get a graphics object from the image so we can draw on it
+                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(finalImage))
+                {
+                    //set background color
+                    g.Clear(System.Drawing.Color.Black);
+
+                    //go through each image and draw it on the final image
+                    int offset = 0;
+                    foreach (System.Drawing.Bitmap image in images)
+                    {
+                        g.DrawImage(image,
+                          new System.Drawing.Rectangle(offset, 0, image.Width, image.Height));
+                        offset += image.Width;
+                    }
+                }
+
+                using (var ms = new MemoryStream())
+                {
+                    finalImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    sigBase64 = Convert.ToBase64String(ms.GetBuffer()); //Get Base64                    
+                }
+                return sigBase64;
+            }
+            catch (Exception)
+            {
+                if (finalImage != null)
+                    finalImage.Dispose();
+                //throw ex;
+                throw;
+            }
+            finally
+            {
+                //clean up memory
+                foreach (System.Drawing.Bitmap image in images)
+                {
+                    image.Dispose();
+                }
             }
         }
     }

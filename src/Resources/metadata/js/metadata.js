@@ -14,8 +14,7 @@ GLOBAL VARIABLES
 ******************************************************************
 */
 var metadata = {
-    id: "",
-    type: "",
+    id: "",   
     value: 0,
 };
 var metadataList = [];
@@ -208,14 +207,6 @@ function saveData() {
 }
 
 /**
- * delete metadata property
- * @param {Object} event - delete metadata button click event data
- */
-function deleteMetadata(event) {
-
-}
-
-/**
  * Download document
  * @param {Object} button - Clicked download button
  */
@@ -261,7 +252,6 @@ function getHtmlMetadata(metadataId, metadataValue, newProperty) {
                 value = (value != "") ? value : "";
                 property += '<input type="text" class="gd-metadata-input" value="' + value + '">';
             });
-
         } else {
             property = '<input type="text" class="gd-metadata-input" value="' + metadataValue + '">';
         }
