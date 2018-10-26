@@ -31,6 +31,8 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         private static Common.Config.GlobalConfiguration globalConfiguration;
         private static ViewerHtmlHandler viewerHtmlHandler = null;
         private static ViewerImageHandler viewerImageHandler = null;
+        public static string PASSWORD_REQUIRED = "Password Required";
+        public static string INCORRECT_PASSWORD = "Incorrect password";
 
         /// <summary>
         /// Constructor
@@ -132,14 +134,14 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         public HttpResponseMessage LoadDocumentDescription(PostedDataEntity postedData)
         {
             string password = "";
-            string documentGuid = "";           
+            string documentGuid = "";
             try
             {
                 // get request body
                 if (postedData != null)
                 {
                     // get/set parameters
-                    documentGuid = postedData.guid;                   
+                    documentGuid = postedData.guid;
                     password = postedData.password;
                     // check if documentGuid contains path or only file name
                     if (!Path.IsPathRooted(documentGuid))
@@ -172,10 +174,18 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             }
             catch (InvalidPasswordException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                if (String.IsNullOrEmpty(password))
+                {
+                    Exception error = new Exception(PASSWORD_REQUIRED);
+                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
+                } else
+                {
+                    Exception error = new Exception(INCORRECT_PASSWORD);
+                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
+                }
             }
-            catch (System.Exception ex)
-            {
+            catch (System.Exception ex)            {
+
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
