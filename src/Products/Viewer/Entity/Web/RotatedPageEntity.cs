@@ -7,7 +7,6 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Entity.Web
     public class RotatedPageEntity
     {
         public int pageNumber;
-        public string angle;
-        public bool htmlMode;
+        public string angle;        
     }
 }

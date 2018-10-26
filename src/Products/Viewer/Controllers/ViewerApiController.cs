@@ -305,8 +305,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     rotatedPage.pageNumber = pageNumber;
                     // add rotated page angle
                     rotatedPage.angle = resultAngle;
-                    // add rotated page object into resulting list
-                    rotatedPage.htmlMode = globalConfiguration.Viewer.isHtmlMode;
+                    // add rotated page object into resulting list                   
                     rotatedPages.Add(rotatedPage);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, rotatedPages);
