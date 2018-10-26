@@ -17,7 +17,8 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         public bool isSearch { get; set; }
         public bool isThumbnails { get; set; }
         public bool isRotate { get; set; }      
-        public bool isHtmlMode { get; set; }        
+        public bool isHtmlMode { get; set; }
+        public bool Cache { get; set; }
         private NameValueCollection viewerConfiguration = (NameValueCollection)System.Configuration.ConfigurationManager.GetSection("viewerConfiguration");
 
         /// <summary>
@@ -30,11 +31,12 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
             FontsDirectory = viewerConfiguration["fontsDirectory"];
             DefaultDocument = viewerConfiguration["defaultDocument"];
             PreloadPageCount = Convert.ToInt32(viewerConfiguration["preloadPageCount"]);
-            isZoom = Convert.ToBoolean(viewerConfiguration["isZoom"]);          
+            isZoom = Convert.ToBoolean(viewerConfiguration["isZoom"]);
             isSearch = Convert.ToBoolean(viewerConfiguration["isSearch"]);
             isThumbnails = Convert.ToBoolean(viewerConfiguration["isThumbnails"]);
-            isRotate = Convert.ToBoolean(viewerConfiguration["isRotate"]);           
-            isHtmlMode = Convert.ToBoolean(viewerConfiguration["isHtmlMode"]);           
+            isRotate = Convert.ToBoolean(viewerConfiguration["isRotate"]);
+            isHtmlMode = Convert.ToBoolean(viewerConfiguration["isHtmlMode"]);
+            Cache = Convert.ToBoolean(viewerConfiguration["cache"]);
         }
     }
 }
