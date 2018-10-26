@@ -8,5 +8,6 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Entity.Web
     {
         public int pageNumber;
         public string angle;
+        public bool htmlMode;
     }
 }

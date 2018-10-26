@@ -27,34 +27,40 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ViewerApiController : ApiController
     {
-        
+
         private static Common.Config.GlobalConfiguration globalConfiguration;
-        private static ViewerHtmlHandler viewerHtmlHandler;
-        private static ViewerImageHandler viewerImageHandler;
+        private static ViewerHtmlHandler viewerHtmlHandler = null;
+        private static ViewerImageHandler viewerImageHandler = null;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public ViewerApiController()
-        {            
+        {
             // Check if filesDirectory is relative or absolute path           
             globalConfiguration = new Common.Config.GlobalConfiguration();
-               
+
             // create viewer application configuration
             ViewerConfig config = new ViewerConfig();
             config.StoragePath = globalConfiguration.Viewer.FilesDirectory;
-            config.EnableCaching = true;
+            config.EnableCaching = globalConfiguration.Viewer.Cache;
             config.ForcePasswordValidation = true;
             List<string> fontsDirectory = new List<string>();
             if (!String.IsNullOrEmpty(globalConfiguration.Viewer.FontsDirectory))
             {
                 fontsDirectory.Add(globalConfiguration.Viewer.FontsDirectory);
             }
-            config.FontDirectories = fontsDirectory;           
-            // initialize viewer instance for the HTML mode
-            viewerHtmlHandler = new ViewerHtmlHandler(config);
-            // initialize viewer instance for the Image mode
-            viewerImageHandler = new ViewerImageHandler(config);
+            config.FontDirectories = fontsDirectory;
+            if (globalConfiguration.Viewer.isHtmlMode)
+            {
+                // initialize total instance for the HTML mode
+                viewerHtmlHandler = new ViewerHtmlHandler(config);
+            }
+            else
+            {
+                // initialize total instance for the Image mode
+                viewerImageHandler = new ViewerImageHandler(config);
+            }
         }
 
         /// <summary>
@@ -81,7 +87,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
                 if (!String.IsNullOrEmpty(globalConfiguration.Viewer.FilesDirectory))
                 {
-                    FileListContainer fileListContainer = viewerHtmlHandler.GetFileList(fileListOptions);                   
+                    FileListContainer fileListContainer = this.GetHandler().GetFileList(fileListOptions);
                     // parse files/folders list
                     foreach (FileDescription fd in fileListContainer.Files)
                     {
@@ -99,7 +105,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                             fileDescription.name = fd.Name;
                         }
                         // set file type
-                        fileDescription.docType = fd.DocumentType;
+                        fileDescription.docType = fd.FileFormat;
                         // set is directory true/false
                         fileDescription.isDirectory = fd.IsDirectory;
                         // set file size
@@ -126,16 +132,14 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         public HttpResponseMessage LoadDocumentDescription(PostedDataEntity postedData)
         {
             string password = "";
-            string documentGuid = "";
-            bool htmlMode = false;
+            string documentGuid = "";           
             try
             {
                 // get request body
                 if (postedData != null)
                 {
                     // get/set parameters
-                    documentGuid = postedData.guid;
-                    htmlMode = postedData.htmlMode;
+                    documentGuid = postedData.guid;                   
                     password = postedData.password;
                     // check if documentGuid contains path or only file name
                     if (!Path.IsPathRooted(documentGuid))
@@ -148,22 +152,15 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
                 // set password for protected document                
                 documentInfoOptions.Password = password;
-                // get document info container
-                if (htmlMode)
-                {
-                    documentInfoContainer = viewerHtmlHandler.GetDocumentInfo(documentGuid, documentInfoOptions);
-                }
-                else
-                {
-                    documentInfoContainer = viewerImageHandler.GetDocumentInfo(documentGuid, documentInfoOptions);
-                }
+                // get document info container               
+                documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions);
                 List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
                 // get info about each document page
                 for (int i = 0; i < documentInfoContainer.Pages.Count; i++)
                 {
                     //initiate custom Document description object
-                    DocumentDescriptionEntity description = new DocumentDescriptionEntity();             
-                   
+                    DocumentDescriptionEntity description = new DocumentDescriptionEntity();
+
                     // set current page info for result
                     description.height = documentInfoContainer.Pages[i].Height;
                     description.width = documentInfoContainer.Pages[i].Width;
@@ -171,7 +168,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     pagesDescription.Add(description);
                 }
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);            
+                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
             }
             catch (InvalidPasswordException ex)
             {
@@ -198,12 +195,15 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 int pageNumber = postedData.page;
-                bool htmlMode = postedData.htmlMode;
                 string password = postedData.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
+                // get document info options
+                DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
+                // set password for protected document                
+                documentInfoOptions.Password = password;
                 string angle = "0";
                 // set options
-                if (htmlMode)
+                if (globalConfiguration.Viewer.isHtmlMode)
                 {
                     HtmlOptions htmlOptions = new HtmlOptions();
                     htmlOptions.PageNumber = pageNumber;
@@ -215,9 +215,9 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                         htmlOptions.Password = password;
                     }
                     // get page HTML
-                    loadedPage.pageHtml = viewerHtmlHandler.GetPages(documentGuid, htmlOptions)[0].HtmlContent;
+                    loadedPage.pageHtml = this.GetHandler().GetPages(documentGuid, htmlOptions)[0].HtmlContent;
                     // get page rotation angle
-                    angle = viewerHtmlHandler.GetDocumentInfo(documentGuid).Pages[pageNumber - 1].Angle.ToString();
+                    angle = viewerHtmlHandler.GetDocumentInfo(documentGuid, documentInfoOptions).Pages[pageNumber - 1].Angle.ToString();
                 }
                 else
                 {
@@ -233,7 +233,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     byte[] bytes;
                     using (var memoryStream = new MemoryStream())
                     {
-                        viewerImageHandler.GetPages(documentGuid, imageOptions)[0].Stream.CopyTo(memoryStream);
+                        this.GetHandler().GetPages(documentGuid, imageOptions)[0].Stream.CopyTo(memoryStream);
                         bytes = memoryStream.ToArray();
                     }
 
@@ -241,7 +241,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
 
                     loadedPage.pageImage = encodedImage;
                     // get page rotation angle
-                    angle = viewerImageHandler.GetDocumentInfo(documentGuid).Pages[pageNumber - 1].Angle.ToString();
+                    angle = viewerImageHandler.GetDocumentInfo(documentGuid, documentInfoOptions).Pages[pageNumber - 1].Angle.ToString();
                 }
                 loadedPage.angle = angle;
                 // return loaded page object
@@ -269,8 +269,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 string documentGuid = postedData.guid;
                 int angle = postedData.angle;
                 List<int> pages = postedData.pages;
-                bool htmlMode = postedData.htmlMode;
                 string password = postedData.password;
+                DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
+                // set password for protected document                
+                documentInfoOptions.Password = password;
                 // a list of the rotated pages info
                 List<RotatedPageEntity> rotatedPages = new List<RotatedPageEntity>();
                 // rotate pages
@@ -287,21 +289,14 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     {
                         rotateOptions.Password = password;
                     }
-                    if (htmlMode)
-                    {
-                        viewerHtmlHandler.RotatePage(documentGuid, rotateOptions);
-                        resultAngle = viewerHtmlHandler.GetDocumentInfo(documentGuid).Pages[pageNumber - 1].Angle.ToString();
-                    }
-                    else
-                    {
-                        viewerImageHandler.RotatePage(documentGuid, rotateOptions);
-                        resultAngle = viewerImageHandler.GetDocumentInfo(documentGuid).Pages[pageNumber - 1].Angle.ToString();
-                    }
+                    this.GetHandler().RotatePage(documentGuid, rotateOptions);
+                    resultAngle = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions).Pages[pageNumber - 1].Angle.ToString();
                     // add rotated page number
                     rotatedPage.pageNumber = pageNumber;
                     // add rotated page angle
                     rotatedPage.angle = resultAngle;
                     // add rotated page object into resulting list
+                    rotatedPage.htmlMode = globalConfiguration.Viewer.isHtmlMode;
                     rotatedPages.Add(rotatedPage);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, rotatedPages);
@@ -376,7 +371,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                             httpPostedFile.SaveAs(fileSavePath);
                         }
                     }
-                } 
+                }
                 else
                 {
                     using (WebClient client = new WebClient())
@@ -406,6 +401,18 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
-        }       
+        }
+
+        private dynamic GetHandler()
+        {
+            if (viewerHtmlHandler != null)
+            {
+                return viewerHtmlHandler;
+            }
+            else
+            {
+                return viewerImageHandler;
+            }
+        }
     }
 }
