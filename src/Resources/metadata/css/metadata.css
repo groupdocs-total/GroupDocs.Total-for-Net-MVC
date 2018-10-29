@@ -101,6 +101,7 @@
     left: 8px;
     font-size: 22px;
     color: #959da5;
+    display: grid;
 }
 
 .gd-metadata-id {
@@ -120,6 +121,14 @@
     font-size: 25px;
     cursor: pointer;
     float: right;
+}
+
+.gd-metadata-value {
+    padding: 10px 0px 10px 37px;
+}
+
+.gd-metadata-value p {
+    color: white;
 }
 
 .gd-metadata-input {

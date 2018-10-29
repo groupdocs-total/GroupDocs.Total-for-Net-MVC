@@ -24,6 +24,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Metadata
                     return new PowerPointMetadataImporter(document);
                 case DocumentType.Pdf:
                     return new PdfMetadataImporter(document);
+                case DocumentType.Mp3:
+                    return new Mp3MetadataImporter(document);
+                case DocumentType.Wav:
+                    return new WavMetadataImporter(document);
+                case DocumentType.AVI:
+                    return new AviMetadataImporter(document);
+                case DocumentType.Mov:
+                    return new MovMetadataImporter(document);
                 default:
                     throw new Exception("Wrong document type!");
             }

@@ -17,6 +17,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Script.Serialization;
@@ -102,17 +103,29 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
 
                     using (PreviewHandler handler = PreviewFactory.Load(document))
                     {
-                        bool isSupported = handler.PreviewSupported;
-                        PreviewPage[] pages = handler.Pages;
-                        // get info about each document page
-                        for (int i = 0; i < pages.Length; i++)
+                        if (handler.PreviewSupported)
                         {
-                            //initiate custom Document description object
+                            PreviewPage[] pages = handler.Pages;
+                            // get info about each document page
+                            for (int i = 0; i < pages.Length; i++)
+                            {
+                                //initiate custom Document description object
+                                DocumentMetadataDescription description = new DocumentMetadataDescription();
+                                // set current page info for result
+                                description.height = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Height * 0.75 : pages[i].Height;
+                                description.width = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Width * 0.75 : pages[i].Width;
+                                description.number = i + 1;
+                                pagesDescription.Add(description);
+                            }
+                        }
+                        else
+                        {
                             DocumentMetadataDescription description = new DocumentMetadataDescription();
                             // set current page info for result
-                            description.height = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Height * 0.75 : pages[i].Height;
-                            description.width = (handler.UnitOfMeasurement == PreviewUnitOfMeasurement.Point) ? pages[i].Width * 0.75 : pages[i].Width;
-                            description.number = i + 1;
+                            var img = GetFileTypeIconProperties(docType);
+                            description.height = img.Height;
+                            description.width = img.Width;
+                            description.number = 1;
                             pagesDescription.Add(description);
                         }
                     }
@@ -135,7 +148,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         [Route("metadata/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(MetadataPostedDataEntity postedData)
         {
-            string encodedImage;
+            string encodedImage = String.Empty;
             try
             {
                 // get/set parameters
@@ -147,23 +160,34 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                 {
                     using (PreviewHandler handler = PreviewFactory.Load(document))
                     {
-                        // get page image
-                        if (handler.GetPageImage(pageNumber - 1).Length > 1)
+                        if (!handler.PreviewSupported)
                         {
-                            Stream[] images = new MemoryStream[handler.GetPageImage(pageNumber - 1).Length];
-                            for (int i = 0; i < handler.GetPageImage(pageNumber - 1).Length; i++)
+                            DocumentType fileType = new DocumentType();
+                            using (FileFormatChecker fileFormatChecker = new FileFormatChecker(document))
                             {
-                                images[i] = new MemoryStream(handler.GetPageImage(pageNumber - 1)[i].Contents);
+                                fileType = fileFormatChecker.GetDocumentType();
                             }
-                            encodedImage = CombineBitmap(images);
+                            encodedImage = GetFileTypeIcon(fileType);
                         }
                         else
                         {
-                            byte[] bytes = handler.GetPageImage(pageNumber - 1)[0].Contents;
-                            // encode ByteArray into string
-                            encodedImage = Convert.ToBase64String(bytes);
+                            // get page image
+                            if (handler.GetPageImage(pageNumber - 1).Length > 1)
+                            {
+                                Stream[] images = new MemoryStream[handler.GetPageImage(pageNumber - 1).Length];
+                                for (int i = 0; i < handler.GetPageImage(pageNumber - 1).Length; i++)
+                                {
+                                    images[i] = new MemoryStream(handler.GetPageImage(pageNumber - 1)[i].Contents);
+                                }
+                                encodedImage = CombineBitmap(images);
+                            }
+                            else
+                            {
+                                byte[] bytes = handler.GetPageImage(pageNumber - 1)[0].Contents;
+                                // encode ByteArray into string
+                                encodedImage = Convert.ToBase64String(bytes);
+                            }
                         }
-
                         loadedPage.pageImage = encodedImage;
                     }
                 }
@@ -391,6 +415,61 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
                 {
                     image.Dispose();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Get file type icon for not viewable file types
+        /// </summary>
+        /// <param name="fileType">DocumentType</param>
+        /// <returns></returns>
+        private string GetFileTypeIcon(DocumentType fileType)
+        {
+            try
+            {
+                string icon = String.Empty;
+                switch (fileType)
+                {
+                    case DocumentType.Mp3:
+                    case DocumentType.Wav:
+                        byte[] audioIcon = File.ReadAllBytes(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "Resources/metadata/images/audio.png"));
+                        icon = Convert.ToBase64String(audioIcon);
+                        break;
+                    case DocumentType.AVI:
+                    case DocumentType.Mov:
+                        byte[] videoIcon = File.ReadAllBytes(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "Resources/metadata/images/video.png"));
+                        icon = Convert.ToBase64String(videoIcon);
+                        break;
+                }
+                return icon;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private Image GetFileTypeIconProperties(DocumentType fileType)
+        {
+            try
+            {
+                Image icon = null;
+                switch (fileType)
+                {
+                    case DocumentType.Mp3:
+                    case DocumentType.Wav:
+                        icon = Image.FromFile(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "Resources/metadata/images/audio.png"));
+                        break;
+                    case DocumentType.AVI:
+                    case DocumentType.Mov:
+                        icon = Image.FromFile(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, "Resources/metadata/images/video.png"));
+                        break;
+                }
+                return icon;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

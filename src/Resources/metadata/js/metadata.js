@@ -250,7 +250,7 @@ function getHtmlMetadata(metadataId, metadataValue, newProperty) {
         if (typeof metadataValue == "object") {
             $.each(metadataValue, function (key, value) {
                 value = (value != "") ? value : "";
-                property += '<input type="text" class="gd-metadata-input" value="' + value + '">';
+                property += '<p class="gd-metadata-key">' + key + '</p><input type="text" class="gd-metadata-input" value="' + value + '">';
             });
         } else {
             property = '<input type="text" class="gd-metadata-input" value="' + metadataValue + '">';

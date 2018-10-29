@@ -221,7 +221,11 @@
     <Compile Include="Products\Metadata\Entity\Web\MetadataPostedDataEntity.cs" />
     <Compile Include="Products\Metadata\Loader\FilesTreeLoader.cs" />
     <Compile Include="Products\Metadata\MetadataSerializer\MetadataConverter.cs" />
+    <Compile Include="Products\Metadata\Metadata\MovMetadataImporter.cs" />
     <Compile Include="Products\Metadata\Metadata\BaseMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\AviMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\WavMetadataImporter.cs" />
+    <Compile Include="Products\Metadata\Metadata\Mp3MetadataImporter.cs" />
     <Compile Include="Products\Metadata\Metadata\PdfMetadataImporter.cs" />
     <Compile Include="Products\Metadata\Metadata\PowerPointMetadataImporter.cs" />
     <Compile Include="Products\Metadata\Metadata\ExcelMetadataImporter.cs" />
@@ -333,8 +337,10 @@
     <Content Include="Resources\comparison\webfonts\fa-solid-900.svg" />
     <Content Include="Resources\metadata\css\metadata.css" />
     <Content Include="Resources\metadata\css\metadata.mobile.css" />
+    <Content Include="Resources\metadata\images\audio.png" />
     <Content Include="Resources\metadata\images\banner.png" />
     <Content Include="Resources\metadata\images\logo.png" />
+    <Content Include="Resources\metadata\images\video.png" />
     <Content Include="Resources\metadata\js\metadata.js" />
     <Content Include="Resources\signature\css\bcPaint.css" />
     <Content Include="Resources\signature\css\bcPaint.mobile.css" />
