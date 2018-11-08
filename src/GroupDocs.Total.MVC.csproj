@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,24 +45,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GroupDocs.Annotation, Version=18.9.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Annotation.18.9.0\lib\GroupDocs.Annotation.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GroupDocs.Annotation, Version=18.10.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Annotation.18.10.0\lib\GroupDocs.Annotation.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Comparison, Version=18.9.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Comparison.18.9.0\lib\GroupDocs.Comparison.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GroupDocs.Comparison, Version=18.10.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Comparison.18.10.0\lib\GroupDocs.Comparison.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Metadata">
-      <HintPath>.\GroupDocs.Metadata.dll</HintPath>
+    <Reference Include="GroupDocs.Signature, Version=18.10.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Signature.18.10.0\lib\GroupDocs.Signature.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Signature, Version=18.9.1.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Signature.18.9.1\lib\GroupDocs.Signature.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="GroupDocs.Viewer, Version=18.10.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Viewer.18.10.0\lib\GroupDocs.Viewer.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="GroupDocs.Viewer, Version=18.11.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Viewer.18.11.0\lib\GroupDocs.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -160,7 +154,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ComparisonController.cs" />
     <Compile Include="Controllers\AnnotationController.cs" />
-    <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\TotalController.cs" />
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
@@ -214,23 +207,6 @@
     <Compile Include="Products\Comparison\Service\ComparisonServiceImpl.cs" />
     <Compile Include="Products\Comparison\Service\IComparisonService.cs" />
     <Compile Include="Products\Comparison\Util\TransformFiles.cs" />
-    <Compile Include="Products\Metadata\Config\MetadataConfiguration.cs" />
-    <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
-    <Compile Include="Products\Metadata\Entity\Web\DocumentMetadataDescription.cs" />
-    <Compile Include="Products\Metadata\Entity\Web\MetadataFileDescriptionEntity.cs" />
-    <Compile Include="Products\Metadata\Entity\Web\MetadataPostedDataEntity.cs" />
-    <Compile Include="Products\Metadata\Loader\FilesTreeLoader.cs" />
-    <Compile Include="Products\Metadata\MetadataSerializer\MetadataConverter.cs" />
-    <Compile Include="Products\Metadata\Metadata\MovMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\BaseMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\AviMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\WavMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\Mp3MetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\PdfMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\PowerPointMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\ExcelMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\DocMetadataImporter.cs" />
-    <Compile Include="Products\Metadata\Metadata\MetadataFactory.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\BarcodeDataDirectoryEntity.cs" />
@@ -274,41 +250,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="Resources\annotation\css\annotation.css" />
-    <Content Include="Resources\annotation\css\annotation.mobile.css" />
-    <Content Include="Resources\annotation\images\area.png" />
-    <Content Include="Resources\annotation\images\area_active.png" />
-    <Content Include="Resources\annotation\images\arrow.png" />
-    <Content Include="Resources\annotation\images\arrow_active.png" />
-    <Content Include="Resources\annotation\images\distance.png" />
-    <Content Include="Resources\annotation\images\distance_active.png" />
-    <Content Include="Resources\annotation\images\logo.png" />
-    <Content Include="Resources\annotation\images\point.png" />
-    <Content Include="Resources\annotation\images\point_active.png" />
-    <Content Include="Resources\annotation\images\polyline.png" />
-    <Content Include="Resources\annotation\images\polyline_active.png" />
-    <Content Include="Resources\annotation\images\resource_redaction.png" />
-    <Content Include="Resources\annotation\images\resource_redaction_active.png" />
-    <Content Include="Resources\annotation\images\strike_out_text.png" />
-    <Content Include="Resources\annotation\images\strike_out_text_active.png" />
-    <Content Include="Resources\annotation\images\text.png" />
-    <Content Include="Resources\annotation\images\text_active.png" />
-    <Content Include="Resources\annotation\images\text_redaction.png" />
-    <Content Include="Resources\annotation\images\text_redaction_active.png" />
-    <Content Include="Resources\annotation\images\text_replace.png" />
-    <Content Include="Resources\annotation\images\text_replace_active.png" />
-    <Content Include="Resources\annotation\images\type_writer.png" />
-    <Content Include="Resources\annotation\images\type_writer_active.png" />
-    <Content Include="Resources\annotation\images\underline.png" />
-    <Content Include="Resources\annotation\images\underline_active.png" />
-    <Content Include="Resources\annotation\images\watermark.png" />
-    <Content Include="Resources\annotation\images\watermark_active.png" />
-    <Content Include="Resources\annotation\js\annotation.js" />
-    <Content Include="Resources\annotation\js\drawFieldAnnotation.js" />
-    <Content Include="Resources\annotation\js\drawSvgAnnotation.js" />
-    <Content Include="Resources\annotation\js\drawTextAnnotation.js" />
-    <Content Include="Resources\annotation\js\svg.draw.js" />
-    <Content Include="Resources\annotation\js\svg.min.js" />
     <Content Include="Resources\common\css\circle-progress.css" />
     <Content Include="Resources\common\css\font-awesome.min.css" />
     <Content Include="Resources\common\css\images\ui-icons_444444_256x240.png" />
@@ -335,13 +276,6 @@
     <Content Include="Resources\comparison\webfonts\fa-brands-400.svg" />
     <Content Include="Resources\comparison\webfonts\fa-regular-400.svg" />
     <Content Include="Resources\comparison\webfonts\fa-solid-900.svg" />
-    <Content Include="Resources\metadata\css\metadata.css" />
-    <Content Include="Resources\metadata\css\metadata.mobile.css" />
-    <Content Include="Resources\metadata\images\audio.png" />
-    <Content Include="Resources\metadata\images\banner.png" />
-    <Content Include="Resources\metadata\images\logo.png" />
-    <Content Include="Resources\metadata\images\video.png" />
-    <Content Include="Resources\metadata\js\metadata.js" />
     <Content Include="Resources\signature\css\bcPaint.css" />
     <Content Include="Resources\signature\css\bcPaint.mobile.css" />
     <Content Include="Resources\signature\css\bcPicker.css" />
@@ -438,9 +372,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Comparison\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Metadata\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

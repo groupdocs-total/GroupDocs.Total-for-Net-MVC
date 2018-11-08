@@ -21,6 +21,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
         public override AnnotationInfo AnnotatePdf()
         {
             AnnotationInfo distanceAnnotation = InitAnnotationInfo();
+
             return distanceAnnotation;
         }
 
@@ -62,7 +63,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
                 AnnotationReplyInfo reply = distanceAnnotation.Replies[0];
                 if (reply != null)
                 {
-                    reply.Message = String.Format("{1} {2}", annotationData.text, reply.Message);
+                    reply.Message = String.Format("{0} {1}", annotationData.text, reply.Message);
                 }
             }
             else
