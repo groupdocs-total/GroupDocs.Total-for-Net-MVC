@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IO;
+using System.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Signature.Config
 {
@@ -30,7 +32,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
         public SignatureConfiguration()
         {
             FilesDirectory = signatureConfiguration["filesDirectory"];
-            OutputDirectory = signatureConfiguration["outputDirectory"];
+            if (!IsFullPath(FilesDirectory))
+            {
+                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, signatureConfiguration["filesDirectory"]);
+                if (!Directory.Exists(FilesDirectory))
+                {
+                    FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples");
+                    Directory.CreateDirectory(FilesDirectory);
+                }
+            }
+            OutputDirectory = signatureConfiguration["outputDirectory"];           
             DataDirectory = signatureConfiguration["dataDirectory"];
             isTextSignature = Convert.ToBoolean(signatureConfiguration["isTextSignature"]);
             isImageSignature = Convert.ToBoolean(signatureConfiguration["isImageSignature"]);
@@ -42,6 +53,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
             isDownloadSigned = Convert.ToBoolean(signatureConfiguration["isDownloadSigned"]);
             DefaultDocument = signatureConfiguration["defaultDocument"];
             PreloadPageCount = Convert.ToInt32(signatureConfiguration["preloadPageCount"]);
+        }
+
+        private static bool IsFullPath(string path)
+        {
+            return !String.IsNullOrWhiteSpace(path)
+                && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+                && Path.IsPathRooted(path)
+                && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
         }
     }
 }

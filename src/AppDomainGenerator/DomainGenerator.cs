@@ -10,7 +10,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
     public class DomainGenerator
     {
         private Products.Common.Config.GlobalConfiguration globalConfiguration;
-        public Type CurrentType;
+        public Type CurrentType;       
 
         /// <summary>
         /// Constructor
@@ -69,7 +69,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             // Initiate License class
             var obj = (GroupDocs.Viewer.License)Activator.CreateInstance(type);
             // Set license
-            obj.SetLicense(globalConfiguration.Application.LicensePath);
+            SetLicense(obj);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             // Initiate license class
             var obj = (GroupDocs.Signature.License)Activator.CreateInstance(type);
             // Set license
-            obj.SetLicense(globalConfiguration.Application.LicensePath);
+            SetLicense(obj);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             // Initiate license class
             var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(type);
             // Set license
-            obj.SetLicense(globalConfiguration.Application.LicensePath);
+            SetLicense(obj);
         }
 
         /// <summary>
@@ -105,7 +105,14 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             // Initiate license class
             var obj = (GroupDocs.Comparison.Common.License.License)Activator.CreateInstance(type);
             // Set license
-            obj.SetLicense(globalConfiguration.Application.LicensePath);
+            SetLicense(obj);
+        }
+
+        private void SetLicense(dynamic obj) {
+            if (!String.IsNullOrEmpty(globalConfiguration.Application.LicensePath))
+            {
+                obj.SetLicense(globalConfiguration.Application.LicensePath);
+            }
         }
     }
 }

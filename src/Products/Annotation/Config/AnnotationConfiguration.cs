@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IO;
+using System.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Annotation.Config
 {
@@ -11,8 +13,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
     {
         public string FilesDirectory { get; set; }
         public string OutputDirectory { get; set; }
-        public string DefaultDocument { get; set; }
-        public string DataDirectory { get; set; }
+        public string DefaultDocument { get; set; }        
         public int PreloadPageCount { get; set; }
         public bool isTextAnnotation { get; set; }
         public bool isAreaAnnotation { get; set;}
@@ -36,9 +37,17 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
         /// </summary>
         public AnnotationConfiguration()
         {
-            FilesDirectory = annotationConfiguration["filesDirectory"];
-            OutputDirectory = annotationConfiguration["outputDirectory"];
-            DataDirectory = annotationConfiguration["dataDirectory"];
+            FilesDirectory = annotationConfiguration["filesDirectory"];           
+            if (!IsFullPath(FilesDirectory))
+            {
+                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, annotationConfiguration["filesDirectory"]);
+                if (!Directory.Exists(FilesDirectory))
+                {
+                    FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples");
+                    Directory.CreateDirectory(FilesDirectory);
+                }
+            }
+            OutputDirectory = annotationConfiguration["outputDirectory"];          
             isTextAnnotation = Convert.ToBoolean(annotationConfiguration["isTextAnnotation"]);
             isAreaAnnotation = Convert.ToBoolean(annotationConfiguration["isAreaAnnotation"]);
             isPointAnnotation = Convert.ToBoolean(annotationConfiguration["isPointAnnotation"]);
@@ -55,6 +64,14 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
             isDownloadOriginal = Convert.ToBoolean(annotationConfiguration["isDownloadOriginal"]);
             isDownloadAnnotated = Convert.ToBoolean(annotationConfiguration["isDownloadAnnotated"]);
             PreloadPageCount = Convert.ToInt32(annotationConfiguration["preloadPageCount"]);
+        }
+
+        private static bool IsFullPath(string path)
+        {
+            return !String.IsNullOrWhiteSpace(path)
+                && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+                && Path.IsPathRooted(path)
+                && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
         }
     }
 }
