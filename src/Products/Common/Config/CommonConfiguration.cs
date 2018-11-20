@@ -25,24 +25,13 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("common");
-            isPageSelector = (configuration != null && !String.IsNullOrEmpty(configuration["pageSelector"].ToString())) ?
-                Convert.ToBoolean(configuration["pageSelector"]) :
-                Convert.ToBoolean(commonConfiguration["isPageSelector"]);               
-            isDownload = (configuration != null && !String.IsNullOrEmpty(configuration["download"].ToString())) ?
-                Convert.ToBoolean(configuration["download"]) :
-                Convert.ToBoolean(commonConfiguration["isDownload"]);
-            isUpload = (configuration != null && !String.IsNullOrEmpty(configuration["upload"].ToString())) ?
-                Convert.ToBoolean(configuration["upload"]) :
-                Convert.ToBoolean(commonConfiguration["isUpload"]);
-            isPrint = (configuration != null && !String.IsNullOrEmpty(configuration["print"].ToString())) ?
-                Convert.ToBoolean(configuration["print"]) :
-                Convert.ToBoolean(commonConfiguration["isPrint"]);
-            isBrowse = (configuration != null && !String.IsNullOrEmpty(configuration["browse"].ToString())) ?
-                Convert.ToBoolean(configuration["browse"]) : 
-                Convert.ToBoolean(commonConfiguration["isBrowse"]);         
-            isRewrite = (configuration != null && !String.IsNullOrEmpty(configuration["rewrite"].ToString())) ?
-                Convert.ToBoolean(configuration["rewrite"]) : 
-                Convert.ToBoolean(commonConfiguration["isRewrite"]);
+            ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
+            isPageSelector = valuesGetter.GetBooleanPropertyValue("pageSelector", isPageSelector);
+            isDownload = valuesGetter.GetBooleanPropertyValue("download", isDownload);
+            isUpload = valuesGetter.GetBooleanPropertyValue("upload", isUpload);
+            isPrint = valuesGetter.GetBooleanPropertyValue("print", isPrint);
+            isBrowse = valuesGetter.GetBooleanPropertyValue("browse", isBrowse);
+            isRewrite = valuesGetter.GetBooleanPropertyValue("rewrite", isRewrite);
         }
     }
 }

@@ -10,10 +10,9 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
     /// <summary>
     /// Application configuration
     /// </summary>
-    public class ApplicationConfiguration : ConfigurationSection
+    public class ApplicationConfiguration
     {
-        public string LicensePath { get; set; }
-        private NameValueCollection applicationConfiguration = (NameValueCollection)System.Configuration.ConfigurationManager.GetSection("applicationConfiguration");
+        public string LicensePath = "Licenses";
 
         /// <summary>
         /// Get license path from the application configuration section of the web.config
@@ -22,16 +21,14 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("application");
-            LicensePath = (configuration != null && !String.IsNullOrEmpty(configuration["licensePath"].ToString())) ? configuration["licensePath"] : applicationConfiguration["licensePath"];
-            if (String.IsNullOrEmpty(LicensePath)) {
-                LicensePath = "Licenses/GroupDocs.Total.NET.lic";
-            }
+            ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
+            LicensePath = valuesGetter.GetStringPropertyValue("licensePath", LicensePath);            
             if (!IsFullPath(LicensePath))
             {
                 LicensePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LicensePath);
                 if (!Directory.Exists(Path.GetDirectoryName(LicensePath)))
                 {                    
-                    Directory.CreateDirectory(LicensePath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(LicensePath));
                 }
             }
             if (!File.Exists(LicensePath))

@@ -233,6 +233,7 @@
     <Compile Include="Products\Annotation\Util\Directory\OutputDirectoryUtils.cs" />
     <Compile Include="Products\Annotation\Util\DocumentTypesConverter.cs" />
     <Compile Include="Products\Common\Config\ApplicationConfiguration.cs" />
+    <Compile Include="Products\Common\Config\ConfigurationValuesGetter.cs" />
     <Compile Include="Products\Common\Config\GlobalConfiguration.cs" />
     <Compile Include="Products\Common\Config\ServerConfiguration.cs" />
     <Compile Include="Products\Common\Config\CommonConfiguration.cs" />

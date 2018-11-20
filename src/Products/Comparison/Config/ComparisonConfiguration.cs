@@ -1,4 +1,5 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+﻿using GroupDocs.Total.MVC.Products.Common.Config;
+using GroupDocs.Total.MVC.Products.Common.Util.Parser;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
     public class ComparisonConfiguration
     {
         public string FilesDirectory = "DocumentSamples";
-        public string ResultDirectory = "Compared";
+        public string ResultDirectory = "DocumentSamples/Compared";
         public int PreloadResultPageCount = 0;
         public bool isMultiComparing = true;      
 
@@ -22,8 +23,9 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("comparison");
+            ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
             // get Comparison configuration section from the web.config            
-            FilesDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["filesDirectory"].ToString())) ? configuration["filesDirectory"] : FilesDirectory;
+            FilesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", FilesDirectory);
             if (!IsFullPath(FilesDirectory))
             {
                 FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
@@ -32,7 +34,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }
-            ResultDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["resultDirectory"].ToString())) ? configuration["resultDirectory"] : ResultDirectory;
+            ResultDirectory = valuesGetter.GetStringPropertyValue("resultDirectory", ResultDirectory);
             if (!IsFullPath(ResultDirectory))
             {
                 ResultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ResultDirectory);
@@ -41,12 +43,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
                     Directory.CreateDirectory(ResultDirectory);
                 }
             }
-            PreloadResultPageCount = (configuration != null && !String.IsNullOrEmpty(configuration["preloadResultPageCount"].ToString())) ?
-                Convert.ToInt32(configuration["preloadResultPageCount"]) : 
-                PreloadResultPageCount;
-            isMultiComparing = (configuration != null && !String.IsNullOrEmpty(configuration["multiComparing"].ToString())) ?
-                Convert.ToBoolean(configuration["multiComparing"]) :
-                isMultiComparing;
+            PreloadResultPageCount = valuesGetter.GetIntegerPropertyValue("preloadResultPageCount", PreloadResultPageCount);               
+            isMultiComparing = valuesGetter.GetBooleanPropertyValue("multiComparing", isMultiComparing);
         }
 
         private static bool IsFullPath(string path)

@@ -20,12 +20,10 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         public ServerConfiguration() {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("server");
-            HttpPort = (configuration != null && !String.IsNullOrEmpty(configuration["connector"]["port"].ToString())) ?
-                Convert.ToInt32(configuration["connector"]["port"]) : 
-                Convert.ToInt32(serverConfiguration["httpPort"]);
-            HostAddress = (!String.IsNullOrEmpty(serverConfiguration["hostAddress"])) ?
-                serverConfiguration["hostAddress"] : 
-                HostAddress;
+            ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
+            int defaultPort = Convert.ToInt32(serverConfiguration["httpPort"]);
+            HttpPort = valuesGetter.GetIntegerPropertyValue("connector", defaultPort, "port");
+            HostAddress = valuesGetter.GetStringPropertyValue("hostAddress", HostAddress);
         }
     }
 }

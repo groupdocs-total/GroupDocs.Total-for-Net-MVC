@@ -1,7 +1,10 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+﻿using GroupDocs.Total.MVC.Products.Common.Config;
+using GroupDocs.Total.MVC.Products.Common.Util.Parser;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace GroupDocs.Total.MVC.Products.Viewer.Config
 {
@@ -19,7 +22,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         public bool isThumbnails = true;
         public bool isRotate = true;
         public bool isHtmlMode = true;
-        public bool Cache = true;
+        public bool Cache = true;       
 
         /// <summary>
         /// Constructor
@@ -28,9 +31,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("viewer");
+            ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
 
             // get Viewer configuration section from the web.config
-            FilesDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["filesDirectory"].ToString())) ? configuration["filesDirectory"] : FilesDirectory;
+            FilesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", FilesDirectory);
             if (!IsFullPath(FilesDirectory))
             {
                 FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
@@ -39,33 +43,15 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }
-            FontsDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["fontsDirectory"].ToString())) ?
-                configuration["fontsDirectory"] :
-                FontsDirectory;
-            DefaultDocument = (configuration != null && !String.IsNullOrEmpty(configuration["defaultDocument"].ToString())) ?
-                configuration["defaultDocument"] :
-                DefaultDocument;
-            PreloadPageCount = (configuration != null && !String.IsNullOrEmpty(configuration["preloadPageCount"].ToString())) ?
-                Convert.ToInt32(configuration["preloadPageCount"]) : 
-                PreloadPageCount;
-            isZoom = (configuration != null && !String.IsNullOrEmpty(configuration["zoom"].ToString())) ? 
-                Convert.ToBoolean(configuration["zoom"]) :
-                isZoom;
-            isSearch = (configuration != null && !String.IsNullOrEmpty(configuration["search"].ToString())) ? 
-                Convert.ToBoolean(configuration["search"]) : 
-                isSearch;
-            isThumbnails = (configuration != null && !String.IsNullOrEmpty(configuration["thumbnails"].ToString())) ?
-                Convert.ToBoolean(configuration["thumbnails"]) : 
-                isThumbnails;
-            isRotate = (configuration != null && !String.IsNullOrEmpty(configuration["rotate"].ToString())) ? 
-                Convert.ToBoolean(configuration["rotate"]) : 
-                isRotate;
-            isHtmlMode = (configuration != null && !String.IsNullOrEmpty(configuration["htmlMode"].ToString())) ? 
-                Convert.ToBoolean(configuration["htmlMode"]) : 
-                isHtmlMode;
-            Cache = (configuration != null && !String.IsNullOrEmpty(configuration["cache"].ToString())) ?
-                Convert.ToBoolean(configuration["cache"]) : 
-                Cache;
+            FontsDirectory = valuesGetter.GetStringPropertyValue("fontsDirectory", FontsDirectory);
+            DefaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", DefaultDocument);
+            PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
+            isZoom = valuesGetter.GetBooleanPropertyValue("zoom", isZoom);
+            isSearch = valuesGetter.GetBooleanPropertyValue("search", isSearch);
+            isThumbnails = valuesGetter.GetBooleanPropertyValue("thumbnails", isThumbnails);
+            isRotate = valuesGetter.GetBooleanPropertyValue("rotate", isRotate);
+            isHtmlMode = valuesGetter.GetBooleanPropertyValue("htmlMode", isHtmlMode);
+            Cache = valuesGetter.GetBooleanPropertyValue("cache", Cache);
         }
 
         private static bool IsFullPath(string path)
@@ -74,6 +60,6 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
                 && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
-        }
+        }        
     }
 }
