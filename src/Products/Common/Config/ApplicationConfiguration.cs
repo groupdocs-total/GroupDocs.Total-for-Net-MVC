@@ -22,7 +22,10 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("application");
-            LicensePath = (configuration != null && !String.IsNullOrEmpty(configuration["licensePath"].ToString())) ? configuration["licensePath"] : applicationConfiguration["licensePath"];           
+            LicensePath = (configuration != null && !String.IsNullOrEmpty(configuration["licensePath"].ToString())) ? configuration["licensePath"] : applicationConfiguration["licensePath"];
+            if (String.IsNullOrEmpty(LicensePath)) {
+                LicensePath = "License";
+            }
             if (!IsFullPath(LicensePath))
             {
                 LicensePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LicensePath);
