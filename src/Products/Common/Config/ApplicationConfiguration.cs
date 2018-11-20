@@ -24,7 +24,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             dynamic configuration = parser.GetConfiguration("application");
             LicensePath = (configuration != null && !String.IsNullOrEmpty(configuration["licensePath"].ToString())) ? configuration["licensePath"] : applicationConfiguration["licensePath"];
             if (String.IsNullOrEmpty(LicensePath)) {
-                LicensePath = "License";
+                LicensePath = "Licenses/GroupDocs.Total.NET.lic";
             }
             if (!IsFullPath(LicensePath))
             {
