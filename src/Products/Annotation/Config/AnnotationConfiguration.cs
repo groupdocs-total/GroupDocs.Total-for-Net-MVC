@@ -11,7 +11,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
     /// </summary>
     public class AnnotationConfiguration
     {
-        public string FilesDirectory = "DocumentSamples";
+        public string FilesDirectory = "DocumentSamples/Annotation";
         public string OutputDirectory = "";
         public string DefaultDocument = "";
         public int PreloadPageCount = 0;

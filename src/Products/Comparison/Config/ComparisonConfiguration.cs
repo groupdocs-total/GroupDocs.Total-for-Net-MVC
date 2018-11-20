@@ -11,8 +11,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
     /// </summary>
     public class ComparisonConfiguration
     {
-        public string FilesDirectory = "DocumentSamples";
-        public string ResultDirectory = "DocumentSamples/Compared";
+        public string FilesDirectory = "DocumentSamples/Comparison";
+        public string ResultDirectory = "DocumentSamples/Comparison/Compared";
         public int PreloadResultPageCount = 0;
         public bool isMultiComparing = true;      
 

@@ -13,7 +13,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
     /// </summary>
     public class ViewerConfiguration
     {
-        public string FilesDirectory = "DocumentSamples";
+        public string FilesDirectory = "DocumentSamples/Viewer";
         public string FontsDirectory = "";
         public string DefaultDocument = "";
         public int PreloadPageCount = 0;

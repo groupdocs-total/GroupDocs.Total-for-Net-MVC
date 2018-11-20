@@ -11,7 +11,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
     /// </summary>
     public class SignatureConfiguration
     {
-        public string FilesDirectory = "DocumentSamples";
+        public string FilesDirectory = "DocumentSamples/Signature";
         public string OutputDirectory = "";
         public string DefaultDocument = "";
         public string DataDirectory = "";
