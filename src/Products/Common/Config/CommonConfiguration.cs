@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using System;
 using System.Collections.Specialized;
 using System.Configuration;
 
@@ -22,13 +23,26 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         /// </summary>
         public CommonConfiguration()
         {
-            // get Common configuration section from the web.config           
-            isPageSelector = Convert.ToBoolean(commonConfiguration["isPageSelector"]);           
-            isDownload = Convert.ToBoolean(commonConfiguration["isDownload"]);
-            isUpload = Convert.ToBoolean(commonConfiguration["isUpload"]);
-            isPrint = Convert.ToBoolean(commonConfiguration["isPrint"]);
-            isBrowse = Convert.ToBoolean(commonConfiguration["isBrowse"]);         
-            isRewrite = Convert.ToBoolean(commonConfiguration["isRewrite"]);
+            YamlParser parser = new YamlParser();
+            dynamic configuration = parser.GetConfiguration("common");
+            isPageSelector = (configuration != null && !String.IsNullOrEmpty(configuration["pageSelector"].ToString())) ?
+                Convert.ToBoolean(configuration["pageSelector"]) :
+                Convert.ToBoolean(commonConfiguration["isPageSelector"]);               
+            isDownload = (configuration != null && !String.IsNullOrEmpty(configuration["download"].ToString())) ?
+                Convert.ToBoolean(configuration["download"]) :
+                Convert.ToBoolean(commonConfiguration["isDownload"]);
+            isUpload = (configuration != null && !String.IsNullOrEmpty(configuration["upload"].ToString())) ?
+                Convert.ToBoolean(configuration["upload"]) :
+                Convert.ToBoolean(commonConfiguration["isUpload"]);
+            isPrint = (configuration != null && !String.IsNullOrEmpty(configuration["print"].ToString())) ?
+                Convert.ToBoolean(configuration["print"]) :
+                Convert.ToBoolean(commonConfiguration["isPrint"]);
+            isBrowse = (configuration != null && !String.IsNullOrEmpty(configuration["browse"].ToString())) ?
+                Convert.ToBoolean(configuration["browse"]) : 
+                Convert.ToBoolean(commonConfiguration["isBrowse"]);         
+            isRewrite = (configuration != null && !String.IsNullOrEmpty(configuration["rewrite"].ToString())) ?
+                Convert.ToBoolean(configuration["rewrite"]) : 
+                Convert.ToBoolean(commonConfiguration["isRewrite"]);
         }
     }
 }

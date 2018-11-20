@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Configuration;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -9,61 +8,96 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
     /// <summary>
     /// SignatureConfiguration
     /// </summary>
-    public class AnnotationConfiguration : ConfigurationSection
+    public class AnnotationConfiguration
     {
-        public string FilesDirectory { get; set; }
-        public string OutputDirectory { get; set; }
-        public string DefaultDocument { get; set; }        
-        public int PreloadPageCount { get; set; }
-        public bool isTextAnnotation { get; set; }
-        public bool isAreaAnnotation { get; set;}
-        public bool isPointAnnotation { get; set;}
-        public bool isTextStrikeoutAnnotation { get; set;}
-        public bool isPolylineAnnotation { get; set;}
-        public bool isTextFieldAnnotation { get; set;}
-        public bool isWatermarkAnnotation { get; set;}
-        public bool isTextReplacementAnnotation { get; set;}
-        public bool isArrowAnnotation { get; set;}
-        public bool isTextRedactionAnnotation { get; set;}
-        public bool isResourcesRedactionAnnotation { get; set;}
-        public bool isTextUnderlineAnnotation { get; set;}
-        public bool isDistanceAnnotation {get; set;}
-        public bool isDownloadOriginal {get; set;}
-        public bool isDownloadAnnotated {get; set;}
-        private NameValueCollection annotationConfiguration = (NameValueCollection)System.Configuration.ConfigurationManager.GetSection("annotationConfiguration");
+        public string FilesDirectory = "DocumentSamples";
+        public string OutputDirectory = "";
+        public string DefaultDocument = "";
+        public int PreloadPageCount = 0;
+        public bool isTextAnnotation = true;
+        public bool isAreaAnnotation = true;
+        public bool isPointAnnotation = true;
+        public bool isTextStrikeoutAnnotation = true;
+        public bool isPolylineAnnotation = true;
+        public bool isTextFieldAnnotation = true;
+        public bool isWatermarkAnnotation = true;
+        public bool isTextReplacementAnnotation = true;
+        public bool isArrowAnnotation = true;
+        public bool isTextRedactionAnnotation = true;
+        public bool isResourcesRedactionAnnotation = true;
+        public bool isTextUnderlineAnnotation = true;
+        public bool isDistanceAnnotation = true;
+        public bool isDownloadOriginal = true;
+        public bool isDownloadAnnotated = true;     
 
         /// <summary>
         /// Get annotation configuration section from the Web.config
         /// </summary>
         public AnnotationConfiguration()
         {
-            FilesDirectory = annotationConfiguration["filesDirectory"];           
+            YamlParser parser = new YamlParser();
+            dynamic configuration = parser.GetConfiguration("annotation");
+            // get Viewer configuration section from the web.config
+            FilesDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["filesDirectory"].ToString())) ? configuration["filesDirectory"] : FilesDirectory;
             if (!IsFullPath(FilesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, annotationConfiguration["filesDirectory"]);
+                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
                 if (!Directory.Exists(FilesDirectory))
-                {
-                    FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples");
+                {                   
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }
-            OutputDirectory = annotationConfiguration["outputDirectory"];          
-            isTextAnnotation = Convert.ToBoolean(annotationConfiguration["isTextAnnotation"]);
-            isAreaAnnotation = Convert.ToBoolean(annotationConfiguration["isAreaAnnotation"]);
-            isPointAnnotation = Convert.ToBoolean(annotationConfiguration["isPointAnnotation"]);
-            isTextStrikeoutAnnotation = Convert.ToBoolean(annotationConfiguration["isTextStrikeoutAnnotation"]);
-            isPolylineAnnotation = Convert.ToBoolean(annotationConfiguration["isPolylineAnnotation"]);
-            isTextFieldAnnotation = Convert.ToBoolean(annotationConfiguration["isTextFieldAnnotation"]);
-            isWatermarkAnnotation = Convert.ToBoolean(annotationConfiguration["isWatermarkAnnotation"]);
-            isTextReplacementAnnotation = Convert.ToBoolean(annotationConfiguration["isTextReplacementAnnotation"]);
-            isArrowAnnotation = Convert.ToBoolean(annotationConfiguration["isArrowAnnotation"]);
-            isTextRedactionAnnotation = Convert.ToBoolean(annotationConfiguration["isTextRedactionAnnotation"]);
-            isResourcesRedactionAnnotation = Convert.ToBoolean(annotationConfiguration["isResourcesRedactionAnnotation"]);
-            isTextUnderlineAnnotation = Convert.ToBoolean(annotationConfiguration["isTextUnderlineAnnotation"]);
-            isDistanceAnnotation = Convert.ToBoolean(annotationConfiguration["isDistanceAnnotation"]);
-            isDownloadOriginal = Convert.ToBoolean(annotationConfiguration["isDownloadOriginal"]);
-            isDownloadAnnotated = Convert.ToBoolean(annotationConfiguration["isDownloadAnnotated"]);
-            PreloadPageCount = Convert.ToInt32(annotationConfiguration["preloadPageCount"]);
+            OutputDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["outputDirectory"].ToString())) ? 
+                configuration["outputDirectory"] : 
+                OutputDirectory;
+            isTextAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["textAnnotation"].ToString())) ? 
+                Convert.ToBoolean(configuration["textAnnotation"]) : 
+                isTextAnnotation;
+            isAreaAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["areaAnnotation"].ToString())) ? 
+                Convert.ToBoolean(configuration["areaAnnotation"]) : 
+                isAreaAnnotation;
+            isPointAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["pointAnnotation"].ToString())) ? 
+                Convert.ToBoolean(configuration["pointAnnotation"]) : 
+                isPointAnnotation;
+            isTextStrikeoutAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["textStrikeoutAnnotation"].ToString())) ? 
+                Convert.ToBoolean(configuration["textStrikeoutAnnotation"]) : 
+                isTextStrikeoutAnnotation;
+            isPolylineAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["polylineAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["polylineAnnotation"]) :
+                isPolylineAnnotation;
+            isTextFieldAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["textFieldAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["textFieldAnnotation"]) :
+                isTextFieldAnnotation;
+            isWatermarkAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["watermarkAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["watermarkAnnotation"]) :
+                isWatermarkAnnotation;
+            isTextReplacementAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["textReplacementAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["textReplacementAnnotation"]) :
+                isTextReplacementAnnotation;
+            isArrowAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["arrowAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["arrowAnnotation"]) :
+                isArrowAnnotation;
+            isTextRedactionAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["textRedactionAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["textRedactionAnnotation"]) :
+                isTextRedactionAnnotation;
+            isResourcesRedactionAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["resourcesRedactionAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["resourcesRedactionAnnotation"]) :
+                isResourcesRedactionAnnotation;
+            isTextUnderlineAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["textUnderlineAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["textUnderlineAnnotation"]) :
+                isTextUnderlineAnnotation;
+            isDistanceAnnotation = (configuration != null && !String.IsNullOrEmpty(configuration["distanceAnnotation"].ToString())) ?
+                Convert.ToBoolean(configuration["distanceAnnotation"]) :
+                isDistanceAnnotation;
+            isDownloadOriginal = (configuration != null && !String.IsNullOrEmpty(configuration["downloadOriginal"].ToString())) ?
+                Convert.ToBoolean(configuration["downloadOriginal"]) :
+                isDownloadOriginal;
+            isDownloadAnnotated = (configuration != null && !String.IsNullOrEmpty(configuration["downloadAnnotated"].ToString())) ?
+                Convert.ToBoolean(configuration["downloadAnnotated"]) :
+                isDownloadAnnotated;
+            PreloadPageCount = (configuration != null && !String.IsNullOrEmpty(configuration["preloadPageCount"].ToString())) ?
+                Convert.ToInt32(configuration["preloadPageCount"]) :
+                PreloadPageCount;
         }
 
         private static bool IsFullPath(string path)

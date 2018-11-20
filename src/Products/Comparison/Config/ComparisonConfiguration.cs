@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Configuration;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -9,42 +8,45 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
     /// <summary>
     /// CommonConfiguration
     /// </summary>
-    public class ComparisonConfiguration : ConfigurationSection
+    public class ComparisonConfiguration
     {
-        public string FilesDirectory { get; set; }
-        public string ResultDirectory { get; set; }
-        public int PreloadResultPageCount { get; set; }
-        public bool isMultiComparing { get; set; }       
-        private NameValueCollection comparisonConfiguration = (NameValueCollection)System.Configuration.ConfigurationManager.GetSection("comparisonConfiguration");
+        public string FilesDirectory = "DocumentSamples";
+        public string ResultDirectory = "Compared";
+        public int PreloadResultPageCount = 0;
+        public bool isMultiComparing = true;      
 
         /// <summary>
         /// Constructor
         /// </summary>
         public ComparisonConfiguration()
         {
-            // get Comparison configuration section from the web.config           
-            FilesDirectory = comparisonConfiguration["filesDirectory"];
+            YamlParser parser = new YamlParser();
+            dynamic configuration = parser.GetConfiguration("comparison");
+            // get Comparison configuration section from the web.config            
+            FilesDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["filesDirectory"].ToString())) ? configuration["filesDirectory"] : FilesDirectory;
             if (!IsFullPath(FilesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, comparisonConfiguration["filesDirectory"]);
+                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
                 if (!Directory.Exists(FilesDirectory))
                 {
-                    FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples");
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }
-            ResultDirectory = comparisonConfiguration["resultDirectory"];
+            ResultDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["resultDirectory"].ToString())) ? configuration["resultDirectory"] : ResultDirectory;
             if (!IsFullPath(ResultDirectory))
             {
-                ResultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, comparisonConfiguration["resultDirectory"]);
+                ResultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ResultDirectory);
                 if (!Directory.Exists(ResultDirectory))
-                {
-                    ResultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples/compared");
+                {                    
                     Directory.CreateDirectory(ResultDirectory);
                 }
             }
-            PreloadResultPageCount = Convert.ToInt32(comparisonConfiguration["preloadResultPageCount"]);
-            isMultiComparing = Convert.ToBoolean(comparisonConfiguration["isMultiComparing"]);         
+            PreloadResultPageCount = (configuration != null && !String.IsNullOrEmpty(configuration["preloadResultPageCount"].ToString())) ?
+                Convert.ToInt32(configuration["preloadResultPageCount"]) : 
+                PreloadResultPageCount;
+            isMultiComparing = (configuration != null && !String.IsNullOrEmpty(configuration["multiComparing"].ToString())) ?
+                Convert.ToBoolean(configuration["multiComparing"]) :
+                isMultiComparing;
         }
 
         private static bool IsFullPath(string path)

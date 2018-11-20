@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Configuration;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -9,46 +8,64 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
     /// <summary>
     /// ViewerConfiguration
     /// </summary>
-    public class ViewerConfiguration : ConfigurationSection
+    public class ViewerConfiguration
     {
-        public static string DEFAULT_FILES_DIRECTORY = "";
-        public string FilesDirectory { get; set; }
-        public string FontsDirectory { get; set; }
-        public string DefaultDocument { get; set; }
-        public int PreloadPageCount { get; set; }
-        public bool isZoom { get; set; }      
-        public bool isSearch { get; set; }
-        public bool isThumbnails { get; set; }
-        public bool isRotate { get; set; }      
-        public bool isHtmlMode { get; set; }
-        public bool Cache { get; set; }
-        private NameValueCollection viewerConfiguration = (NameValueCollection)System.Configuration.ConfigurationManager.GetSection("viewerConfiguration");
+        public string FilesDirectory = "DocumentSamples";
+        public string FontsDirectory = "";
+        public string DefaultDocument = "";
+        public int PreloadPageCount = 0;
+        public bool isZoom = true;
+        public bool isSearch = true;
+        public bool isThumbnails = true;
+        public bool isRotate = true;
+        public bool isHtmlMode = true;
+        public bool Cache = true;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public ViewerConfiguration()
         {
+            YamlParser parser = new YamlParser();
+            dynamic configuration = parser.GetConfiguration("viewer");
+
             // get Viewer configuration section from the web.config
-            FilesDirectory = viewerConfiguration["filesDirectory"];
+            FilesDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["filesDirectory"].ToString())) ? configuration["filesDirectory"] : FilesDirectory;
             if (!IsFullPath(FilesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, viewerConfiguration["filesDirectory"]);
+                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
                 if (!Directory.Exists(FilesDirectory))
-                {
-                    FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples");
+                {                   
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }
-            FontsDirectory = viewerConfiguration["fontsDirectory"];
-            DefaultDocument = viewerConfiguration["defaultDocument"];
-            PreloadPageCount = Convert.ToInt32(viewerConfiguration["preloadPageCount"]);
-            isZoom = Convert.ToBoolean(viewerConfiguration["isZoom"]);
-            isSearch = Convert.ToBoolean(viewerConfiguration["isSearch"]);
-            isThumbnails = Convert.ToBoolean(viewerConfiguration["isThumbnails"]);
-            isRotate = Convert.ToBoolean(viewerConfiguration["isRotate"]);
-            isHtmlMode = Convert.ToBoolean(viewerConfiguration["isHtmlMode"]);
-            Cache = Convert.ToBoolean(viewerConfiguration["cache"]);
+            FontsDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["fontsDirectory"].ToString())) ?
+                configuration["fontsDirectory"] :
+                FontsDirectory;
+            DefaultDocument = (configuration != null && !String.IsNullOrEmpty(configuration["defaultDocument"].ToString())) ?
+                configuration["defaultDocument"] :
+                DefaultDocument;
+            PreloadPageCount = (configuration != null && !String.IsNullOrEmpty(configuration["preloadPageCount"].ToString())) ?
+                Convert.ToInt32(configuration["preloadPageCount"]) : 
+                PreloadPageCount;
+            isZoom = (configuration != null && !String.IsNullOrEmpty(configuration["zoom"].ToString())) ? 
+                Convert.ToBoolean(configuration["zoom"]) :
+                isZoom;
+            isSearch = (configuration != null && !String.IsNullOrEmpty(configuration["search"].ToString())) ? 
+                Convert.ToBoolean(configuration["search"]) : 
+                isSearch;
+            isThumbnails = (configuration != null && !String.IsNullOrEmpty(configuration["thumbnails"].ToString())) ?
+                Convert.ToBoolean(configuration["thumbnails"]) : 
+                isThumbnails;
+            isRotate = (configuration != null && !String.IsNullOrEmpty(configuration["rotate"].ToString())) ? 
+                Convert.ToBoolean(configuration["rotate"]) : 
+                isRotate;
+            isHtmlMode = (configuration != null && !String.IsNullOrEmpty(configuration["htmlMode"].ToString())) ? 
+                Convert.ToBoolean(configuration["htmlMode"]) : 
+                isHtmlMode;
+            Cache = (configuration != null && !String.IsNullOrEmpty(configuration["cache"].ToString())) ?
+                Convert.ToBoolean(configuration["cache"]) : 
+                Cache;
         }
 
         private static bool IsFullPath(string path)

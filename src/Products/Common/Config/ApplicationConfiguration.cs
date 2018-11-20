@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using System;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
@@ -19,21 +20,15 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         /// </summary>
         public ApplicationConfiguration()
         {
-            if (IsFullPath(applicationConfiguration["licensePath"]))
+            YamlParser parser = new YamlParser();
+            dynamic configuration = parser.GetConfiguration("application");
+            LicensePath = (configuration != null && !String.IsNullOrEmpty(configuration["licensePath"].ToString())) ? configuration["licensePath"] : applicationConfiguration["licensePath"];           
+            if (!IsFullPath(LicensePath))
             {
-                LicensePath = applicationConfiguration["licensePath"];
-            }
-            else
-            {
-                string rootFolder = AppDomain.CurrentDomain.BaseDirectory;
-                LicensePath = Path.Combine(rootFolder, applicationConfiguration["licensePath"]);
-                if (!File.Exists(LicensePath))
-                {
-                    if (!Directory.Exists(Path.Combine(rootFolder, "licenses")))
-                    {
-                        Directory.CreateDirectory(Path.Combine(rootFolder, "licenses"));
-                    }
-                    LicensePath = Path.Combine(rootFolder, "licenses/GroupDocs.Total.NET.lic");
+                LicensePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LicensePath);
+                if (!Directory.Exists(Path.GetDirectoryName(LicensePath)))
+                {                    
+                    Directory.CreateDirectory(LicensePath);
                 }
             }
             if (!File.Exists(LicensePath))

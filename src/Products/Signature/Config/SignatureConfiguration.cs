@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Configuration;
+﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -9,50 +8,51 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
     /// <summary>
     /// SignatureConfiguration
     /// </summary>
-    public class SignatureConfiguration : ConfigurationSection
+    public class SignatureConfiguration
     {
-        public string FilesDirectory { get; set; }
-        public string OutputDirectory { get; set; }
-        public string DefaultDocument { get; set; }
-        public string DataDirectory { get; set; }
-        public int PreloadPageCount { get; set; }
-        public bool isTextSignature { get; set; }
-        public bool isImageSignature { get; set; }
-        public bool isDigitalSignature { get; set; }
-        public bool isQrCodeSignature { get; set; }
-        public bool isBarCodeSignature { get; set; }
-        public bool isStampSignature { get; set; }
-        public bool isDownloadOriginal { get; set; }
-        public bool isDownloadSigned { get; set; }
-        private NameValueCollection signatureConfiguration = (NameValueCollection)System.Configuration.ConfigurationManager.GetSection("signatureConfiguration");
+        public string FilesDirectory = "DocumentSamples";
+        public string OutputDirectory = "";
+        public string DefaultDocument = "";
+        public string DataDirectory = "";
+        public int PreloadPageCount = 0;
+        public bool isTextSignature = true;
+        public bool isImageSignature = true;
+        public bool isDigitalSignature = true;
+        public bool isQrCodeSignature = true;
+        public bool isBarCodeSignature = true;
+        public bool isStampSignature = true;
+        public bool isDownloadOriginal = true;
+        public bool isDownloadSigned = true;      
 
         /// <summary>
         /// Get signature configuration section from the Web.config
         /// </summary>
         public SignatureConfiguration()
         {
-            FilesDirectory = signatureConfiguration["filesDirectory"];
+            YamlParser parser = new YamlParser();
+            dynamic configuration = parser.GetConfiguration("signature");
+            // get Comparison configuration section from the web.config            
+            FilesDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["filesDirectory"].ToString())) ? configuration["filesDirectory"] : FilesDirectory;
             if (!IsFullPath(FilesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, signatureConfiguration["filesDirectory"]);
+                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
                 if (!Directory.Exists(FilesDirectory))
                 {
-                    FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DocumentSamples");
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }
-            OutputDirectory = signatureConfiguration["outputDirectory"];           
-            DataDirectory = signatureConfiguration["dataDirectory"];
-            isTextSignature = Convert.ToBoolean(signatureConfiguration["isTextSignature"]);
-            isImageSignature = Convert.ToBoolean(signatureConfiguration["isImageSignature"]);
-            isDigitalSignature = Convert.ToBoolean(signatureConfiguration["isDigitalSignature"]);
-            isQrCodeSignature = Convert.ToBoolean(signatureConfiguration["isQrCodeSignature"]);
-            isBarCodeSignature = Convert.ToBoolean(signatureConfiguration["isBarCodeSignature"]);
-            isStampSignature = Convert.ToBoolean(signatureConfiguration["isStampSignature"]);
-            isDownloadOriginal = Convert.ToBoolean(signatureConfiguration["isDownloadOriginal"]);
-            isDownloadSigned = Convert.ToBoolean(signatureConfiguration["isDownloadSigned"]);
-            DefaultDocument = signatureConfiguration["defaultDocument"];
-            PreloadPageCount = Convert.ToInt32(signatureConfiguration["preloadPageCount"]);
+            OutputDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["outputDirectory"].ToString())) ? configuration["outputDirectory"] : OutputDirectory;
+            DataDirectory = (configuration != null && !String.IsNullOrEmpty(configuration["dataDirectory"].ToString())) ? configuration["dataDirectory"] : DataDirectory;
+            isTextSignature = (configuration != null && !String.IsNullOrEmpty(configuration["textSignature"].ToString())) ? Convert.ToBoolean(configuration["textSignature"]) : isTextSignature;
+            isImageSignature = (configuration != null && !String.IsNullOrEmpty(configuration["imageSignature"].ToString())) ? Convert.ToBoolean(configuration["imageSignature"]) : isImageSignature;
+            isDigitalSignature = (configuration != null && !String.IsNullOrEmpty(configuration["digitalSignature"].ToString())) ? Convert.ToBoolean(configuration["digitalSignature"]) : isDigitalSignature;
+            isQrCodeSignature = (configuration != null && !String.IsNullOrEmpty(configuration["qrCodeSignature"].ToString())) ? Convert.ToBoolean(configuration["qrCodeSignature"]) : isQrCodeSignature;
+            isBarCodeSignature = (configuration != null && !String.IsNullOrEmpty(configuration["barCodeSignature"].ToString())) ? Convert.ToBoolean(configuration["barCodeSignature"]) : isBarCodeSignature;
+            isStampSignature = (configuration != null && !String.IsNullOrEmpty(configuration["stampSignature"].ToString())) ? Convert.ToBoolean(configuration["stampSignature"]) : isStampSignature;
+            isDownloadOriginal = (configuration != null && !String.IsNullOrEmpty(configuration["downloadOriginal"].ToString())) ? Convert.ToBoolean(configuration["downloadOriginal"]) : isDownloadOriginal;
+            isDownloadSigned = (configuration != null && !String.IsNullOrEmpty(configuration["downloadSigned"].ToString())) ? Convert.ToBoolean(configuration["downloadSigned"]) : isDownloadSigned;
+            DefaultDocument = (configuration != null && !String.IsNullOrEmpty(configuration["defaultDocument"].ToString())) ? configuration["defaultDocument"] : DefaultDocument;
+            PreloadPageCount = (configuration != null && !String.IsNullOrEmpty(configuration["preloadPageCount"].ToString())) ? Convert.ToInt32(configuration["preloadPageCount"]) : PreloadPageCount;
         }
 
         private static bool IsFullPath(string path)
