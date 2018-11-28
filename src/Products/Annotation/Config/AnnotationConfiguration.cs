@@ -7,7 +7,7 @@ using System.Linq;
 namespace GroupDocs.Total.MVC.Products.Annotation.Config
 {
     /// <summary>
-    /// SignatureConfiguration
+    /// AnnotationConfiguration
     /// </summary>
     public class AnnotationConfiguration
     {
