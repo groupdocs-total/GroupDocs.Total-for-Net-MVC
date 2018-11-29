@@ -130,6 +130,13 @@ Coming soon
 6. Go to `http://localhost:{PORT}/`.
 PORT - port number specified in `web.config` (by default http://localhost:8080).
 
+## How to run in standalone mode
+1. Navigate to GroupDocs.Total for .NET MVC Sample root directory.
+2. Update parameters in `web.config` to meet your requirements.
+3. Execute the 'LaunchServer.bat' file.
+4. Go to `http://localhost:{PORT}/`.
+PORT - port number specified in `web.config` and in 'LaunchServer.bat'(by default http://localhost:8080).
+
 
 ## Resources
 - **Website:** [www.groupdocs.com](http://www.groupdocs.com)
