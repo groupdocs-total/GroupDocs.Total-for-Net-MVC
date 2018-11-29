@@ -1,5 +1,5 @@
 # GroupDocs.Total for .NET MVC Example
-###### version 0.4.12
+###### version 0.4.15
 
 
 ## System Requirements
@@ -126,7 +126,7 @@ Coming soon
 2. Extract/Copy GroupDocs.Total for .NET MVC Sample to working directory.
 3. Navigate to GroupDocs.Total for .NET MVC Sample root directory.
 4. Open solution in the VisualStudio.
-5. Update parameters in `web.config` to meet your requirements.
+5. Update common parameters in `web.config` and example related properties in the 'configuration.yml' to meet your requirements.
 6. Go to `http://localhost:{PORT}/`.
 PORT - port number specified in `web.config` (by default http://localhost:8080).
 
