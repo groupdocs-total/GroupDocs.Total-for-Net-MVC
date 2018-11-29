@@ -187,6 +187,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="YamlDotNet, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YamlDotNet.5.2.1\lib\net45\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppDomainGenerator\DomainGenerator.cs" />
@@ -231,6 +234,7 @@
     <Compile Include="Products\Annotation\Util\Directory\OutputDirectoryUtils.cs" />
     <Compile Include="Products\Annotation\Util\DocumentTypesConverter.cs" />
     <Compile Include="Products\Common\Config\ApplicationConfiguration.cs" />
+    <Compile Include="Products\Common\Config\ConfigurationValuesGetter.cs" />
     <Compile Include="Products\Common\Config\GlobalConfiguration.cs" />
     <Compile Include="Products\Common\Config\ServerConfiguration.cs" />
     <Compile Include="Products\Common\Config\CommonConfiguration.cs" />
@@ -240,6 +244,7 @@
     <Compile Include="Products\Common\Entity\Web\LoadedPageEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\UploadedDocumentEntity.cs" />
     <Compile Include="Products\Common\Resources\Resources.cs" />
+    <Compile Include="Products\Common\Util\Parser\YamlParser.cs" />
     <Compile Include="Products\Comparison\Config\ComparisonConfiguration.cs" />
     <Compile Include="Products\Comparison\Controllers\ComparisonApiController.cs" />
     <Compile Include="Products\Comparison\Model\Request\CompareFileDataRequest.cs" />
@@ -469,20 +474,20 @@
     <Exec Command="..\packages\NodeBin.5.2.0\node-5.2.0\node.exe ..\packages\NodeBin.5.2.0\npm-2.14.13\bin\npm-cli.js update" />
     <Exec Command="..\packages\NodeBin.5.2.0\node-5.2.0\node.exe .\node_modules\gulp\bin\gulp.js build" />
   </Target>
-  <ItemGroup>
-	<ZipFiles Include="$(OutDir)**\*.*" />
-	<ZipFiles Include="$(ProjectDir)Resources\**\*.*" />
-    <ZipFiles Include="$(ProjectDir)Views\**\*.*" />
-    <ZipFiles Include="$(ProjectDir)Global.asax" />
-    <ZipFiles Include="$(ProjectDir)Global.asax.cs" />
-    <ZipFiles Include="$(ProjectDir)Web.config" />    
-    <ZipFiles Include="$(ProjectDir)LaunchServer.bat" />
-    <ZipFiles Include="$(ProjectDir)xsp4.exe" />
-	<ZipFiles Include="$(ProjectDir)Mono.Security.dll" />
-	<ZipFiles Include="$(ProjectDir)Mono.Security.Win32.dll" />
-	<ZipFiles Include="$(ProjectDir)Mono.WebServer2.dll" />	
-  </ItemGroup>
   <Target Name="AfterBuild">
+    <ItemGroup>
+      <ZipFiles Include="$(OutDir)**\*.*" />
+      <ZipFiles Include="$(ProjectDir)Resources\**\*.*" />
+      <ZipFiles Include="$(ProjectDir)Views\**\*.*" />
+      <ZipFiles Include="$(ProjectDir)Global.asax" />
+      <ZipFiles Include="$(ProjectDir)Global.asax.cs" />
+      <ZipFiles Include="$(ProjectDir)Web.config" />
+      <ZipFiles Include="$(ProjectDir)LaunchServer.bat" />
+      <ZipFiles Include="$(ProjectDir)xsp4.exe" />
+      <ZipFiles Include="$(ProjectDir)Mono.Security.dll" />
+      <ZipFiles Include="$(ProjectDir)Mono.Security.Win32.dll" />
+      <ZipFiles Include="$(ProjectDir)Mono.WebServer2.dll" />
+    </ItemGroup>
     <Zip Files="@(ZipFiles)" WorkingDirectory="$(ProjectDir)" ZipFileName="GroupDocs.Total.MVC.zip" />
   </Target>
   <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
