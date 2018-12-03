@@ -1,5 +1,6 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
@@ -29,6 +30,12 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
                 if (!Directory.Exists(Path.GetDirectoryName(LicensePath)))
                 {                    
                     Directory.CreateDirectory(Path.GetDirectoryName(LicensePath));
+                }
+                bool isDirectory = File.GetAttributes(LicensePath).HasFlag(FileAttributes.Directory);
+                if (isDirectory)
+                {
+                    string[] files = System.IO.Directory.GetFiles(LicensePath, "*.lic");
+                    LicensePath = Path.Combine(LicensePath, files[0]);
                 }
             }
             if (!File.Exists(LicensePath))
