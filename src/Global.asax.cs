@@ -14,7 +14,7 @@ namespace GroupDocs.Total.MVC
             string viewerAssemblyName = "GroupDocs.Viewer.dll";
             string signatureAssemblyName = "GroupDocs.Signature.dll";
             string annotationAssemblyName = "GroupDocs.Annotation.dll";
-            string comparisonAssemblyName = "GroupDocs.Comparison.dll";
+            string comparisonAssemblyName = "GroupDocs.Comparison.dll";             
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
             viewerDomainGenerator.SetViewerLicense(viewerDomainGenerator.CurrentType);

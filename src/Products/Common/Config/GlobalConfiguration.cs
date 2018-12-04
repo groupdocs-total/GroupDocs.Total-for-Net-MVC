@@ -22,7 +22,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         /// Get all configurations
         /// </summary>
         public GlobalConfiguration()
-        {
+        {            
             Server = new ServerConfiguration();
             Application = new ApplicationConfiguration();
             Signature = new SignatureConfiguration();
