@@ -1,5 +1,7 @@
 # GroupDocs.Total for .NET MVC Example
 ###### version 0.4.12
+[![Build status](https://ci.appveyor.com/api/projects/status/kvkv1oswg5xfd6uq/branch/master?svg=true)](https://ci.appveyor.com/project/egorovpavel/groupdocs-total-for-net-mvc/branch/master)
+
 
 
 ## System Requirements
