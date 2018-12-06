@@ -15,7 +15,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
         
         public override AnnotationInfo AnnotateWord()
         {
-            throw new NotSupportedException(String.Format(MESSAGE, annotationData.type));
+            return InitAnnotationInfo();
         }
         
         public override AnnotationInfo AnnotatePdf()
@@ -49,7 +49,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
         
         public override AnnotationInfo AnnotateDiagram()
         {
-            throw new NotSupportedException(String.Format(MESSAGE, annotationData.type));
+            return InitAnnotationInfo();
         }
         
         protected override Rectangle GetBox()

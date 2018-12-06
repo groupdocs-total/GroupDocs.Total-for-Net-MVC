@@ -15,13 +15,13 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 
         public override AnnotationInfo AnnotateWord()
         {
-            throw new NotSupportedException(String.Format(MESSAGE, annotationData.type));
+            AnnotationInfo distanceAnnotation = InitAnnotationInfo();
+            return distanceAnnotation;
         }
 
         public override AnnotationInfo AnnotatePdf()
         {
             AnnotationInfo distanceAnnotation = InitAnnotationInfo();
-
             return distanceAnnotation;
         }
 
