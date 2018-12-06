@@ -168,6 +168,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     description.height = pageData.Height;
                     description.width = pageData.Width;
                     description.number = pageData.Number;
+                    description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
                     // set annotations data if document page contains annotations
                     if (annotations != null && annotations.Length > 0)
                     {
@@ -482,7 +483,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     resultStream.Close();
                 }
                 File.Delete(path);
-                File.Move(tempFilePath, path);
+                File.Move(tempFilePath, path);                
             }
             catch (System.Exception ex)
             {
