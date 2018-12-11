@@ -8,7 +8,7 @@ using System;
 namespace GroupDocs.Total.MVC.Test
 {
     [TestFixture]
-    public class ViewerControllerTest
+    public class AnnotationControllerTest
     {
         
         [SetUp]
@@ -32,7 +32,7 @@ namespace GroupDocs.Total.MVC.Test
                 var request = new SerialisableRequest
                 {
                     Method = "GET",
-                    RequestUri = "/viewer",
+                    RequestUri = "/annotation",
                     Content = null
                 };
 
@@ -44,7 +44,7 @@ namespace GroupDocs.Total.MVC.Test
         [Test]
         public void ViewMapControllerTest()
         {
-            "~/viewer".Route().ShouldMapTo<ViewerController>(x => x.Index());
+            "~/annotation".Route().ShouldMapTo<AnnotationController>(x => x.Index());
         }
     }
 }
