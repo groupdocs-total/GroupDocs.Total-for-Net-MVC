@@ -60,7 +60,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
         
         public override AnnotationInfo AnnotateDiagram()
         {
-            throw new NotSupportedException(String.Format(MESSAGE, annotationData.type));
+            throw new NotSupportedException(String.Format(Message, annotationData.type));
         }
         
         protected Rectangle getBox()

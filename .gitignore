@@ -11,3 +11,6 @@ src/Resources/*
 node_modules
 src/package-lock.json
 /src/node 
+/GroupDocs.Total.MVC.Test/GroupDocs.Total.MVC.Test.csproj.user
+/GroupDocs.Total.MVC.Test/bin
+/GroupDocs.Total.MVC.Test/obj

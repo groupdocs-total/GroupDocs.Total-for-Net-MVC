@@ -34,7 +34,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 
         public override AnnotationInfo AnnotateCells()
         {
-            throw new NotSupportedException(String.Format(MESSAGE, annotationData.type));
+            throw new NotSupportedException(String.Format(Message, annotationData.type));
         }
         
         public override AnnotationInfo AnnotateSlides()
