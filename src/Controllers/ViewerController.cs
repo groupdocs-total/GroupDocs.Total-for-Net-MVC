@@ -9,7 +9,7 @@ namespace GroupDocs.Total.MVC.Controllers
     {       
         public ActionResult Index()
         {
-            return View();
+            return View("Index");
         }
     }
 }
