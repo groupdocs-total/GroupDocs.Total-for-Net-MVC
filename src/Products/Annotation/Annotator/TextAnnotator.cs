@@ -53,7 +53,9 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
         
         public override AnnotationInfo AnnotateImage()
         {
-            throw new NotSupportedException(String.Format(Message, annotationData.type));
+            // init possible types of annotations
+            AnnotationInfo textAnnotation = InitAnnotationInfo();
+            return textAnnotation;
         }
         
         public override AnnotationInfo AnnotateDiagram()
