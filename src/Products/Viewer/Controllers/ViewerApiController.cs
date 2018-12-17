@@ -134,21 +134,18 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         public HttpResponseMessage LoadDocumentDescription(PostedDataEntity postedData)
         {
             string password = "";
-            string documentGuid = "";
             try
             {
-                // get request body
-                if (postedData != null)
+
+                // get/set parameters
+                string documentGuid = postedData.guid;
+                password = postedData.password;
+                // check if documentGuid contains path or only file name
+                if (!Path.IsPathRooted(documentGuid))
                 {
-                    // get/set parameters
-                    documentGuid = postedData.guid;
-                    password = postedData.password;
-                    // check if documentGuid contains path or only file name
-                    if (!Path.IsPathRooted(documentGuid))
-                    {
-                        documentGuid = globalConfiguration.Viewer.FilesDirectory + "/" + documentGuid;
-                    }
+                    documentGuid = globalConfiguration.Viewer.FilesDirectory + "/" + documentGuid;
                 }
+
                 DocumentInfoContainer documentInfoContainer = new DocumentInfoContainer();
                 // get document info options
                 DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
@@ -156,21 +153,12 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 documentInfoOptions.Password = password;
                 // get document info container               
                 documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions);
-                List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
-                // get info about each document page
-                for (int i = 0; i < documentInfoContainer.Pages.Count; i++)
-                {
-                    //initiate custom Document description object
-                    DocumentDescriptionEntity description = new DocumentDescriptionEntity();
-
-                    // set current page info for result
-                    description.height = documentInfoContainer.Pages[i].Height;
-                    description.width = documentInfoContainer.Pages[i].Width;
-                    description.number = i + 1;
-                    pagesDescription.Add(description);
-                }
+                List<PageDescriptionEntity> pages = GetPageDescriptionEntities(documentInfoContainer.Pages);
+                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+                loadDocumentEntity.guid = documentGuid;
+                loadDocumentEntity.pages = pages;
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
+                return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
             catch (InvalidPasswordException ex)
             {
@@ -178,13 +166,15 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 {
                     Exception error = new Exception(PASSWORD_REQUIRED);
                     return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
-                } else
+                }
+                else
                 {
                     Exception error = new Exception(INCORRECT_PASSWORD);
                     return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
                 }
             }
-            catch (System.Exception ex)            {
+            catch (System.Exception ex)
+            {
 
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
@@ -422,6 +412,21 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 return viewerImageHandler;
             }
+        }
+
+        private List<PageDescriptionEntity> GetPageDescriptionEntities(List<PageData> containerPages)
+        {
+            List<PageDescriptionEntity> pages = new List<PageDescriptionEntity>();
+            foreach (PageData page in containerPages)
+            {
+                PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
+                pageDescriptionEntity.number = page.Number;
+                pageDescriptionEntity.angle = page.Angle;
+                pageDescriptionEntity.height = page.Height;
+                pageDescriptionEntity.width = page.Width;
+                pages.Add(pageDescriptionEntity);
+            }
+            return pages;
         }
     }
 }

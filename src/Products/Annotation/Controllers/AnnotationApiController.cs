@@ -140,7 +140,20 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     documentPath = Path.Combine(parentDirName, fileName);
                 }
-
+                List<PageImage> pageImages = null;
+                ImageOptions imageOptions = new ImageOptions();
+                // set password for protected document
+                if (!String.IsNullOrEmpty(password))
+                {
+                    imageOptions.Password = password;
+                }
+                if (GlobalConfiguration.Annotation.PreloadPageCount == 0)
+                {
+                    Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    pageImages = AnnotationImageHandler.GetPages(document, imageOptions);
+                    document.Dispose();
+                    document.Close();
+                }
                 documentDescription = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 string documentType = documentDescription.DocumentType;
                 string fileExtension = Path.GetExtension(documentGuid);
@@ -156,28 +169,41 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // check if document contains annotations
                 AnnotationInfo[] annotations = GetAnnotations(documentGuid, documentType, password);
                 // initiate pages description list
-                List<AnnotatedDocumentEntity> pagesDescription = new List<AnnotatedDocumentEntity>();
+                // initiate custom Document description object
+                AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
+                description.guid = documentGuid;
+                description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
+                // initiate pages description list
+                List<PageDataDescriptionEntity> pagesDescriptions = new List<PageDataDescriptionEntity>();
                 // get info about each document page
                 for (int i = 0; i < documentDescription.Pages.Count; i++)
                 {
-                    //initiate custom Document description object
-                    AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
-                    description.guid = documentGuid;
-                    // set current page info for result
-                    PageData pageData = documentDescription.Pages[i];
-                    description.height = pageData.Height;
-                    description.width = pageData.Width;
-                    description.number = pageData.Number;
-                    description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
+                    PageDataDescriptionEntity page = new PageDataDescriptionEntity();
+                    page.height = documentDescription.Pages[i].Height;
+                    page.width = documentDescription.Pages[i].Width;
+                    page.number = documentDescription.Pages[i].Number;
                     // set annotations data if document page contains annotations
                     if (annotations != null && annotations.Length > 0)
-                    {
-                        description.annotations = AnnotationMapper.instance.mapForPage(annotations, description.number);
+                    {                       
+                        page.annotations = AnnotationMapper.instance.mapForPage(annotations, page.number);
                     }
-                    pagesDescription.Add(description);
+                    if (pageImages != null)
+                    {
+                        byte[] bytes;
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            Stream imageStream = pageImages[i].Stream;
+                            imageStream.Position = 0;
+                            imageStream.CopyTo(memoryStream);
+                            bytes = memoryStream.ToArray();
+                        }
+                        string encodedImage = Convert.ToBase64String(bytes);
+                        page.data = encodedImage;
+                    }
+                    description.pages.Add(page);
                 }
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
+                return Request.CreateResponse(HttpStatusCode.OK, description);
             }
             catch (System.Exception ex)
             {

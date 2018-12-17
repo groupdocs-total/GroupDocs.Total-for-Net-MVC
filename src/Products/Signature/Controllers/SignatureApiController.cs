@@ -151,13 +151,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 password = postedData.password;
                 DocumentDescription documentDescription;
                 // get document info container
-                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);
-                List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
+                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);                
+                List<PageDescriptionEntity> pagesDescription = new List<PageDescriptionEntity>();
                 // get info about each document page
                 for (int i = 1; i <= documentDescription.PageCount; i++)
                 {
                     //initiate custom Document description object
-                    DocumentDescriptionEntity description = new DocumentDescriptionEntity();
+                    PageDescriptionEntity description = new PageDescriptionEntity();
                     // get current page size
                     Size pageSize = SignatureHandler.GetDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
                     // set current page info for result
@@ -166,8 +166,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     description.number = i;
                     pagesDescription.Add(description);
                 }
+                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+                loadDocumentEntity.guid = documentGuid;
+                loadDocumentEntity.pages = pagesDescription;
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
+                return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
             catch (Exception ex)
             {
