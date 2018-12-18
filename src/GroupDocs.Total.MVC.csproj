@@ -248,7 +248,6 @@
     <Compile Include="Products\Annotation\Util\AnnotationMapper.cs" />
     <Compile Include="Products\Annotation\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Annotation\Util\Directory\FilesDirectoryUtils.cs" />
-    <Compile Include="Products\Annotation\Util\Directory\OutputDirectoryUtils.cs" />
     <Compile Include="Products\Annotation\Util\DocumentTypesConverter.cs" />
     <Compile Include="Products\Annotation\Util\SupportedAnnotations.cs" />
     <Compile Include="Products\Common\Config\ApplicationConfiguration.cs" />
@@ -306,7 +305,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Products\Signature\Util\Directory\OutputDirectoryUtils.cs" />
     <Compile Include="Products\Viewer\Config\ViewerConfiguration.cs" />
     <Compile Include="Products\Viewer\Controllers\ViewerApiController.cs" />
     <Compile Include="Products\Common\Entity\Web\PostedDataEntity.cs" />

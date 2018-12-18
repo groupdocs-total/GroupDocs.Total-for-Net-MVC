@@ -12,7 +12,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
     public class SignatureConfiguration
     {
         public string FilesDirectory = "DocumentSamples/Signature";
-        public string OutputDirectory = "";
         public string DefaultDocument = "";
         public string DataDirectory = "";
         public int PreloadPageCount = 0;
@@ -21,9 +20,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
         public bool isDigitalSignature = true;
         public bool isQrCodeSignature = true;
         public bool isBarCodeSignature = true;
-        public bool isStampSignature = true;
-        public bool isDownloadOriginal = true;
-        public bool isDownloadSigned = true;      
+        public bool isStampSignature = true;            
 
         /// <summary>
         /// Get signature configuration section from the Web.config
@@ -42,8 +39,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
                 {
                     Directory.CreateDirectory(FilesDirectory);
                 }
-            }
-            OutputDirectory = valuesGetter.GetStringPropertyValue("outputDirectory", OutputDirectory);
+            }          
             DataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", DataDirectory);
             DefaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", DefaultDocument);
             isTextSignature = valuesGetter.GetBooleanPropertyValue("textSignature", isTextSignature);
@@ -51,9 +47,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
             isDigitalSignature = valuesGetter.GetBooleanPropertyValue("digitalSignature", isDigitalSignature);
             isQrCodeSignature = valuesGetter.GetBooleanPropertyValue("qrCodeSignature", isQrCodeSignature);
             isBarCodeSignature = valuesGetter.GetBooleanPropertyValue("barCodeSignature", isBarCodeSignature);
-            isStampSignature = valuesGetter.GetBooleanPropertyValue("stampSignature", isStampSignature);
-            isDownloadOriginal = valuesGetter.GetBooleanPropertyValue("downloadOriginal", isDownloadOriginal);
-            isDownloadSigned = valuesGetter.GetBooleanPropertyValue("downloadSigned", isDownloadSigned);            
+            isStampSignature = valuesGetter.GetBooleanPropertyValue("stampSignature", isStampSignature);             
             PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
         }
 

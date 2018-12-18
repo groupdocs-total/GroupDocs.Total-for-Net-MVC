@@ -8,7 +8,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
     public class DirectoryUtils
     {
         public FilesDirectoryUtils FilesDirectory;
-        public OutputDirectoryUtils OutputDirectory;
         public DataDirectoryUtils DataDirectory;
 
         /// <summary>
@@ -18,7 +17,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
         public DirectoryUtils(SignatureConfiguration signatureConfiguration)
         {
             FilesDirectory = new FilesDirectoryUtils(signatureConfiguration);
-            OutputDirectory = new OutputDirectoryUtils(signatureConfiguration);
             DataDirectory = new DataDirectoryUtils(signatureConfiguration);
         }
     }

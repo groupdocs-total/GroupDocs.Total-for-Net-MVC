@@ -11,8 +11,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
     /// </summary>
     public class AnnotationConfiguration
     {
-        public string FilesDirectory = "DocumentSamples/Annotation";
-        public string OutputDirectory = "";
+        public string FilesDirectory = "DocumentSamples/Annotation";       
         public string DefaultDocument = "";
         public int PreloadPageCount = 0;
         public bool isTextAnnotation = true;
@@ -28,8 +27,6 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
         public bool isResourcesRedactionAnnotation = true;
         public bool isTextUnderlineAnnotation = true;
         public bool isDistanceAnnotation = true;
-        public bool isDownloadOriginal = true;
-        public bool isDownloadAnnotated = true;     
 
         /// <summary>
         /// Get annotation configuration section from the Web.config
@@ -48,8 +45,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
                 {                   
                     Directory.CreateDirectory(FilesDirectory);
                 }
-            }
-            OutputDirectory = valuesGetter.GetStringPropertyValue("outputDirectory", OutputDirectory);
+            }           
             isTextAnnotation = valuesGetter.GetBooleanPropertyValue("textAnnotation", isTextAnnotation);
             isAreaAnnotation = valuesGetter.GetBooleanPropertyValue("areaAnnotation", isAreaAnnotation);
             isPointAnnotation = valuesGetter.GetBooleanPropertyValue("pointAnnotation", isPointAnnotation);
@@ -62,9 +58,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
             isTextRedactionAnnotation = valuesGetter.GetBooleanPropertyValue("textRedactionAnnotation", isTextRedactionAnnotation);
             isResourcesRedactionAnnotation = valuesGetter.GetBooleanPropertyValue("resourcesRedactionAnnotation", isResourcesRedactionAnnotation);
             isTextUnderlineAnnotation = valuesGetter.GetBooleanPropertyValue("textUnderlineAnnotation", isTextUnderlineAnnotation);
-            isDistanceAnnotation = valuesGetter.GetBooleanPropertyValue("distanceAnnotation", isDistanceAnnotation);
-            isDownloadOriginal = valuesGetter.GetBooleanPropertyValue("downloadOriginal", isDownloadOriginal);
-            isDownloadAnnotated = valuesGetter.GetBooleanPropertyValue("downloadAnnotated", isDownloadAnnotated);
+            isDistanceAnnotation = valuesGetter.GetBooleanPropertyValue("distanceAnnotation", isDistanceAnnotation);            
             PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
         }
 

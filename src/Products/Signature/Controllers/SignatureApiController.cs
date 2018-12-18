@@ -52,7 +52,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();
             config.CertificatesPath = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
             config.ImagesPath = DirectoryUtils.DataDirectory.ImageDirectory.Path;
-            config.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
+            config.OutputPath = DirectoryUtils.FilesDirectory.GetPath();
             // initialize instance for the Image mode
             SignatureHandler = new SignatureHandler(config);
         }
@@ -209,39 +209,24 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         }
 
         /// <summary>
-        /// Download document
+        /// Download curernt document
         /// </summary>
-        /// <param name="path">string</param>
-        /// <param name="signed">bool</param>
-        /// <returns></returns>
+        /// <param name="path">Path of the document to download</param>
+        /// <returns>Document stream as attachement</returns>
         [HttpGet]
         [Route("signature/downloadDocument")]
-        public HttpResponseMessage DownloadDocument(string path, bool signed)
+        public HttpResponseMessage DownloadDocument(string path)
         {
             if (!string.IsNullOrEmpty(path))
             {
-                string pathToDownload = "";
-                string fileName = Path.GetFileName(path);
-                // check if file exists
-                if (System.IO.File.Exists(path))
+                if (File.Exists(path))
                 {
-                    // prepare response message
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                    // check if signed document should be downloaded or original
-                    if (signed)
-                    {
-                        pathToDownload = Path.Combine(DirectoryUtils.OutputDirectory.GetPath(), fileName);
-                    }
-                    else
-                    {
-                        pathToDownload = Path.Combine(DirectoryUtils.FilesDirectory.GetPath(), fileName);
-                    }
-                    // add file into the response
-                    var fileStream = new FileStream(path, FileMode.Open);
+                    var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     response.Content = new StreamContent(fileStream);
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    response.Content.Headers.ContentDisposition.FileName = fileName;
+                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
                     return response;
                 }
             }
@@ -297,6 +282,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
 
                             // Save the uploaded file to "UploadedFiles" folder
                             httpPostedFile.SaveAs(fileSavePath);
+                            httpPostedFile.InputStream.Close();
                         }
                     }
                 }
@@ -699,6 +685,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             SaveOptions saveOptions = new SaveOptions();
             saveOptions.OutputType = OutputType.String;
             saveOptions.OutputFileName = Path.GetFileName(documentGuid);
+            saveOptions.OverwriteExistingFiles = true;
 
             // set password
             LoadOptions loadOptions = new LoadOptions();
@@ -897,7 +884,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string tempFile = Path.Combine(previewPath, fileName + "signed.png");
                 System.IO.File.Move(tempFile, filePath);
                 // set signed documents path back to correct path
-                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
+                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.FilesDirectory.GetPath();
                 // set data for response
                 opticalCodeData.imageGuid = filePath;
                 opticalCodeData.height = 200;
@@ -997,7 +984,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string tempFile = Path.Combine(previewPath, fileName + "signed.png");
                 System.IO.File.Move(tempFile, filePath);
                 // set signed documents path back to correct path
-                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
+                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.FilesDirectory.GetPath();
                 // set Text data for response
                 textData.imageGuid = filePath;
                 // get signature preview as Base64 string
