@@ -414,7 +414,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             }
         }
 
-        private List<PageDescriptionEntity> GetPageDescriptionEntities(List<PageData> containerPages)
+        private static List<PageDescriptionEntity> GetPageDescriptionEntities(List<PageData> containerPages)
         {
             List<PageDescriptionEntity> pages = new List<PageDescriptionEntity>();
             foreach (PageData page in containerPages)
