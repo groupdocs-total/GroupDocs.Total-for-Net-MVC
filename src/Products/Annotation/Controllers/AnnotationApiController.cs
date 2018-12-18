@@ -231,7 +231,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 ImageOptions imageOptions = new ImageOptions()
                 {
                     PageNumber = pageNumber,
-                    CountPagesToConvert = 1
+                    CountPagesToConvert = 1,
+                    Password = password
                 };
                 // get page image
 
@@ -324,7 +325,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                             }
                             else
                             {
-                                fileSavePath = new Resources().GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
+                                fileSavePath = Resources.GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
                             }
 
                             // Save the uploaded file to "UploadedFiles" folder
@@ -346,7 +347,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                         }
                         else
                         {
-                            fileSavePath = new Resources().GetFreeFileName(documentStoragePath, fileName);
+                            fileSavePath = Resources.GetFreeFileName(documentStoragePath, fileName);
                         }
                         // Download the Web resource and save it into the current filesystem folder.
                         client.DownloadFile(url, fileSavePath);
@@ -501,7 +502,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     resultStream = AnnotationImageHandler.RemoveAnnotationStream(inputStream);
                     resultStream.Position = 0;
-                    tempFilePath = new Resources().GetFreeFileName(GlobalConfiguration.Annotation.OutputDirectory, Path.GetFileName(path));
+                    tempFilePath = Resources.GetFreeFileName(GlobalConfiguration.Annotation.OutputDirectory, Path.GetFileName(path));
                     using (Stream tempFile = File.Create(tempFilePath))
                     {
                         resultStream.Seek(0, SeekOrigin.Begin);
