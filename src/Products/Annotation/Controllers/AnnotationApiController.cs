@@ -172,9 +172,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // initiate custom Document description object
                 AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
                 description.guid = documentGuid;
-                description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
-                // initiate pages description list
-                List<PageDataDescriptionEntity> pagesDescriptions = new List<PageDataDescriptionEntity>();
+                description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);                
                 // get info about each document page
                 for (int i = 0; i < documentDescription.Pages.Count; i++)
                 {
