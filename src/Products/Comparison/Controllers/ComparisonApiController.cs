@@ -55,7 +55,33 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         /// <param name=""></param>
         [HttpGet]
         [Route("comparison/downloadDocument")]
-        public HttpResponseMessage DownloadDocument(string guid, string ext, string index = "")
+        public HttpResponseMessage DownloadDocument(string guid, string ext)
+        {
+            ext = (ext.Contains(".")) ? ext : "." + ext;
+            string filePath = comparisonService.CalculateResultFileName(guid, "", ext);
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                if (File.Exists(filePath))
+                {
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                    var fileStream = new FileStream(filePath, FileMode.Open);
+                    response.Content = new StreamContent(fileStream);
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                    response.Content.Headers.ContentDisposition.FileName = System.IO.Path.GetFileName(filePath);
+                    return response;
+                }
+            }
+            return new HttpResponseMessage(HttpStatusCode.NotFound);
+        }
+
+        /// <summary>
+        /// Download results
+        /// </summary>
+        /// <param name=""></param>
+        [HttpGet]
+        [Route("comparison/downloadDocument")]
+        public HttpResponseMessage DownloadDocument(string guid, string ext, string index)
         {
             ext = (ext.Contains(".")) ? ext : "." + ext;
             string filePath = comparisonService.CalculateResultFileName(guid, index, ext);
@@ -88,7 +114,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = globalConfiguration.Comparison.FilesDirectory;
+                string documentStoragePath = globalConfiguration.Comparison.GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))
@@ -106,7 +132,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                             }
                             else
                             {
-                                fileSavePath = new Resources().GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
+                                fileSavePath = Resources.GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
                             }
 
                             // Save the uploaded file to "UploadedFiles" folder
@@ -128,7 +154,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                         }
                         else
                         {
-                            fileSavePath = new Resources().GetFreeFileName(documentStoragePath, fileName);
+                            fileSavePath = Resources.GetFreeFileName(documentStoragePath, fileName);
                         }
                         // Download the Web resource and save it into the current filesystem folder.
                         client.DownloadFile(url, fileSavePath);
@@ -276,7 +302,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                 CompareRequest requestData = comparisonService.GetFormData(HttpContext.Current.Request);
                 // transform all files into input streams
                 TransformFiles transformFiles = new TransformFiles(requestData.files, requestData.passwords, requestData.urls, requestData.paths).TransformToStreams();
-                List<string> fileNames = transformFiles.fileNames;
+                List<string> fileNames = transformFiles.GetFileNames();
 
                 // check formats
                 if (comparisonService.CheckMultiFiles(fileNames))
@@ -285,8 +311,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                     string ext = System.IO.Path.GetExtension(fileNames[0]);
 
                     // compare
-                    List<Stream> newFiles = transformFiles.newFiles;
-                    List<string> newPasswords = transformFiles.newPasswords;                  
+                    List<Stream> newFiles = transformFiles.GetNewFiles();
+                    List<string> newPasswords = transformFiles.GetNewPasswords();                  
                     return Request.CreateResponse(HttpStatusCode.OK, comparisonService.CompareFiles(newFiles[0], newPasswords[0], newFiles[1], newPasswords[1], ext));
                 }
                 else
@@ -314,7 +340,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                 CompareRequest requestData = comparisonService.GetFormData(HttpContext.Current.Request);
                 // transform all files into input streams
                 TransformFiles transformFiles = new TransformFiles(requestData.files, requestData.passwords, requestData.urls, requestData.paths).TransformToStreams();
-                List<string> fileNames = transformFiles.fileNames;
+                List<string> fileNames = transformFiles.GetFileNames();
 
                 // check formats
                 if (comparisonService.CheckMultiFiles(fileNames))
@@ -323,8 +349,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                     string ext = System.IO.Path.GetExtension(fileNames[0]);
 
                     // compare
-                    List<Stream> newFiles = transformFiles.newFiles;
-                    List<string> newPasswords = transformFiles.newPasswords;
+                    List<Stream> newFiles = transformFiles.GetNewFiles();
+                    List<string> newPasswords = transformFiles.GetNewPasswords();
                     return Request.CreateResponse(HttpStatusCode.OK, comparisonService.MultiCompareFiles(newFiles, newPasswords, ext));
                 }
                 else

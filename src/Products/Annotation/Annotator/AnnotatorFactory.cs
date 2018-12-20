@@ -1,6 +1,7 @@
 ﻿
 using GroupDocs.Annotation.Domain;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
+using GroupDocs.Total.MVC.Products.Common.Resources;
 using System;
 
 namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
@@ -44,7 +45,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
                 case "distance":
                     return new DistanceAnnotator(annotationData, pageData);
                 default:
-                    throw new Exception("Wrong annotation data without annotation type!");
+                    throw new ArgumentNullException("Wrong annotation data without annotation type!");
             }
         }
     }

@@ -152,12 +152,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 DocumentDescription documentDescription;
                 // get document info container
                 documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);
-                List<DocumentDescriptionEntity> pagesDescription = new List<DocumentDescriptionEntity>();
+                List<PageDescriptionEntity> pagesDescription = new List<PageDescriptionEntity>();
                 // get info about each document page
                 for (int i = 1; i <= documentDescription.PageCount; i++)
                 {
                     //initiate custom Document description object
-                    DocumentDescriptionEntity description = new DocumentDescriptionEntity();
+                    PageDescriptionEntity description = new PageDescriptionEntity();
                     // get current page size
                     Size pageSize = SignatureHandler.GetDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
                     // set current page info for result
@@ -166,8 +166,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     description.number = i;
                     pagesDescription.Add(description);
                 }
+                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+                loadDocumentEntity.SetGuid(documentGuid);
+                foreach (PageDescriptionEntity pageDescription in pagesDescription)
+                {
+                    loadDocumentEntity.SetPages(pageDescription);
+                }
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, pagesDescription);
+                return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
             catch (Exception ex)
             {
@@ -289,7 +295,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                             }
                             else
                             {
-                                fileSavePath = new Resources().GetFreeFileName(fileSavePath, httpPostedFile.FileName);
+                                fileSavePath = Resources.GetFreeFileName(fileSavePath, httpPostedFile.FileName);
                             }
 
                             // Save the uploaded file to "UploadedFiles" folder
@@ -311,7 +317,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         }
                         else
                         {
-                            fileSavePath = new Resources().GetFreeFileName(fileSavePath, fileName);
+                            fileSavePath = Resources.GetFreeFileName(fileSavePath, fileName);
                         }
                         // Download the Web resource and save it into the current filesystem folder.
                         client.DownloadFile(url, fileSavePath);
@@ -418,6 +424,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     case "Microsoft Excel":
                         // sign document
                         signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signer.SignCells(), loadOptions, saveOptions);
+                        break;
+                    default:
+                        signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signer.SignPdf(), loadOptions, saveOptions);
                         break;
                 }
                 // return loaded page object
@@ -725,7 +734,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
                 if (System.IO.File.Exists(imagePath))
                 {
-                    imageName = Path.GetFileName(new Resources().GetFreeFileName(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName));
+                    imageName = Path.GetFileName(Resources.GetFreeFileName(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName));
                     imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
                 }
                 System.IO.File.WriteAllBytes(imagePath, Convert.FromBase64String(encodedImage));
@@ -1020,7 +1029,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         {
             // initiate return object type
             T returnObject = default(T);
-            if (string.IsNullOrEmpty(xmlFileName)) return default(T);
+            if (string.IsNullOrEmpty(xmlFileName))
+            {
+                return default(T);
+            }
 
             try
             {
