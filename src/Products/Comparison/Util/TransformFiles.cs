@@ -9,10 +9,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Util
 {
     public class TransformFiles
     {
-        private List<Stream> files;
-        private List<string> passwords;
-        private List<CompareFileDataRequest> urls;
-        private List<CompareFileDataRequest> paths;
+        private readonly List<Stream> files;
+        private readonly List<string> passwords;
+        private readonly List<CompareFileDataRequest> urls;
+        private readonly List<CompareFileDataRequest> paths;
         private List<Stream> newFiles;
         private List<string> fileNames;
         private List<string> newPasswords;

@@ -402,12 +402,15 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             switch (ext)
             {
                 case ".doc":
+                    return DOC;
                 case ".docx":
                     return DOCX;
                 case ".xls":
+                    return XLS;
                 case ".xlsx":
                     return XLSX;
                 case ".ppt":
+                    return PPT;
                 case ".pptx":
                     return PPTX;
                 default:
