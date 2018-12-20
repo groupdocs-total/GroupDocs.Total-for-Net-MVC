@@ -1,9 +1,7 @@
-﻿
-using GroupDocs.Total.MVC.Products.Comparison.Model.Request;
+﻿using GroupDocs.Total.MVC.Products.Comparison.Model.Request;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Web;
 
 namespace GroupDocs.Total.MVC.Products.Comparison.Util
 {

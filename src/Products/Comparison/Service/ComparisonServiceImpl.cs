@@ -413,6 +413,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                     return PPT;
                 case ".pptx":
                     return PPTX;
+                case ".pdf":
+                    return PDF;
+                case ".txt":
+                    return TXT;
                 default:
                     return ext;
             }
