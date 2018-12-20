@@ -17,16 +17,16 @@ namespace GroupDocs.Total.MVC
             string comparisonAssemblyName = "GroupDocs.Comparison.dll";             
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
-            viewerDomainGenerator.SetViewerLicense(viewerDomainGenerator.CurrentType);
+            viewerDomainGenerator.SetViewerLicense();
             // set GroupDocs.Signature license
             DomainGenerator signatureDomainGenerator = new DomainGenerator(signatureAssemblyName, "GroupDocs.Signature.License");
-            signatureDomainGenerator.SetSignatureLicense(signatureDomainGenerator.CurrentType);
+            signatureDomainGenerator.SetSignatureLicense();
             // set GroupDocs.Annotation license
             DomainGenerator annotationDomainGenerator = new DomainGenerator(annotationAssemblyName, "GroupDocs.Annotation.Common.License.License");
-            annotationDomainGenerator.SetAnnotationLicense(annotationDomainGenerator.CurrentType);
+            annotationDomainGenerator.SetAnnotationLicense();
             // set GroupDocs.Comparison license
             DomainGenerator comparisonDomainGenerator = new DomainGenerator(comparisonAssemblyName, "GroupDocs.Comparison.Common.License.License");
-            comparisonDomainGenerator.SetComparisonLicense(comparisonDomainGenerator.CurrentType);
+            comparisonDomainGenerator.SetComparisonLicense();
             
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);

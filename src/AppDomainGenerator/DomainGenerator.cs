@@ -9,19 +9,19 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
     /// </summary>
     public class DomainGenerator
     {
-        private Products.Common.Config.GlobalConfiguration globalConfiguration;
-        public Type CurrentType;       
+        private readonly Products.Common.Config.GlobalConfiguration globalConfiguration;
+        private readonly Type CurrentType;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public DomainGenerator(string assemblyName, string className)
         {
-            globalConfiguration = new Products.Common.Config.GlobalConfiguration();           
+            globalConfiguration = new Products.Common.Config.GlobalConfiguration();
             // Get assembly path
             string assemblyPath = this.GetAssemblyPath(assemblyName);
             // Initiate GroupDocs license class
-            CurrentType = this.CreateDomain(assemblyName + "Domain", assemblyPath, className);            
+            CurrentType = this.CreateDomain(assemblyName + "Domain", assemblyPath, className);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         {
             // Create domain
             AppDomain dom = AppDomain.CreateDomain(domainName);
-            AssemblyName assemblyName = new AssemblyName() { CodeBase = assemblyPath };
+            AssemblyName assemblyName = new AssemblyName { CodeBase = assemblyPath };
             // Load assembly into the domain
             Assembly assembly = dom.Load(assemblyName);
             // Initiate class from the loaded assembly
@@ -64,10 +64,10 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// Set GroupDocs.Viewer license
         /// </summary>
         /// <param name="type">Type</param>
-        public void SetViewerLicense(Type type)
+        public void SetViewerLicense()
         {
             // Initiate License class
-            var obj = (GroupDocs.Viewer.License)Activator.CreateInstance(type);
+            var obj = (GroupDocs.Viewer.License)Activator.CreateInstance(CurrentType);
             // Set license
             SetLicense(obj);
         }
@@ -76,10 +76,10 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// Set GroupDocs.Signature license
         /// </summary>
         /// <param name="type">Type</param>
-        public void SetSignatureLicense(Type type)
+        public void SetSignatureLicense()
         {
             // Initiate license class
-            var obj = (GroupDocs.Signature.License)Activator.CreateInstance(type);
+            var obj = (GroupDocs.Signature.License)Activator.CreateInstance(CurrentType);
             // Set license
             SetLicense(obj);
         }
@@ -88,10 +88,10 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// Set GroupDocs.Annotation license
         /// </summary>
         /// <param name="type">Type</param>
-        public void SetAnnotationLicense(Type type)
+        public void SetAnnotationLicense()
         {
             // Initiate license class
-            var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(type);
+            var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(CurrentType);
             // Set license
             SetLicense(obj);
         }
@@ -100,10 +100,10 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// Set GroupDocs.Comparison license
         /// </summary>
         /// <param name="type">Type</param>
-        public void SetComparisonLicense(Type type)
+        public void SetComparisonLicense()
         {
             // Initiate license class
-            var obj = (GroupDocs.Comparison.Common.License.License)Activator.CreateInstance(type);
+            var obj = (GroupDocs.Comparison.Common.License.License)Activator.CreateInstance(CurrentType);
             // Set license
             SetLicense(obj);
         }

@@ -167,8 +167,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     pagesDescription.Add(description);
                 }
                 LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-                loadDocumentEntity.guid = documentGuid;
-                loadDocumentEntity.pages = pagesDescription;
+                loadDocumentEntity.SetGuid(documentGuid);
+                foreach (PageDescriptionEntity pageDescription in pagesDescription)
+                {
+                    loadDocumentEntity.SetPages(pageDescription);
+                }
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
