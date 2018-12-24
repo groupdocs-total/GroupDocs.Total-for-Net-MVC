@@ -31,12 +31,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
         /// <returns>List[SignatureFileDescriptionEntity]</returns>
         public List<SignatureFileDescriptionEntity> LoadImageSignatures()
         {
-            string[] files = Directory.GetFiles(CurrentPath, "*.*", SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(CurrentPath, "*.*", SearchOption.TopDirectoryOnly);
             List<string> allFiles = new List<string>(files);
             List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
             try
             {
-                allFiles.Sort(new FileTypeComparator());
+                allFiles.Sort(new FileDateComparator());
                 allFiles.Sort(new FileNameComparator());
 
                 foreach (string file in allFiles)
@@ -85,7 +85,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
             try
             {                
                 allFiles.Sort(new FileNameComparator());
-                allFiles.Sort(new FileTypeComparator());
+                allFiles.Sort(new FileDateComparator());
 
                 foreach (string file in allFiles)
                 {
@@ -130,7 +130,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
         {
             string imagesPath = CurrentPath + previewFolder;
             string xmlPath = CurrentPath + xmlFolder;
-            string[] imageFiles = Directory.GetFiles(imagesPath);
+            string[] imageFiles = Directory.GetFiles(imagesPath, "*.png", SearchOption.TopDirectoryOnly);
             // get all files from the directory
             List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
             try
@@ -150,7 +150,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                         }
                     }
                     // sort list of files and folders
-                    filesList.Sort(new FileTypeComparator());
+                    filesList.Sort(new FileDateComparator());
                     filesList.Sort(new FileNameComparator());
                     foreach (string file in filesList)
                     {

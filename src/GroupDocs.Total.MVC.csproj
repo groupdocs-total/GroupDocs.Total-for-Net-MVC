@@ -262,6 +262,7 @@
     <Compile Include="Products\Common\Entity\Web\LoadedPageEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\UploadedDocumentEntity.cs" />
     <Compile Include="Products\Common\Resources\Resources.cs" />
+    <Compile Include="Products\Common\Util\Comparator\FileDateComparator.cs" />
     <Compile Include="Products\Common\Util\Parser\YamlParser.cs" />
     <Compile Include="Products\Comparison\Config\ComparisonConfiguration.cs" />
     <Compile Include="Products\Comparison\Controllers\ComparisonApiController.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="Products\Comparison\Util\TransformFiles.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
+    <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
     <Compile Include="Products\Signature\Entity\Directory\BarcodeDataDirectoryEntity.cs" />
     <Compile Include="Products\Signature\Entity\Directory\CertificateDataDirectoryEntity.cs" />
     <Compile Include="Products\Signature\Entity\Directory\DataDirectoryEntity.cs" />

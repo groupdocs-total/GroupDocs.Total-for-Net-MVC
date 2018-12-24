@@ -15,6 +15,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
 
         public CertificateDataDirectoryEntity CertificateDirectory { get; set; }
         public ImageDataDirectoryEntity ImageDirectory { get; set; }
+        public UploadedImageDataDirectoryEntity UploadedImageDirectory { get; set; }
         public StampDataDirectoryEntity StampDirectory { get; set; }
         public QrCodeDataDirectoryEntity QrCodeDirectory { get; set; }
         public BarcodeDataDirectoryEntity BarcodeDirectory { get; set; }
@@ -38,6 +39,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             BarcodeDirectory = new BarcodeDataDirectoryEntity(signatureConfiguration);
             CertificateDirectory = new CertificateDataDirectoryEntity(signatureConfiguration);
             ImageDirectory = new ImageDataDirectoryEntity(signatureConfiguration);
+            UploadedImageDirectory = new UploadedImageDataDirectoryEntity(signatureConfiguration);
             StampDirectory = new StampDataDirectoryEntity(signatureConfiguration);
             QrCodeDirectory = new QrCodeDataDirectoryEntity(signatureConfiguration);
             BarcodeDirectory = new BarcodeDataDirectoryEntity(signatureConfiguration);

@@ -86,11 +86,20 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     case "image":
                         rootDirectory = DirectoryUtils.DataDirectory.ImageDirectory.Path;
                         break;
+                    case "hand":
+                        rootDirectory = DirectoryUtils.DataDirectory.UploadedImageDirectory.Path;
+                        break;
                     case "stamp":
                         rootDirectory = DirectoryUtils.DataDirectory.StampDirectory.Path;
                         break;
                     case "text":
                         rootDirectory = DirectoryUtils.DataDirectory.TextDirectory.Path;
+                        break;
+                    case "qrCode":
+                        rootDirectory = DirectoryUtils.DataDirectory.QrCodeDirectory.Path;
+                        break;
+                    case "barCode":
+                        rootDirectory = DirectoryUtils.DataDirectory.BarcodeDirectory.Path;
                         break;
                     default:
                         rootDirectory = DirectoryUtils.FilesDirectory.GetPath();
@@ -113,14 +122,15 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         fileList = signatureLoader.LoadFiles();
                         break;
                     case "image":
+                    case "hand":
                         fileList = signatureLoader.LoadImageSignatures();
                         break;
                     case "stamp":
-                        fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER);
-                        break;
                     case "text":
+                    case "qrCode":
+                    case "barCode":
                         fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER);
-                        break;
+                        break;                   
                     default:
                         fileList = signatureLoader.LoadFiles();
                         break;
@@ -859,7 +869,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     {
                         int number = i + 1;
                         // set file name, for example 001
-                        fileName = String.Format("{0:000}", number);
+                        fileName = opticalCodeData.text;
                         filePath = Path.Combine(previewPath, fileName + ".png");
                         // check if file with such name already exists
                         if (System.IO.File.Exists(filePath))
