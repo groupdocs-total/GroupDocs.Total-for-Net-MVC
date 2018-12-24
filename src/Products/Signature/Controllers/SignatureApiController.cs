@@ -813,8 +813,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string signatureType = postedData.signatureType;
                 // initiate signature data wrapper with default values
                 SignatureDataEntity signaturesData = new SignatureDataEntity();
-                signaturesData.ImageHeight = 200;
-                signaturesData.ImageWidth = 200;
+                signaturesData.ImageHeight = 250;
+                signaturesData.ImageWidth = 250;
                 signaturesData.Left = 0;
                 signaturesData.Top = 0;
                 // initiate signer object
@@ -891,7 +891,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 SaveOptions saveOptions = new SaveOptions();
                 saveOptions.OutputType = OutputType.String;
                 saveOptions.OutputFileName = fileName + "signed";
-                saveOptions.OverwriteExistingFiles = true;
+                saveOptions.OverwriteExistingFiles = true;                
                 // set temporary signed documents path to QR-Code/BarCode image previews folder
                 SignatureHandler.SignatureConfig.OutputPath = previewPath;
                 // sign generated image with Optical signature
@@ -903,8 +903,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
                 // set data for response
                 opticalCodeData.imageGuid = filePath;
-                opticalCodeData.height = 200;
-                opticalCodeData.width = 200;
+                opticalCodeData.height = signaturesData.ImageHeight;              
+                opticalCodeData.width = signaturesData.ImageWidth;
                 // get signature preview as Base64 string
                 byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
                 string base64ImageRepresentation = Convert.ToBase64String(imageArray);

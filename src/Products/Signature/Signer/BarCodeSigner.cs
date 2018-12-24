@@ -39,14 +39,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
-            if (QrCodeData.borderWidth != 0)
-            {
-                signOptions.BorderVisiblity = true;
-                signOptions.BorderColor = getColor(QrCodeData.borderColor);
-                signOptions.BorderWeight = QrCodeData.borderWidth;
-                signOptions.BorderDashStyle = (DashStyle)QrCodeData.borderStyle;
-            }
+            signOptions.RotationAngle = signatureData.Angle;           
             return signOptions;
         }
 
@@ -68,14 +61,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             if (signatureData.Angle != 0)
             {
                 signOptions.RotationAngle = signatureData.Angle;
-            }
-            if (QrCodeData.borderWidth != 0)
-            {
-                signOptions.BorderVisiblity = true;
-                signOptions.BorderColor = getColor(QrCodeData.borderColor);
-                signOptions.BorderWeight = QrCodeData.borderWidth;
-                signOptions.BorderDashStyle = (DashStyle)QrCodeData.borderStyle;
-            }
+            }            
             return signOptions;
         }
 
@@ -95,14 +81,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
-            if (QrCodeData.borderWidth != 0)
-            {
-                signOptions.BorderVisiblity = true;
-                signOptions.BorderColor = getColor(QrCodeData.borderColor);
-                signOptions.BorderWeight = QrCodeData.borderWidth;
-                signOptions.BorderDashStyle = (DashStyle)QrCodeData.borderStyle;
-            }
+            signOptions.RotationAngle = signatureData.Angle;            
             return signOptions;
         }
 
@@ -122,14 +101,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
-            if (QrCodeData.borderWidth != 0)
-            {
-                signOptions.BorderVisiblity = true;
-                signOptions.BorderColor = getColor(QrCodeData.borderColor);
-                signOptions.BorderWeight = QrCodeData.borderWidth;
-                signOptions.BorderDashStyle = (DashStyle)QrCodeData.borderStyle;
-            }
+            signOptions.RotationAngle = signatureData.Angle;           
             return signOptions;
         }
 
@@ -149,14 +121,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
-            if (QrCodeData.borderWidth != 0)
-            {
-                signOptions.BorderVisiblity = true;
-                signOptions.BorderColor = getColor(QrCodeData.borderColor);
-                signOptions.BorderWeight = QrCodeData.borderWidth;
-                signOptions.BorderDashStyle = (DashStyle)QrCodeData.borderStyle;
-            }
+            signOptions.RotationAngle = signatureData.Angle;            
             return signOptions;
         }
     }
