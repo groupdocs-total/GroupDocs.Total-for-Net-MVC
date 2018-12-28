@@ -1,8 +1,10 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
+using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace GroupDocs.Total.MVC.Products.Signature.Loader
 {
@@ -80,10 +82,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
         public List<SignatureFileDescriptionEntity> LoadFiles()
         {
             List<string> allFiles = new List<string>(Directory.GetFiles(CurrentPath));
-            allFiles.AddRange(Directory.GetDirectories(CurrentPath));           
+            allFiles.AddRange(Directory.GetDirectories(CurrentPath));
             List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
             try
-            {                
+            {
                 allFiles.Sort(new FileNameComparator());
                 allFiles.Sort(new FileDateComparator());
 
@@ -126,7 +128,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
         /// <param name="previewFolder">string</param>
         /// <param name="xmlFolder">string</param>
         /// <returns>List[SignatureFileDescriptionEntity]</returns>
-        public List<SignatureFileDescriptionEntity> LoadStampSignatures(string previewFolder, string xmlFolder)
+        public List<SignatureFileDescriptionEntity> LoadStampSignatures(string previewFolder, string xmlFolder, string signatureType)
         {
             string imagesPath = CurrentPath + previewFolder;
             string xmlPath = CurrentPath + xmlFolder;
@@ -136,9 +138,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
             try
             {
                 if (imageFiles != null && imageFiles.Length > 0)
-                {                    
+                {
                     string[] xmlFiles = Directory.GetFiles(xmlPath);
-                    List<String> filesList = new List<string>();                  
+                    List<String> filesList = new List<string>();
                     foreach (string imageFile in imageFiles)
                     {
                         foreach (string xmlFile in xmlFiles)
@@ -174,6 +176,18 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                             byte[] imageArray = File.ReadAllBytes(file);
                             string base64ImageRepresentation = Convert.ToBase64String(imageArray);
                             fileDescription.image = base64ImageRepresentation;
+                            if ("qrCode".Equals(signatureType) || "barCode".Equals(signatureType))
+                            {
+                                // get stream of the xml file
+                                StreamReader xmlStream = new StreamReader(Path.Combine(xmlPath, Path.GetFileNameWithoutExtension(file) + ".xml"));
+                                // initiate serializer
+                                XmlSerializer serializer = new XmlSerializer(typeof(OpticalXmlEntity));
+                                // deserialize XML into the object
+                                OpticalXmlEntity xmlData = (OpticalXmlEntity)serializer.Deserialize(xmlStream);
+                                fileDescription.text = xmlData.text;
+                                xmlStream.Close();
+                                xmlStream.Dispose();                                
+                            }
                             // add object to array list
                             fileList.Add(fileDescription);
                         }

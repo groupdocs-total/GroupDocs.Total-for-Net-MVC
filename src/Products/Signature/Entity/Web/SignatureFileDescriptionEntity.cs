@@ -8,5 +8,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Web
     public class SignatureFileDescriptionEntity : FileDescriptionEntity
     {
         public string image { get; set; }
+        public string text { get; set; }
     }
 }

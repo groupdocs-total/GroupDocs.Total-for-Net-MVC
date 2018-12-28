@@ -129,8 +129,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     case "text":
                     case "qrCode":
                     case "barCode":
-                        fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER);
-                        break;                   
+                        fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER, signatureType);
+                        break;
                     default:
                         fileList = signatureLoader.LoadFiles();
                         break;
@@ -901,7 +901,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 SaveOptions saveOptions = new SaveOptions();
                 saveOptions.OutputType = OutputType.String;
                 saveOptions.OutputFileName = fileName + "signed";
-                saveOptions.OverwriteExistingFiles = true;                
+                saveOptions.OverwriteExistingFiles = true;
                 // set temporary signed documents path to QR-Code/BarCode image previews folder
                 SignatureHandler.SignatureConfig.OutputPath = previewPath;
                 // sign generated image with Optical signature
@@ -913,7 +913,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
                 // set data for response
                 opticalCodeData.imageGuid = filePath;
-                opticalCodeData.height = signaturesData.ImageHeight;              
+                opticalCodeData.height = signaturesData.ImageHeight;
                 opticalCodeData.width = signaturesData.ImageWidth;
                 // get signature preview as Base64 string
                 byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
@@ -1052,6 +1052,68 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
+        }
+
+        /// <summary>
+        /// Delete signature
+        /// </summary>
+        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <returns>Text signature preview image</returns>
+        [HttpPost]
+        [Route("signature/deleteSignatureFile")]
+        public HttpResponseMessage DeleteSignatureFile(DeleteSignatureFileRequest deleteSignatureFileRequest)
+        {
+            try
+            {
+                String signatureType = deleteSignatureFileRequest.getSignatureType();
+                if ("image".Equals(signatureType) ||
+                        "digital".Equals(signatureType))
+                {
+                    if (File.Exists(deleteSignatureFileRequest.getGuid()))
+                    {
+                        File.Delete(deleteSignatureFileRequest.getGuid());
+                    }
+                }
+                else
+                {
+                    if (File.Exists(deleteSignatureFileRequest.getGuid()))
+                    {
+                        File.Delete(deleteSignatureFileRequest.getGuid());
+                    }
+                    String xmlFilePath = GetXmlFilePath(
+                        signatureType,
+                        Path.GetFileNameWithoutExtension(deleteSignatureFileRequest.getGuid()) + ".xml"
+                    );
+                    File.Delete(xmlFilePath);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+            }
+        }
+
+        private string GetXmlFilePath(string signatureType, string fileName)
+        {
+            string path = "";
+            switch (signatureType)
+            {
+                case "stamp":
+                    path = Path.Combine(DirectoryUtils.DataDirectory.StampDirectory.XmlPath, fileName);
+                    break;
+                case "text":
+                    path = Path.Combine(DirectoryUtils.DataDirectory.TextDirectory.XmlPath, fileName);
+                    break;
+                case "qrCode":
+                    path = Path.Combine(DirectoryUtils.DataDirectory.QrCodeDirectory.XmlPath, fileName);
+                    break;
+                case "barCode":
+                    path = Path.Combine(DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath, fileName);
+                    break;
+            }
+            return path;
         }
 
         /// <summary>
