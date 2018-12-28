@@ -78,9 +78,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         StampLine line = new StampLine();
                         line.BackgroundColor = getColor(stampData[n].backgroundColor);
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = 0.5;
+                        line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
+                        line.InnerBorder.Weight = stampData[n].strokeWidth;
                         line.Height = 1;
                         pdfSignOptions.OuterLines.Add(line);
                     }
@@ -92,9 +92,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine line = new StampLine();
                     line.BackgroundColor = getColor(stampData[n].backgroundColor);
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = 0.5;
+                    line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
+                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
@@ -162,9 +162,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         StampLine line = new StampLine();
                         line.BackgroundColor = getColor(stampData[n].backgroundColor);
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = 0.5;
+                        line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
+                        line.InnerBorder.Weight = stampData[n].strokeWidth;
                         line.Height = 1;
                         imageSignOptions.OuterLines.Add(line);
                     }
@@ -176,9 +176,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine line = new StampLine();
                     line.BackgroundColor = getColor(stampData[n].backgroundColor);
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = 0.5;
+                    line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
+                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
@@ -246,9 +246,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         StampLine line = new StampLine();
                         line.BackgroundColor = getColor(stampData[n].backgroundColor);
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = 0.5;
+                        line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
+                        line.InnerBorder.Weight = stampData[n].strokeWidth;
                         line.Height = 1;
                         wordsSignOptions.OuterLines.Add(line);
                     }
@@ -260,9 +260,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine line = new StampLine();
                     line.BackgroundColor = getColor(stampData[n].backgroundColor);
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = 0.5;
+                    line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
+                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
@@ -330,9 +330,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         StampLine line = new StampLine();
                         line.BackgroundColor = getColor(stampData[n].backgroundColor);
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = 0.5;
+                        line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
+                        line.InnerBorder.Weight = stampData[n].strokeWidth;
                         line.Height = 1;
                         cellsSignOptions.OuterLines.Add(line);
                     }
@@ -344,9 +344,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine line = new StampLine();
                     line.BackgroundColor = getColor(stampData[n].backgroundColor);
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = 0.5;
+                    line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
+                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
@@ -414,9 +414,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         StampLine line = new StampLine();
                         line.BackgroundColor = getColor(stampData[n].backgroundColor);
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = 0.5;
+                        line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
+                        line.InnerBorder.Weight = stampData[n].strokeWidth;
                         line.Height = 1;
                         slidesSignOptions.OuterLines.Add(line);
                     }
@@ -428,9 +428,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine line = new StampLine();
                     line.BackgroundColor = getColor(stampData[n].backgroundColor);
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = 0.5;
+                    line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
+                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;

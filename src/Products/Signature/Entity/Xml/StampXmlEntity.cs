@@ -31,5 +31,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Xml
 
         [XmlElement("textRepeat")]
         public int textRepeat { get; set; }
+
+        [XmlElement("strokeWidth")]
+        public int strokeWidth { get; set; }
     }
 }
