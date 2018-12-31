@@ -69,6 +69,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine squareLine = new StampLine();
                     squareLine.Text = text;
                     squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
+                    squareLine.Font.Bold = stampData[n].bold;
+                    squareLine.Font.Italic = stampData[n].italic;
+                    squareLine.Font.Underline = stampData[n].underline;
                     squareLine.TextColor = getColor(stampData[n].textColor);
                     pdfSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
@@ -98,6 +101,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
+                    line.Font.Bold = stampData[n].bold;
+                    line.Font.Italic = stampData[n].italic;
+                    line.Font.Underline = stampData[n].underline;
                     line.TextColor = getColor(stampData[n].textColor);
                     line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
                     line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;                    
@@ -153,6 +159,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine squareLine = new StampLine();
                     squareLine.Text = text;
                     squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
+                    squareLine.Font.Bold = stampData[n].bold;
+                    squareLine.Font.Italic = stampData[n].italic;
+                    squareLine.Font.Underline = stampData[n].underline;
                     squareLine.TextColor = getColor(stampData[n].textColor);
                     imageSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
@@ -180,6 +189,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
                     line.InnerBorder.Weight = 0.5;
                     line.Text = text;
+                    line.Font.Bold = stampData[n].bold;
+                    line.Font.Italic = stampData[n].italic;
+                    line.Font.Underline = stampData[n].underline;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
@@ -238,6 +250,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     squareLine.Text = text;
                     squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
                     squareLine.TextColor = getColor(stampData[n].textColor);
+                    squareLine.Font.Bold = stampData[n].bold;
+                    squareLine.Font.Italic = stampData[n].italic;
+                    squareLine.Font.Underline = stampData[n].underline;
                     wordsSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
                     if (stampData.Length == 1)
@@ -263,6 +278,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
                     line.InnerBorder.Weight = 0.5;
+                    line.Font.Bold = stampData[n].bold;
+                    line.Font.Italic = stampData[n].italic;
+                    line.Font.Underline = stampData[n].underline;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
@@ -322,6 +340,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     squareLine.Text = text;
                     squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
                     squareLine.TextColor = getColor(stampData[n].textColor);
+                    squareLine.Font.Bold = stampData[n].bold;
+                    squareLine.Font.Italic = stampData[n].italic;
+                    squareLine.Font.Underline = stampData[n].underline;
                     cellsSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
                     if (stampData.Length == 1)
@@ -349,6 +370,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.InnerBorder.Weight = 0.5;
                     line.Text = text;
                     line.Height = height;
+                    line.Font.Bold = stampData[n].bold;
+                    line.Font.Italic = stampData[n].italic;
+                    line.Font.Underline = stampData[n].underline;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
                     line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
@@ -405,6 +429,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     StampLine squareLine = new StampLine();
                     squareLine.Text = text;
                     squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
+                    squareLine.Font.Bold = stampData[n].bold;
+                    squareLine.Font.Italic = stampData[n].italic;
+                    squareLine.Font.Underline = stampData[n].underline;
                     squareLine.TextColor = getColor(stampData[n].textColor);
                     slidesSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
@@ -432,6 +459,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
                     line.InnerBorder.Weight = 0.5;
                     line.Text = text;
+                    line.Font.Bold = stampData[n].bold;
+                    line.Font.Italic = stampData[n].italic;
+                    line.Font.Underline = stampData[n].underline;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);

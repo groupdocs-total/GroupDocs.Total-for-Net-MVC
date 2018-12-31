@@ -34,5 +34,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Xml
 
         [XmlElement("strokeWidth")]
         public int strokeWidth { get; set; }
+
+        [XmlElement("bold")]
+        public bool bold { get; set; }
+
+        [XmlElement("italic")]
+        public bool italic { get; set; }
+
+        [XmlElement("underline")]
+        public bool underline { get; set; }
     }
 }
