@@ -31,8 +31,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             PdfStampSignOptions pdfSignOptions = new PdfStampSignOptions();
-            pdfSignOptions.Height = signatureData.ImageHeight;
-            pdfSignOptions.Width = signatureData.ImageWidth;
+            pdfSignOptions.Height = signatureData.ImageHeight - 20;
+            pdfSignOptions.Width = signatureData.ImageWidth - 20;
             pdfSignOptions.Top = signatureData.Top;
             pdfSignOptions.Left = signatureData.Left;
             pdfSignOptions.DocumentPageNumber = signatureData.PageNumber;
@@ -80,7 +80,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                         line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = stampData[n].strokeWidth;
+                        line.InnerBorder.Weight = 0.5;
                         line.Height = 1;
                         pdfSignOptions.OuterLines.Add(line);
                     }
@@ -94,13 +94,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                     line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
+                    line.InnerBorder.Weight = 0.5;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = height / 2;
-                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
+                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
+                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;                    
                     pdfSignOptions.OuterLines.Add(line);
                 }
             }
@@ -115,8 +115,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             ImagesStampSignOptions imageSignOptions = new ImagesStampSignOptions();
-            imageSignOptions.Height = signatureData.ImageHeight;
-            imageSignOptions.Width = signatureData.ImageWidth;
+            imageSignOptions.Height = signatureData.ImageHeight - 20;
+            imageSignOptions.Width = signatureData.ImageWidth - 20;
             imageSignOptions.Top = signatureData.Top;
             imageSignOptions.Left = signatureData.Left;
             imageSignOptions.DocumentPageNumber = signatureData.PageNumber;
@@ -164,7 +164,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                         line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = stampData[n].strokeWidth;
+                        line.InnerBorder.Weight = 0.5;
                         line.Height = 1;
                         imageSignOptions.OuterLines.Add(line);
                     }
@@ -178,12 +178,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                     line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
+                    line.InnerBorder.Weight = 0.5;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = height / 2;
+                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
                     line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
                     imageSignOptions.OuterLines.Add(line);
                 }
@@ -199,8 +199,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             WordsStampSignOptions wordsSignOptions = new WordsStampSignOptions();
-            wordsSignOptions.Height = signatureData.ImageHeight;
-            wordsSignOptions.Width = signatureData.ImageWidth;
+            wordsSignOptions.Height = signatureData.ImageHeight - 20;
+            wordsSignOptions.Width = signatureData.ImageWidth - 20;
             wordsSignOptions.Top = signatureData.Top;
             wordsSignOptions.Left = signatureData.Left;
             wordsSignOptions.DocumentPageNumber = signatureData.PageNumber;
@@ -248,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                         line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = stampData[n].strokeWidth;
+                        line.InnerBorder.Weight = 0.5;
                         line.Height = 1;
                         wordsSignOptions.OuterLines.Add(line);
                     }
@@ -262,12 +262,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                     line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
+                    line.InnerBorder.Weight = 0.5;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = height / 2;
+                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
                     line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
                     wordsSignOptions.OuterLines.Add(line);
                 }
@@ -283,8 +283,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             CellsStampSignOptions cellsSignOptions = new CellsStampSignOptions();
-            cellsSignOptions.Height = signatureData.ImageHeight;
-            cellsSignOptions.Width = signatureData.ImageWidth;
+            cellsSignOptions.Height = signatureData.ImageHeight - 20;
+            cellsSignOptions.Width = signatureData.ImageWidth - 20;
             cellsSignOptions.Top = signatureData.Top;
             cellsSignOptions.Left = signatureData.Left;
             cellsSignOptions.DocumentPageNumber = signatureData.PageNumber;
@@ -332,7 +332,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                         line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = stampData[n].strokeWidth;
+                        line.InnerBorder.Weight = 0.5;
                         line.Height = 1;
                         cellsSignOptions.OuterLines.Add(line);
                     }
@@ -346,12 +346,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                     line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
+                    line.InnerBorder.Weight = 0.5;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = height / 2;
+                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
                     line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
                     cellsSignOptions.OuterLines.Add(line);
                 }
@@ -367,8 +367,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             SlidesStampSignOptions slidesSignOptions = new SlidesStampSignOptions();
-            slidesSignOptions.Height = signatureData.ImageHeight;
-            slidesSignOptions.Width = signatureData.ImageWidth;
+            slidesSignOptions.Height = signatureData.ImageHeight - 20;
+            slidesSignOptions.Width = signatureData.ImageWidth - 20;
             slidesSignOptions.Top = signatureData.Top;
             slidesSignOptions.Left = signatureData.Left;
             slidesSignOptions.DocumentPageNumber = signatureData.PageNumber;
@@ -416,7 +416,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                         line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                         line.OuterBorder.Weight = stampData[n].strokeWidth;
                         line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = stampData[n].strokeWidth;
+                        line.InnerBorder.Weight = 0.5;
                         line.Height = 1;
                         slidesSignOptions.OuterLines.Add(line);
                     }
@@ -430,12 +430,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     line.OuterBorder.Color = getColor(stampData[n].strokeColor);
                     line.OuterBorder.Weight = stampData[n].strokeWidth;
                     line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = stampData[n + 1].strokeWidth;
+                    line.InnerBorder.Weight = 0.5;
                     line.Text = text;
                     line.Height = height;
                     line.Font.FontSize = stampData[n].fontSize / reductionSize;
                     line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = height / 2;
+                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
                     line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
                     slidesSignOptions.OuterLines.Add(line);
                 }
