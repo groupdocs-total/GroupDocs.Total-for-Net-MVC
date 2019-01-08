@@ -61,7 +61,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         /// <returns>List of files and directories</returns>
         [HttpPost]
         [Route("annotation/loadFileTree")]
-        public HttpResponseMessage loadFileTree(AnnotationPostedDataEntity fileTreeRequest)
+        public HttpResponseMessage LoadFileTree(AnnotationPostedDataEntity fileTreeRequest)
         {
             string relDirPath = fileTreeRequest.path;
             // get file list from storage path
@@ -76,8 +76,10 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // parse files/folders list
                 foreach (FileDescription fd in fileListContainer.FileTree)
                 {
-                    FileDescriptionEntity fileDescription = new FileDescriptionEntity();
-                    fileDescription.guid = fd.Guid;
+                    FileDescriptionEntity fileDescription = new FileDescriptionEntity
+                    {
+                        guid = fd.Guid
+                    };
                     // check if current file/folder is temp directory or is hidden
                     FileInfo fileInfo = new FileInfo(fileDescription.guid);
                     if (tempDirectoryName.ToLower().Equals(fileDescription.guid) || fileInfo.Attributes.HasFlag(FileAttributes.Hidden))
@@ -115,7 +117,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         /// <returns>Document description</returns>
         [HttpPost]
         [Route("annotation/loadDocumentDescription")]
-        public HttpResponseMessage loadDocumentDescription(AnnotationPostedDataEntity loadDocumentRequest)
+        public HttpResponseMessage LoadDocumentDescription(AnnotationPostedDataEntity loadDocumentRequest)
         {
             try
             {
@@ -130,7 +132,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 string documentPath = "";
                 string parentDirName = parentDir.Name;
-                if (parentDir.FullName == GlobalConfiguration.Annotation.FilesDirectory.Replace("/", "\\"))
+                if (parentDir.FullName == GlobalConfiguration.Annotation.GetFilesDirectory().Replace("/", "\\"))
                 {
                     documentPath = fileName;
                 }
@@ -145,7 +147,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     imageOptions.Password = password;
                 }
-                if (GlobalConfiguration.Annotation.PreloadPageCount == 0)
+                if (GlobalConfiguration.Annotation.GetPreloadPageCount() == 0)
                 {
                     Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     pageImages = AnnotationImageHandler.GetPages(document, imageOptions);
@@ -169,19 +171,23 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // initiate pages description list
                 // initiate custom Document description object
                 AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
+
                 description.guid = documentGuid;
-                description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);                
+                description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
+
                 // get info about each document page
                 for (int i = 0; i < documentDescription.Pages.Count; i++)
                 {
-                    PageDataDescriptionEntity page = new PageDataDescriptionEntity();
-                    page.height = documentDescription.Pages[i].Height;
-                    page.width = documentDescription.Pages[i].Width;
-                    page.number = documentDescription.Pages[i].Number;
+                    PageDataDescriptionEntity page = new PageDataDescriptionEntity
+                    {
+                        height = documentDescription.Pages[i].Height,
+                        width = documentDescription.Pages[i].Width,
+                        number = documentDescription.Pages[i].Number
+                    };
                     // set annotations data if document page contains annotations
                     if (annotations != null && annotations.Length > 0)
-                    {                       
-                        page.annotations = AnnotationMapper.instance.mapForPage(annotations, page.number);
+                    {
+                        page.SetAnnotations(AnnotationMapper.instance.mapForPage(annotations, page.number));
                     }
                     if (pageImages != null)
                     {
@@ -194,7 +200,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                             bytes = memoryStream.ToArray();
                         }
                         string encodedImage = Convert.ToBase64String(bytes);
-                        page.data = encodedImage;
+                        page.SetData(encodedImage);
                     }
                     description.pages.Add(page);
                 }
@@ -215,7 +221,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         /// <returns>Document page image</returns>
         [HttpPost]
         [Route("annotation/loadDocumentPage")]
-        public HttpResponseMessage loadDocumentPage(AnnotationPostedDataEntity loadDocumentPageRequest)
+        public HttpResponseMessage LoadDocumentPage(AnnotationPostedDataEntity loadDocumentPageRequest)
         {
             try
             {
@@ -253,7 +259,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
@@ -296,7 +302,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = GlobalConfiguration.Annotation.FilesDirectory;
+                string documentStoragePath = GlobalConfiguration.Annotation.GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))
@@ -342,8 +348,10 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                         client.DownloadFile(url, fileSavePath);
                     }
                 }
-                UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-                uploadedDocument.guid = fileSavePath;
+                UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity
+                {
+                    guid = fileSavePath
+                };
                 return Request.CreateResponse(HttpStatusCode.OK, uploadedDocument);
             }
             catch (System.Exception ex)
@@ -352,7 +360,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
         }
-       
+
         /// <summary>
         /// Annotate document
         /// </summary>      
@@ -379,7 +387,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 string documentPath = "";
                 string parentDirName = parentDir.Name;
-                if (parentDir.FullName == GlobalConfiguration.Annotation.FilesDirectory.Replace("/", "\\"))
+                if (parentDir.FullName == GlobalConfiguration.Annotation.GetFilesDirectory().Replace("/", "\\"))
                 {
                     documentPath = fileName;
                 }
@@ -421,8 +429,17 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 // Add annotation to the document
                 DocumentType type = DocumentTypesConverter.GetDocumentType(documentType);
-                              
-                RemoveAnnotations(documentGuid);
+                string path = "";
+                if (annotateDocumentRequest.print)
+                {
+                    path = documentGuid.Replace(System.IO.Path.GetFileNameWithoutExtension(documentGuid), System.IO.Path.GetFileNameWithoutExtension(documentGuid) + "Temp");
+                    using (FileStream fileStream = new FileStream(path, FileMode.Create)) { }
+                }
+                else
+                {
+                    path = documentGuid;
+                    RemoveAnnotations(path);
+                }               
                
                 // check if annotations array contains at least one annotation to add
                 if (annotations.Count != 0)
@@ -430,9 +447,9 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     Stream cleanDoc = new FileStream(documentGuid, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                     Stream result = AnnotationImageHandler.ExportAnnotationsToDocument(cleanDoc, annotations, type);
                     cleanDoc.Dispose();
-                    cleanDoc.Close();
+                    cleanDoc.Close();    
                     // Save result stream to file.                       
-                    using (FileStream fileStream = new FileStream(documentGuid, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                     {
                         byte[] buffer = new byte[result.Length];
                         result.Seek(0, SeekOrigin.Begin);
@@ -449,6 +466,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     guid = documentGuid,
                 };
+                if (annotateDocumentRequest.print)
+                {
+                    annotatedDocument.pages = GetAnnotatedPagesForPrint(path);
+                    File.Delete(path);
+                }
             }
             catch (System.Exception ex)
             {
@@ -472,7 +494,44 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 DocumentType docType = DocumentTypesConverter.GetDocumentType(documentType);
                 return new BaseImporter(documentStream, AnnotationImageHandler, password).ImportAnnotations(docType);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private List<PageDataDescriptionEntity> GetAnnotatedPagesForPrint(string path)
+        {
+            AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
+            try
+            {
+
+                Stream document = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                List<PageImage> pageImages = AnnotationImageHandler.GetPages(document, new ImageOptions());
+                document.Dispose();
+                document.Close();
+                for (int i = 0; i < pageImages.Count; i++)
+                {
+                    PageDataDescriptionEntity page = new PageDataDescriptionEntity();
+                    if (pageImages != null)
+                    {
+                        byte[] bytes;
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            Stream imageStream = pageImages[i].Stream;
+                            imageStream.Position = 0;
+                            imageStream.CopyTo(memoryStream);
+                            bytes = memoryStream.ToArray();
+                        }
+                        string encodedImage = Convert.ToBase64String(bytes);
+                        page.SetData(encodedImage);
+                    }
+                    description.pages.Add(page);
+                }
+
+                return description.pages;
+            }
+            catch (FileNotFoundException ex)
             {
                 throw ex;
             }
@@ -498,7 +557,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     resultStream.Close();
                 }
                 File.Delete(path);
-                File.Move(tempFilePath, path);                
+                File.Move(tempFilePath, path);
             }
             catch (System.Exception ex)
             {
