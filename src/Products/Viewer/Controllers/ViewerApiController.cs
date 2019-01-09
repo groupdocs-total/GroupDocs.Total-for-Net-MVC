@@ -164,20 +164,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             }
             catch (PasswordProtectedFileException ex)
             {
-                if (String.IsNullOrEmpty(password))
-                {
-                    Exception error = new Exception(PASSWORD_REQUIRED);
-                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
-                }
-                else
-                {
-                    Exception error = new Exception(INCORRECT_PASSWORD);
-                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
-                }
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
             catch (System.Exception ex)
             {
-
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
