@@ -35,6 +35,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         private List<string> SupportedDiagrammFormats = new List<string>() { ".vsd", ".vdx", ".vss", ".vsx", ".vst", ".vtx", ".vsdx", ".vdw", ".vstx", ".vssx" };
         private static AnnotationImageHandler AnnotationImageHandler;
         private DirectoryUtils DirectoryUtils;
+        public static readonly string PASSWORD_REQUIRED = "Password Required";
+        public static readonly string INCORRECT_PASSWORD = "Incorrect password";
 
         /// <summary>
         /// Constructor
@@ -123,11 +125,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         [Route("annotation/loadDocumentDescription")]
         public HttpResponseMessage LoadDocumentDescription(AnnotationPostedDataEntity loadDocumentRequest)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = loadDocumentRequest.guid;
-                string password = loadDocumentRequest.password;
+                password = loadDocumentRequest.password;
                 DocumentInfoContainer documentDescription;
                 // get document info container              
                 string fileName = System.IO.Path.GetFileName(documentGuid);
@@ -210,11 +213,27 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 }
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, description);
-            }
+            }           
             catch (System.Exception ex)
             {
-                // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                if (ex.Message.Contains("password"))
+                {
+                    if (String.IsNullOrEmpty(password))
+                    {
+                        Exception error = new Exception(PASSWORD_REQUIRED);
+                        return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
+                    }
+                    else
+                    {
+                        Exception error = new Exception(INCORRECT_PASSWORD);
+                        return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
+                    }
+                }
+                else
+                {
+                    // set exception message
+                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                }
             }
         }
 
@@ -227,12 +246,13 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         [Route("annotation/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(AnnotationPostedDataEntity loadDocumentPageRequest)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = loadDocumentPageRequest.guid;
                 int pageNumber = loadDocumentPageRequest.page;
-                string password = loadDocumentPageRequest.password;
+                password = loadDocumentPageRequest.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
                 ImageOptions imageOptions = new ImageOptions()
                 {
@@ -265,7 +285,24 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             }
             catch (System.Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                if (ex.Message.Contains("password"))
+                {
+                    if (String.IsNullOrEmpty(password))
+                    {
+                        Exception error = new Exception(PASSWORD_REQUIRED);
+                        return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
+                    }
+                    else
+                    {
+                        Exception error = new Exception(INCORRECT_PASSWORD);
+                        return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(error, password));
+                    }
+                }
+                else
+                {
+                    // set exception message
+                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                }
             }
         }
 

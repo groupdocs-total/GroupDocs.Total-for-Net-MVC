@@ -162,7 +162,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (InvalidPasswordException ex)
+            catch (PasswordProtectedFileException ex)
             {
                 if (String.IsNullOrEmpty(password))
                 {
