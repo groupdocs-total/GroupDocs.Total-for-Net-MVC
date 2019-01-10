@@ -8,6 +8,6 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
     {
         public string pageHtml{ get; set; }
         public string angle{ get; set; }
-        public string pageImage{ get; set; }
+        public string pageImage{ get; set; }        
     }
 }

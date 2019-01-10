@@ -65,10 +65,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             }
             signOptions.Font.FontSize = textData.fontSize / reductionSize;
             // specify extended appearance options
-            PdfTextAnnotationAppearance appearance = new PdfTextAnnotationAppearance();
-            appearance.BorderColor = getColor(textData.borderColor);
-            appearance.BorderStyle = (PdfTextAnnotationBorderStyle)textData.borderStyle;
-            appearance.BorderWidth = textData.borderWidth;
+            PdfTextAnnotationAppearance appearance = new PdfTextAnnotationAppearance();          
             signOptions.Appearance = appearance;
             return signOptions;
         }
@@ -114,10 +111,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 reductionSize = textData.height / signatureData.ImageHeight;
             }
             signOptions.Font.FontSize = textData.fontSize / reductionSize;
-            signOptions.BorderColor = getColor(textData.borderColor);
-            signOptions.BorderDashStyle = (ExtendedDashStyle)textData.borderStyle;
-            signOptions.BorderWeight = textData.borderWidth;
-
             return signOptions;
         }
 
@@ -161,10 +154,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             {
                 reductionSize = textData.height / signatureData.ImageHeight;
             }
-            signOptions.Font.FontSize = textData.fontSize / reductionSize;
-            signOptions.BorderColor = getColor(textData.borderColor);
-            signOptions.BorderDashStyle = (ExtendedDashStyle)textData.borderStyle;
-            signOptions.BorderWeight = textData.borderWidth;
+            signOptions.Font.FontSize = textData.fontSize / reductionSize;            
             return signOptions;
         }
 
@@ -208,10 +198,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             {
                 reductionSize = textData.height / signatureData.ImageHeight;
             }
-            signOptions.Font.FontSize = textData.fontSize / reductionSize;
-            signOptions.BorderColor = getColor(textData.borderColor);
-            signOptions.BorderDashStyle = (DashStyle)textData.borderStyle;
-            signOptions.BorderWeight = textData.borderWidth;
+            signOptions.Font.FontSize = textData.fontSize / reductionSize;            
             signOptions.BorderVisiblity = true;
             return signOptions;
         }
@@ -256,9 +243,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             {
                 reductionSize = textData.height / signatureData.ImageHeight;
             }
-            signOptions.Font.FontSize = textData.fontSize / reductionSize;
-            signOptions.BorderColor = getColor(textData.borderColor);
-            signOptions.BorderWeight = textData.borderWidth;
+            signOptions.Font.FontSize = textData.fontSize / reductionSize;           
             return signOptions;
         }
     }

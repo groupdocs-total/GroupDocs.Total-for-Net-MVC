@@ -285,6 +285,7 @@
     <Compile Include="Products\Signature\Entity\Web\DeleteSignatureFileRequest.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignatureDataEntity.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignatureFileDescriptionEntity.cs" />
+    <Compile Include="Products\Signature\Entity\Web\SignatureLoadedPageEntity.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignaturePostedDataEntity.cs" />
     <Compile Include="Products\Signature\Entity\Web\SignedDocumentEntity.cs" />
     <Compile Include="Products\Signature\Entity\Xml\OpticalXmlEntity.cs" />

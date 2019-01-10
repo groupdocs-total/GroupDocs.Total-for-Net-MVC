@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -84,10 +85,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         rootDirectory = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
                         break;
                     case "image":
-                        rootDirectory = DirectoryUtils.DataDirectory.ImageDirectory.Path;
+                        rootDirectory = DirectoryUtils.DataDirectory.UploadedImageDirectory.Path;
                         break;
                     case "hand":
-                        rootDirectory = DirectoryUtils.DataDirectory.UploadedImageDirectory.Path;
+                        rootDirectory = DirectoryUtils.DataDirectory.ImageDirectory.Path;
                         break;
                     case "stamp":
                         rootDirectory = DirectoryUtils.DataDirectory.StampDirectory.Path;
@@ -283,7 +284,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         fileSavePath = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
                         break;
                     case "image":
-                        fileSavePath = DirectoryUtils.DataDirectory.ImageDirectory.Path;
+                        fileSavePath = DirectoryUtils.DataDirectory.UploadedImageDirectory.Path;
                         break;
                     default:
                         fileSavePath = DirectoryUtils.FilesDirectory.GetPath();
@@ -368,7 +369,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
-                LoadedPageEntity loadedPage = new LoadedPageEntity();
+                SignatureLoadedPageEntity loadedPage = new SignatureLoadedPageEntity();
                 MemoryStream ms = new MemoryStream();
                 using (FileStream file = new FileStream(documentGuid, FileMode.Open, FileAccess.Read))
                 {
@@ -378,6 +379,15 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     loadedPage.pageImage = Convert.ToBase64String(imageBytes);
                 }
                 ms.Close();
+                if (postedData.signatureType.Equals("text"))
+                {
+                    // get xml data of the Text signature
+                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(documentGuid));
+                    string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
+                    // Load xml data
+                    TextXmlEntity textData = LoadXmlData<TextXmlEntity>(xmlPath, xmlFileName);
+                    loadedPage.props = textData;
+                }
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
             }
@@ -740,7 +750,27 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // get/set parameters
                 string encodedImage = postedData.image.Replace("data:image/png;base64,", "");
                 FileDescriptionEntity savedImage = new FileDescriptionEntity();
-                string imageName = "drawn signature.png";
+                string[] files = Directory.GetFiles(DirectoryUtils.DataDirectory.ImageDirectory.Path);
+                string imageName = "";
+                if (files.Length == 0)
+                {
+                    imageName = String.Format("{0:000}.png", 1);
+                }
+                else
+                {
+                    for (int i = 0; i <= files.Length; i++)
+                    {
+                        string path = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, String.Format("{0:000}.png", i + 1));
+                        if (files.Contains(path))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            imageName = String.Format("{0:000}.png", i + 1);
+                        }
+                    }
+                }
                 string imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
                 if (System.IO.File.Exists(imagePath))
                 {
@@ -1066,25 +1096,27 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             try
             {
                 String signatureType = deleteSignatureFileRequest.getSignatureType();
-                if ("image".Equals(signatureType) ||
-                        "digital".Equals(signatureType))
+                switch (signatureType)
                 {
-                    if (File.Exists(deleteSignatureFileRequest.getGuid()))
-                    {
-                        File.Delete(deleteSignatureFileRequest.getGuid());
-                    }
-                }
-                else
-                {
-                    if (File.Exists(deleteSignatureFileRequest.getGuid()))
-                    {
-                        File.Delete(deleteSignatureFileRequest.getGuid());
-                    }
-                    String xmlFilePath = GetXmlFilePath(
-                        signatureType,
-                        Path.GetFileNameWithoutExtension(deleteSignatureFileRequest.getGuid()) + ".xml"
-                    );
-                    File.Delete(xmlFilePath);
+                    case "image":
+                    case "digital":
+                    case "hand":
+                        if (File.Exists(deleteSignatureFileRequest.getGuid()))
+                        {
+                            File.Delete(deleteSignatureFileRequest.getGuid());
+                        }
+                        break;
+                    default:
+                        if (File.Exists(deleteSignatureFileRequest.getGuid()))
+                        {
+                            File.Delete(deleteSignatureFileRequest.getGuid());
+                        }
+                        String xmlFilePath = GetXmlFilePath(
+                            signatureType,
+                            Path.GetFileNameWithoutExtension(deleteSignatureFileRequest.getGuid()) + ".xml"
+                        );
+                        File.Delete(xmlFilePath);
+                        break;
                 }
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
