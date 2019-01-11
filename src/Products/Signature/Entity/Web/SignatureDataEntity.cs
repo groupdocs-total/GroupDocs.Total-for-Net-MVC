@@ -11,8 +11,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Web
         public string Address{ get; set; }
         public string Date{ get; set; }
         public string SignaturePassword{ get; set; }
-        public string SignatureComment{ get; set; }
-        public string DocumentType{ get; set; }
+        public string SignatureComment{ get; set; }       
         public string SignatureGuid{ get; set; }
         public string SignatureType{ get; set; }
         public int PageNumber{ get; set; }
