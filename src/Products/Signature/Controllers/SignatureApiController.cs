@@ -399,265 +399,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         }
 
         /// <summary>
-        /// Sign document with digital signature
-        /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
-        /// <returns>Signed document info</returns>
-        [HttpPost]
-        [Route("signature/sign")]
-        public HttpResponseMessage Sign(SignaturePostedDataEntity postedData)
-        {
-            string password = "";
-            try
-            {
-                // get/set parameters
-                string documentGuid = postedData.guid;
-                password = postedData.password;
-                SignatureDataEntity[] signaturesData = postedData.signaturesData;
-                SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
-                // check if document type is image                
-                if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
-                {
-                    postedData.documentType = "image";
-                }
-                else
-                {
-
-                }
-                // set signature password if required
-                for (int i = 0; i < signaturesData.Length; i++)
-                {
-                    switch (signaturesData[i].SignatureType)
-                    {
-                        case "image":
-                        case "hand":
-                            SignImage(postedData.documentType, signaturesData[i], signsCollection);
-                            break;
-                        case "stamp":
-                            SignStamp(postedData.documentType, signaturesData[i], signsCollection);
-                            break;
-                        case "qrCode":
-                        case "barCode":
-                            SignOptical(postedData.documentType, signaturesData[i], signsCollection);
-                            break;
-                        case "text":
-                            SignText(postedData.documentType, signaturesData[i], signsCollection);
-                            break;
-                        case "digital":
-                            SignDigital(postedData.documentType, password, signaturesData[i], signsCollection);
-                            break;
-                    }
-                }
-                // return loaded page object
-                SignedDocumentEntity signedDocument = SignDocument(documentGuid, password, signsCollection);
-                // return loaded page object
-                return Request.CreateResponse(HttpStatusCode.OK, signedDocument);
-            }
-            catch (System.Exception ex)
-            {
-                // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
-            }
-        }
-
-
-        /// <summary>
-        /// Sign document with digital signature
-        /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
-        /// <returns>Signed document info</returns>       
-        private void SignDigital(string documentType, string password, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
-        {
-            try { 
-                // initiate digital signer
-                DigitalSigner signer = new DigitalSigner(signaturesData, password);
-                AddSignOptions(documentType, signsCollection, signer);
-            }
-            catch (System.Exception ex)
-            {
-                // set exception message
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Sign document with image
-        /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
-        /// <returns>Signed document info</returns>       
-        private void SignImage(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
-        {
-            try
-            {
-                // set signature password if required               
-                if (!signaturesData.isDeleted)
-                {
-                    // initiate image signer object
-                    ImageSigner signer = new ImageSigner(signaturesData);
-                    // prepare signing options and sign document
-                    AddSignOptions(documentType, signsCollection, signer);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                // set exception message
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Sign document with stamp
-        /// </summary>
-        /// <param name="postedData"></param>
-        /// <returns>Signed document info</returns>     
-        private void SignStamp(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
-        {
-            string xmlPath = DirectoryUtils.DataDirectory.StampDirectory.XmlPath;
-            try
-            {
-                if (!signaturesData.isDeleted)
-                {
-                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
-                    // Load xml data
-                    StampXmlEntity[] stampData = LoadXmlData<StampXmlEntity[]>(xmlPath, xmlFileName);
-                    // since stamp ine are added stating from the most outer line we need to reverse the stamp data array
-                    Array.Reverse(stampData);
-                    // initiate stamp signer
-                    StampSigner signer = new StampSigner(stampData, signaturesData);
-                    // prepare signing options and sign document
-                    AddSignOptions(documentType, signsCollection, signer);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Sign document with optical signature - QR or BarCode
-        /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
-        /// <returns>Signed document info</returns>       
-        private void SignOptical(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
-        {
-            try
-            {
-                string signatureType = signaturesData.SignatureType;
-                // get xml files root path
-                string xmlPath = (signatureType.Equals("qrCode")) ? DirectoryUtils.DataDirectory.QrCodeDirectory.XmlPath : DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath;
-                // prepare signing options and sign document
-                if (!signaturesData.isDeleted)
-                {
-                    // get xml data of the QR-Code
-                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
-                    // Load xml data
-                    OpticalXmlEntity opticalCodeData = LoadXmlData<OpticalXmlEntity>(xmlPath, xmlFileName);
-                    // initiate QRCode signer object
-                    BaseSigner signer = null;
-                    if (signatureType.Equals("qrCode"))
-                    {
-                        signer = new QrCodeSigner(opticalCodeData, signaturesData);
-                    }
-                    else
-                    {
-                        signer = new BarCodeSigner(opticalCodeData, signaturesData);
-                    }
-                    // prepare signing options and sign document
-                    AddSignOptions(documentType, signsCollection, signer);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Sign document with text signature
-        /// </summary>
-        /// <param name="postedData">SignaturePostedDataEntity</param>
-        /// <returns>Signed document info</returns>       
-        private void SignText(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
-        {
-            string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
-            try
-            {
-                if (!signaturesData.isDeleted)
-                {
-                    // get xml data of the Text signature
-                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
-                    // Load xml data
-                    TextXmlEntity textData = LoadXmlData<TextXmlEntity>(xmlPath, xmlFileName);
-                    // initiate QRCode signer object
-                    TextSigner signer = new TextSigner(textData, signaturesData);
-                    // prepare signing options and sign document
-                    AddSignOptions(documentType, signsCollection, signer);
-                }
-            }
-            catch (System.Exception ex)
-            {
-                // set exception message
-                throw ex;
-            }
-        }
-
-        /// <summary>
-        /// Add signature options to the signatures collection
-        /// </summary>
-        /// <param name="documentType">string</param>
-        /// <param name="signsCollection">SignatureOptionsCollection</param>
-        /// <param name="signer">SignatureSigner</param>
-        private void AddSignOptions(string documentType, SignatureOptionsCollection signsCollection, BaseSigner signer)
-        {
-            switch (documentType)
-            {
-                case "Portable Document Format":
-                    signsCollection.Add(signer.SignPdf());
-                    break;
-                case "Microsoft Word":
-                    signsCollection.Add(signer.SignWord());
-                    break;
-                case "Microsoft PowerPoint":
-                    signsCollection.Add(signer.SignSlides());
-                    break;
-                case "image":
-                    signsCollection.Add(signer.SignImage());
-                    break;
-                case "Microsoft Excel":
-                    signsCollection.Add(signer.SignCells());
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Sign document
-        /// </summary>
-        /// <param name="documentGuid">string</param>
-        /// <param name="password">string</param>
-        /// <param name="signsCollection">SignatureOptionsCollection</param>
-        /// <returns></returns>
-        private SignedDocumentEntity SignDocument(string documentGuid, string password, SignatureOptionsCollection signsCollection)
-        {
-            // set save options
-            SaveOptions saveOptions = new SaveOptions();
-            saveOptions.OutputType = OutputType.String;
-            saveOptions.OutputFileName = Path.GetFileName(documentGuid);
-
-            // set password
-            LoadOptions loadOptions = new LoadOptions();
-            if (!String.IsNullOrEmpty(password))
-            {
-                loadOptions.Password = password;
-            }
-
-            // sign document
-            SignedDocumentEntity signedDocument = new SignedDocumentEntity();
-            signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signsCollection, loadOptions, saveOptions);
-            return signedDocument;
-        }
-
-        /// <summary>
         /// Save image signature
         /// </summary>
         /// <param name="postedData">SignaturePostedDataEntity</param>
@@ -1047,6 +788,271 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
         }
+
+        /// <summary>
+        /// Sign document with digital signature
+        /// </summary>
+        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <returns>Signed document info</returns>
+        [HttpPost]
+        [Route("signature/sign")]
+        public HttpResponseMessage Sign(SignaturePostedDataEntity postedData)
+        {
+            string password = "";
+            try
+            {
+                // get/set parameters
+                string documentGuid = postedData.guid;
+                password = postedData.password;
+                SignatureDataEntity[] signaturesData = postedData.signaturesData;
+                SignatureOptionsCollection signsCollection = new SignatureOptionsCollection();
+                // check if document type is image                
+                if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
+                {
+                    postedData.documentType = "image";
+                }
+                else
+                {
+
+                }
+                // set signature password if required
+                for (int i = 0; i < signaturesData.Length; i++)
+                {
+                    switch (signaturesData[i].SignatureType)
+                    {
+                        case "image":
+                        case "hand":
+                            SignImage(postedData.documentType, signaturesData[i], signsCollection);
+                            break;
+                        case "stamp":
+                            SignStamp(postedData.documentType, signaturesData[i], signsCollection);
+                            break;
+                        case "qrCode":
+                        case "barCode":
+                            SignOptical(postedData.documentType, signaturesData[i], signsCollection);
+                            break;
+                        case "text":
+                            SignText(postedData.documentType, signaturesData[i], signsCollection);
+                            break;
+                        case "digital":
+                            SignDigital(postedData.documentType, password, signaturesData[i], signsCollection);
+                            break;
+                    }
+                }
+                // return loaded page object
+                SignedDocumentEntity signedDocument = SignDocument(documentGuid, password, signsCollection);
+                // return loaded page object
+                return Request.CreateResponse(HttpStatusCode.OK, signedDocument);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Add digital signature
+        /// </summary>
+        /// <param name="documentType">string</param>
+        /// <param name="password">string</param>
+        /// <param name="signaturesData">SignatureDataEntity</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param>
+        private void SignDigital(string documentType, string password, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
+        {
+            try
+            {
+                // initiate digital signer
+                DigitalSigner signer = new DigitalSigner(signaturesData, password);
+                AddSignOptions(documentType, signsCollection, signer);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Add image signature
+        /// </summary>
+        /// <param name="documentType">string</param>
+        /// <param name="signaturesData">SignatureDataEntity</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param>
+        private void SignImage(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
+        {
+            try
+            {
+                // set signature password if required               
+                if (!signaturesData.isDeleted)
+                {
+                    // initiate image signer object
+                    ImageSigner signer = new ImageSigner(signaturesData);
+                    // prepare signing options and sign document
+                    AddSignOptions(documentType, signsCollection, signer);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Add stamp signature
+        /// </summary>
+        /// <param name="documentType">string</param>
+        /// <param name="signaturesData">SignatureDataEntity</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param> 
+        private void SignStamp(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
+        {
+            string xmlPath = DirectoryUtils.DataDirectory.StampDirectory.XmlPath;
+            try
+            {
+                if (!signaturesData.isDeleted)
+                {
+                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
+                    // Load xml data
+                    StampXmlEntity[] stampData = LoadXmlData<StampXmlEntity[]>(xmlPath, xmlFileName);
+                    // since stamp ine are added stating from the most outer line we need to reverse the stamp data array
+                    Array.Reverse(stampData);
+                    // initiate stamp signer
+                    StampSigner signer = new StampSigner(stampData, signaturesData);
+                    // prepare signing options and sign document
+                    AddSignOptions(documentType, signsCollection, signer);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Add Optical signature
+        /// </summary>
+        /// <param name="documentType">string</param>
+        /// <param name="signaturesData">SignatureDataEntity</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param> 
+        private void SignOptical(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
+        {
+            try
+            {
+                string signatureType = signaturesData.SignatureType;
+                // get xml files root path
+                string xmlPath = (signatureType.Equals("qrCode")) ? DirectoryUtils.DataDirectory.QrCodeDirectory.XmlPath : DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath;
+                // prepare signing options and sign document
+                if (!signaturesData.isDeleted)
+                {
+                    // get xml data of the QR-Code
+                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
+                    // Load xml data
+                    OpticalXmlEntity opticalCodeData = LoadXmlData<OpticalXmlEntity>(xmlPath, xmlFileName);
+                    // initiate QRCode signer object
+                    BaseSigner signer = null;
+                    if (signatureType.Equals("qrCode"))
+                    {
+                        signer = new QrCodeSigner(opticalCodeData, signaturesData);
+                    }
+                    else
+                    {
+                        signer = new BarCodeSigner(opticalCodeData, signaturesData);
+                    }
+                    // prepare signing options and sign document
+                    AddSignOptions(documentType, signsCollection, signer);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Add text signature
+        /// </summary>
+        /// <param name="documentType">string</param>
+        /// <param name="signaturesData">SignatureDataEntity</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param>
+        private void SignText(string documentType, SignatureDataEntity signaturesData, SignatureOptionsCollection signsCollection)
+        {
+            string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
+            try
+            {
+                if (!signaturesData.isDeleted)
+                {
+                    // get xml data of the Text signature
+                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
+                    // Load xml data
+                    TextXmlEntity textData = LoadXmlData<TextXmlEntity>(xmlPath, xmlFileName);
+                    // initiate QRCode signer object
+                    TextSigner signer = new TextSigner(textData, signaturesData);
+                    // prepare signing options and sign document
+                    AddSignOptions(documentType, signsCollection, signer);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Add signature options to the signatures collection
+        /// </summary>
+        /// <param name="documentType">string</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param>
+        /// <param name="signer">SignatureSigner</param>
+        private void AddSignOptions(string documentType, SignatureOptionsCollection signsCollection, BaseSigner signer)
+        {
+            switch (documentType)
+            {
+                case "Portable Document Format":
+                    signsCollection.Add(signer.SignPdf());
+                    break;
+                case "Microsoft Word":
+                    signsCollection.Add(signer.SignWord());
+                    break;
+                case "Microsoft PowerPoint":
+                    signsCollection.Add(signer.SignSlides());
+                    break;
+                case "image":
+                    signsCollection.Add(signer.SignImage());
+                    break;
+                case "Microsoft Excel":
+                    signsCollection.Add(signer.SignCells());
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Sign document
+        /// </summary>
+        /// <param name="documentGuid">string</param>
+        /// <param name="password">string</param>
+        /// <param name="signsCollection">SignatureOptionsCollection</param>
+        /// <returns></returns>
+        private SignedDocumentEntity SignDocument(string documentGuid, string password, SignatureOptionsCollection signsCollection)
+        {
+            // set save options
+            SaveOptions saveOptions = new SaveOptions();
+            saveOptions.OutputType = OutputType.String;
+            saveOptions.OutputFileName = Path.GetFileName(documentGuid);
+
+            // set password
+            LoadOptions loadOptions = new LoadOptions();
+            if (!String.IsNullOrEmpty(password))
+            {
+                loadOptions.Password = password;
+            }
+
+            // sign document
+            SignedDocumentEntity signedDocument = new SignedDocumentEntity();
+            signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signsCollection, loadOptions, saveOptions);
+            return signedDocument;
+        }      
 
         private string GetXmlFilePath(string signatureType, string fileName)
         {
