@@ -37,6 +37,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         private List<string> SupportedImageFormats = new List<string>() { ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png" };
         private static SignatureHandler SignatureHandler;
         private DirectoryUtils DirectoryUtils;
+        public static readonly string PASSWORD_REQUIRED = "Password Required";
+        public static readonly string INCORRECT_PASSWORD = "Incorrect password";
 
         /// <summary>
         /// Constructor
@@ -175,9 +177,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -190,12 +193,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         [Route("signature/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(SignaturePostedDataEntity postedData)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 int pageNumber = postedData.page;
-                string password = postedData.password;
+                password = postedData.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
                 // get page image
                 byte[] bytes = SignatureHandler.GetPageImage(documentGuid, pageNumber, password, null, 100);
@@ -205,9 +209,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
