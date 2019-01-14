@@ -150,12 +150,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 documentInfoOptions.Password = password;
                 // get document info container               
                 documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions);
-                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-                List<PageDescriptionEntity> pages = new List<PageDescriptionEntity>();
-                bool loadPageContent = false;               
+                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();                                
                 foreach (PageData page in documentInfoContainer.Pages)
                 {
-                    PageDescriptionEntity pageData = GetPageDescriptionEntities(page, password, documentGuid);
+                    PageDescriptionEntity pageData = GetPageDescriptionEntities(page);
                     if(globalConfiguration.Viewer.GetPreloadPageCount() == 0)
                     {
                         pageData.SetData(GetPageContent(page, password, documentGuid));
@@ -197,7 +195,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 documentInfoOptions.Password = password;
                 // get document info container               
                 documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions);
-                PageDescriptionEntity page = GetPageDescriptionEntities(documentInfoContainer.Pages[pageNumber - 1], password, documentGuid);
+                PageDescriptionEntity page = GetPageDescriptionEntities(documentInfoContainer.Pages[pageNumber - 1]);
                 page.SetData(GetPageContent(documentInfoContainer.Pages[pageNumber - 1], password, documentGuid));
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, page);
@@ -369,7 +367,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             }
         }
 
-        private PageDescriptionEntity GetPageDescriptionEntities(PageData page, string password, string documentGuid)
+        private PageDescriptionEntity GetPageDescriptionEntities(PageData page)
         {
             PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
             pageDescriptionEntity.number = page.Number;
