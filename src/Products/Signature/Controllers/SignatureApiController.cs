@@ -37,8 +37,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         private List<string> SupportedImageFormats = new List<string>() { ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png" };
         private static SignatureHandler SignatureHandler;
         private DirectoryUtils DirectoryUtils;
-        public static readonly string PASSWORD_REQUIRED = "Password Required";
-        public static readonly string INCORRECT_PASSWORD = "Incorrect password";
 
         /// <summary>
         /// Constructor

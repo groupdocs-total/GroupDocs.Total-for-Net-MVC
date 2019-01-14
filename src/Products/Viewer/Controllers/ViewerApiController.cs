@@ -30,8 +30,6 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         private static Common.Config.GlobalConfiguration globalConfiguration;
         private static ViewerHtmlHandler viewerHtmlHandler = null;
         private static ViewerImageHandler viewerImageHandler = null;
-        public static readonly string PASSWORD_REQUIRED = "Password Required";
-        public static readonly string INCORRECT_PASSWORD = "Incorrect password";
 
         /// <summary>
         /// Constructor
@@ -161,15 +159,11 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 }
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
-            }
-            catch (PasswordProtectedFileException ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
-            }
+            }          
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -182,12 +176,13 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         [Route("viewer/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(PostedDataEntity postedData)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 int pageNumber = postedData.page;
-                string password = postedData.password;
+                password = postedData.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
                 // get document info options
                 DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
@@ -242,7 +237,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 

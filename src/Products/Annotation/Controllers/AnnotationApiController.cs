@@ -35,8 +35,6 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         private List<string> SupportedDiagrammFormats = new List<string>() { ".vsd", ".vdx", ".vss", ".vsx", ".vst", ".vtx", ".vsdx", ".vdw", ".vstx", ".vssx" };
         private static AnnotationImageHandler AnnotationImageHandler;
         private DirectoryUtils DirectoryUtils;
-        public static readonly string PASSWORD_REQUIRED = "Password Required";
-        public static readonly string INCORRECT_PASSWORD = "Incorrect password";
 
         /// <summary>
         /// Constructor
