@@ -5,6 +5,7 @@ using GroupDocs.Annotation.Domain.Image;
 using GroupDocs.Annotation.Domain.Options;
 using GroupDocs.Annotation.Handler;
 using GroupDocs.Total.MVC.Products.Annotation.Annotator;
+using GroupDocs.Total.MVC.Products.Annotation.Entity.Request;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
 using GroupDocs.Total.MVC.Products.Annotation.Importer;
 using GroupDocs.Total.MVC.Products.Annotation.Util;
@@ -122,11 +123,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         [Route("annotation/loadDocumentDescription")]
         public HttpResponseMessage LoadDocumentDescription(AnnotationPostedDataEntity loadDocumentRequest)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = loadDocumentRequest.guid;
-                string password = loadDocumentRequest.password;
+                password = loadDocumentRequest.password;
                 DocumentInfoContainer documentDescription;
                 // get document info container              
                 string fileName = System.IO.Path.GetFileName(documentGuid);
@@ -177,7 +179,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 description.guid = documentGuid;
                 description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
-               
+
                 // get info about each document page
                 for (int i = 0; i < documentDescription.Pages.Count; i++)
                 {
@@ -213,7 +215,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -226,12 +228,13 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         [Route("annotation/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(AnnotationPostedDataEntity loadDocumentPageRequest)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = loadDocumentPageRequest.guid;
                 int pageNumber = loadDocumentPageRequest.page;
-                string password = loadDocumentPageRequest.password;
+                password = loadDocumentPageRequest.password;
                 LoadedPageEntity loadedPage = new LoadedPageEntity();
                 ImageOptions imageOptions = new ImageOptions()
                 {
@@ -264,7 +267,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             }
             catch (System.Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -454,7 +458,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     Stream result = AnnotationImageHandler.ExportAnnotationsToDocument(cleanDoc, annotations, type);
                     cleanDoc.Dispose();
                     cleanDoc.Close();
-                    // Save result stream to file.                       
+                    // Save result stream to file.               
+                    if (annotateDocumentRequest.print)
+                    {
+                        path = path.Replace(System.IO.Path.GetFileNameWithoutExtension(path), System.IO.Path.GetFileNameWithoutExtension(path) + "Temp");
+                    }
                     using (FileStream fileStream = new FileStream(path, FileMode.Create))
                     {
                         byte[] buffer = new byte[result.Length];
@@ -470,7 +478,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 }
                 annotatedDocument = new AnnotatedDocumentEntity();
                 annotatedDocument.guid = path;
-                
+                if (annotateDocumentRequest.print)
+                {
+                    annotatedDocument.pages = GetAnnotatedPagesForPrint(path);
+                    File.Delete(path);
+                }
             }
             catch (System.Exception ex)
             {
@@ -495,6 +507,43 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 return new BaseImporter(documentStream, AnnotationImageHandler, password).ImportAnnotations(docType);
             }
             catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private List<PageDataDescriptionEntity> GetAnnotatedPagesForPrint(string path)
+        {
+            AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
+            try
+            {
+
+                Stream document = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                List<PageImage> pageImages = AnnotationImageHandler.GetPages(document, new ImageOptions());
+                document.Dispose();
+                document.Close();
+                for (int i = 0; i < pageImages.Count; i++)
+                {
+                    PageDataDescriptionEntity page = new PageDataDescriptionEntity();
+                    if (pageImages != null)
+                    {
+                        byte[] bytes;
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            Stream imageStream = pageImages[i].Stream;
+                            imageStream.Position = 0;
+                            imageStream.CopyTo(memoryStream);
+                            bytes = memoryStream.ToArray();
+                        }
+                        string encodedImage = Convert.ToBase64String(bytes);
+                        page.SetData(encodedImage);
+                    }
+                    description.pages.Add(page);
+                }
+
+                return description.pages;
+            }
+            catch (FileNotFoundException ex)
             {
                 throw ex;
             }
