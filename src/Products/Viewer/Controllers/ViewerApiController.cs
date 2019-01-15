@@ -150,13 +150,18 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 documentInfoOptions.Password = password;
                 // get document info container               
                 documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions);
-                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();                                
+                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+                List<string> pagesContent = new List<string>();
+                if (globalConfiguration.Viewer.GetPreloadPageCount() == 0)
+                {
+                    pagesContent = GetAllPagesContent(password, documentGuid);
+                }
                 foreach (PageData page in documentInfoContainer.Pages)
                 {
                     PageDescriptionEntity pageData = GetPageDescriptionEntities(page);
-                    if(globalConfiguration.Viewer.GetPreloadPageCount() == 0)
+                    if (pagesContent.Count > 0)
                     {
-                        pageData.SetData(GetPageContent(page, password, documentGuid));
+                        pageData.SetData(pagesContent[page.Number - 1]);
                     }
                     loadDocumentEntity.SetPages(pageData);
                 }
@@ -373,25 +378,28 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             pageDescriptionEntity.number = page.Number;
             pageDescriptionEntity.angle = page.Angle;
             pageDescriptionEntity.height = page.Height;
-            pageDescriptionEntity.width = page.Width;           
+            pageDescriptionEntity.width = page.Width;
             return pageDescriptionEntity;
         }
 
         private string GetPageContent(PageData page, string password, string documentGuid)
-        {           
+        {
             if (globalConfiguration.Viewer.GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
+
                 htmlOptions.PageNumber = page.Number;
                 htmlOptions.CountPagesToRender = 1;
+
                 htmlOptions.EmbedResources = true;
                 // set password for protected document
                 if (!string.IsNullOrEmpty(password))
                 {
                     htmlOptions.Password = password;
                 }
-                // get page HTML
+                // get page HTML              
                 return this.GetHandler().GetPages(documentGuid, htmlOptions)[0].HtmlContent;
+
             }
             else
             {
@@ -411,7 +419,51 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 }
                 string encodedImage = Convert.ToBase64String(bytes);
                 return encodedImage;
-            }            
+            }
+        }
+
+        private List<string> GetAllPagesContent(string password, string documentGuid)
+        {
+            List<string> allPages = new List<string>();
+            if (globalConfiguration.Viewer.GetIsHtmlMode())
+            {
+                HtmlOptions htmlOptions = new HtmlOptions();
+                htmlOptions.EmbedResources = true;
+                // set password for protected document
+                if (!string.IsNullOrEmpty(password))
+                {
+                    htmlOptions.Password = password;
+                }
+                // get page HTML              
+                var pages = this.GetHandler().GetPages(documentGuid, htmlOptions);
+                for (int i = 0; i < pages.Count; i++)
+                {
+                    allPages.Add(pages[i].HtmlContent);
+                }
+
+            }
+            else
+            {
+                ImageOptions imageOptions = new ImageOptions();
+                // set password for protected document
+                if (!string.IsNullOrEmpty(password))
+                {
+                    imageOptions.Password = password;
+                }
+                var pages = this.GetHandler().GetPages(documentGuid, imageOptions);
+                for (int i = 0; i < pages.Count; i++)
+                {
+                    byte[] bytes;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        pages[i].Stream.CopyTo(memoryStream);
+                        bytes = memoryStream.ToArray();
+                    }
+                    string encodedImage = Convert.ToBase64String(bytes);
+                    allPages.Add(encodedImage);
+                }
+            }
+            return allPages;
         }
     }
 }
