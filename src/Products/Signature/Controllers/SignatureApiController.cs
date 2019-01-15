@@ -611,6 +611,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
                 string base64ImageRepresentation = Convert.ToBase64String(imageArray);
                 opticalCodeData.encodedImage = base64ImageRepresentation;
+                if (opticalCodeData.temp)
+                {
+                    File.Delete(filePath);
+                    File.Delete(Path.Combine(xmlPath, fileName + ".xml"));
+                }
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, opticalCodeData);
             }

@@ -9,6 +9,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Xml
     public class OpticalXmlEntity : XmlEntity
     { 
         [XmlElement("EncodedImage")]
-        public string encodedImage { get; set; }        
+        public string encodedImage { get; set; }
+
+        [XmlElement("temp")]
+        public bool temp { get; set; }
     }
 }
