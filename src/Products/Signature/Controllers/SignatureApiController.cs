@@ -376,14 +376,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
-                LoadedPageEntity loadedPage = new LoadedPageEntity();
+                PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                 MemoryStream ms = new MemoryStream();
                 using (FileStream file = new FileStream(documentGuid, FileMode.Open, FileAccess.Read))
                 {
                     file.CopyTo(ms);
                     byte[] imageBytes = ms.ToArray();
                     // Convert byte[] to Base64 String
-                    loadedPage.pageImage = Convert.ToBase64String(imageBytes);
+                    loadedPage.SetData(Convert.ToBase64String(imageBytes));
                 }
                 ms.Close();
                 // return loaded page object
