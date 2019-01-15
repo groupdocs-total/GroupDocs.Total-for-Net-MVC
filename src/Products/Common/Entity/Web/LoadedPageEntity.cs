@@ -6,7 +6,6 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
     /// </summary>
     public class LoadedPageEntity
     {
-        public string pageHtml{ get; set; }
         public string angle{ get; set; }
         public string pageImage{ get; set; }
     }
