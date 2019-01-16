@@ -346,7 +346,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 documentGuid = globalConfiguration.Viewer.GetFilesDirectory() + "/" + documentGuid;
             }
-            DocumentInfoContainer documentInfoContainer = new DocumentInfoContainer();
+            DocumentInfoContainer documentInfoContainer;
             // get document info options
             DocumentInfoOptions documentInfoOptions = new DocumentInfoOptions(documentGuid);
             // set password for protected document                
