@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Text;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 
 namespace GroupDocs.Total.MVC.Test
 {
@@ -48,7 +49,7 @@ namespace GroupDocs.Total.MVC.Test
         public void ViewMapControllerTest()
         {
             "~/comparison".Route().ShouldMapTo<ComparisonController>(x => x.Index());
-        }
+        }        
 
         [Test]
         public void FileTreeStatusCodeTest()
@@ -56,41 +57,23 @@ namespace GroupDocs.Total.MVC.Test
             string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
             using (var server = new DirectServer(path))
             {
+
+                PostedDataEntity requestData = new PostedDataEntity();
+                requestData.path = "";
+
                 var request = new SerialisableRequest
                 {
                     Method = "POST",
                     RequestUri = "/comparison/loadfiletree",
-                    Content = null,
+                    Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(requestData)),
                     Headers = new Dictionary<string, string>{
-                        { "Content-Type", "application/json"}
+                        { "Content-Type", "application/json"},
+                        { "Content-Length", JsonConvert.SerializeObject(requestData).Length.ToString()}
                     }
                 };
 
                 var result = server.DirectCall(request);
                 Assert.That(result.StatusCode, Is.EqualTo(200));
-            }
-        }
-
-        [Test]
-        public void FileTreeDataTest()
-        {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
-            using (var server = new DirectServer(path))
-            {
-                var request = new SerialisableRequest
-                {
-                    Method = "POST",
-                    RequestUri = "/comparison/loadfiletree",
-                    Content = null,
-                    Headers = new Dictionary<string, string>{
-                        { "Content-Type", "application/json"}
-                    }
-                };
-
-                var result = server.DirectCall(request);
-                var resultString = Encoding.UTF8.GetString(result.Content);
-                dynamic data = JsonConvert.DeserializeObject(resultString);
-                Assert.IsTrue(data.Count > 0);
             }
         }
     }
