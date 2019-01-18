@@ -22,7 +22,8 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         private bool isThumbnails = true;
         private bool isRotate = true;
         private bool isHtmlMode = true;
-        private bool Cache = true;       
+        private bool Cache = true;
+        private bool SaveRotateState = true;
 
         /// <summary>
         /// Constructor
@@ -52,6 +53,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
             isRotate = valuesGetter.GetBooleanPropertyValue("rotate", isRotate);
             isHtmlMode = valuesGetter.GetBooleanPropertyValue("htmlMode", isHtmlMode);
             Cache = valuesGetter.GetBooleanPropertyValue("cache", Cache);
+            SaveRotateState = valuesGetter.GetBooleanPropertyValue("saveRotateState", SaveRotateState);
         }
 
         private static bool IsFullPath(string path)
@@ -160,6 +162,16 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         public bool GetCache()
         {
             return Cache;
+        }
+
+        public void SetSaveRotateState(bool saveRotateState)
+        {
+            this.SaveRotateState = saveRotateState;
+        }
+
+        public bool GetSaveRotateState()
+        {
+            return SaveRotateState;
         }
     }
 }
