@@ -388,12 +388,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         {
             PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
             pageDescriptionEntity.number = page.Number;
-            if (globalConfiguration.Viewer.GetSaveRotateState())
-            {
-                pageDescriptionEntity.angle = page.Angle;
-            } else {
-                pageDescriptionEntity.angle = 0;
-            }
+            pageDescriptionEntity.angle = page.Angle;          
             pageDescriptionEntity.height = page.Height;
             pageDescriptionEntity.width = page.Width;
             return pageDescriptionEntity;
