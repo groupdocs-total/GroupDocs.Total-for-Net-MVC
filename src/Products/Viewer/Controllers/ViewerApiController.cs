@@ -401,7 +401,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             if (globalConfiguration.Viewer.GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
-                SetOptions(htmlOptions, password);
+                SetOptions(htmlOptions, password, page.Number);
                 // get page HTML              
                 return this.GetHandler().GetPages(documentGuid, htmlOptions)[0].HtmlContent;
 
@@ -409,7 +409,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             else
             {
                 ImageOptions imageOptions = new ImageOptions();
-                SetOptions(imageOptions, password);
+                SetOptions(imageOptions, password, page.Number);
                 byte[] bytes;
                 using (var memoryStream = new MemoryStream())
                 {
@@ -427,7 +427,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             if (globalConfiguration.Viewer.GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
-                SetOptions(htmlOptions, password);
+                SetOptions(htmlOptions, password, 0);
                 // get page HTML              
                 var pages = this.GetHandler().GetPages(documentGuid, htmlOptions);
                 for (int i = 0; i < pages.Count; i++)
@@ -438,7 +438,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             else
             {
                 ImageOptions imageOptions = new ImageOptions();
-                SetOptions(imageOptions, password);
+                SetOptions(imageOptions, password, 0);
                 var pages = this.GetHandler().GetPages(documentGuid, imageOptions);
                 for (int i = 0; i < pages.Count; i++)
                 {
@@ -455,7 +455,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             return allPages;
         }
 
-        private void SetOptions(HtmlOptions options, string password)
+        private void SetOptions(HtmlOptions options, string password, int pageNumber)
         {
             Watermark watermark = null;
             if (!String.IsNullOrEmpty(globalConfiguration.Viewer.GetWatermarkText()))
@@ -476,9 +476,14 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 options.Watermark = watermark;
             }
+            if(pageNumber != 0)
+            {
+                options.PageNumber = pageNumber;
+                options.CountPagesToRender = 1;
+            }
         }
 
-        private void SetOptions(ImageOptions options, string password)
+        private void SetOptions(ImageOptions options, string password, int pageNumber)
         {
             Watermark watermark = null;
             if (!String.IsNullOrEmpty(globalConfiguration.Viewer.GetWatermarkText()))
@@ -487,7 +492,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 watermark = new Watermark(globalConfiguration.Viewer.GetWatermarkText());
                 watermark.Color = System.Drawing.Color.Blue;
                 watermark.Position = WatermarkPosition.Diagonal;
-                watermark.Width = 100;
+                watermark.Width = 100;               
             }
             // set password for protected document
             if (!string.IsNullOrEmpty(password))
@@ -497,6 +502,11 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             if (watermark != null)
             {
                 options.Watermark = watermark;
+            }
+            if (pageNumber != 0)
+            {
+                options.PageNumber = pageNumber;
+                options.CountPagesToRender = 1;
             }
         }
     }
