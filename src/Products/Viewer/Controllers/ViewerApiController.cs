@@ -379,9 +379,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             if (viewerHtmlHandler != null)
             {
                 return viewerHtmlHandler;
-            }
-            else
-            {
+            } else {
                 return viewerImageHandler;
             }
         }
@@ -390,7 +388,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         {
             PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
             pageDescriptionEntity.number = page.Number;
-            pageDescriptionEntity.angle = page.Angle;
+            pageDescriptionEntity.angle = page.Angle;          
             pageDescriptionEntity.height = page.Height;
             pageDescriptionEntity.width = page.Width;
             return pageDescriptionEntity;
