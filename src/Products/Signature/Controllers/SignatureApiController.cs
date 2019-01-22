@@ -146,14 +146,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             string password = "";
             try
             {
+                
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 password = postedData.password;
                 DocumentDescription documentDescription;
                 // get document info container
-                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);
+                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);               
                 List<PageDescriptionEntity> pagesDescription = new List<PageDescriptionEntity>();
                 // get info about each document page
+                Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 for (int i = 1; i <= documentDescription.PageCount; i++)
                 {
                     //initiate custom Document description object
@@ -164,8 +166,17 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     description.height = pageSize.Height;
                     description.width = pageSize.Width;
                     description.number = i;
+                    if (GlobalConfiguration.Signature.PreloadPageCount == 0)
+                    {
+                        byte[] pageBytes = SignatureHandler.GetPageImage(documentGuid, i, password, null, 100);                        
+                        string encodedImage = Convert.ToBase64String(pageBytes);
+                        description.SetData(encodedImage);                       
+                    }
+
                     pagesDescription.Add(description);
                 }
+                document.Dispose();
+                document.Close();
                 LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
                 loadDocumentEntity.SetGuid(documentGuid);
                 foreach (PageDescriptionEntity pageDescription in pagesDescription)
@@ -175,9 +186,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -190,24 +202,30 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         [Route("signature/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(SignaturePostedDataEntity postedData)
         {
+            string password = "";
             try
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 int pageNumber = postedData.page;
-                string password = postedData.password;
-                LoadedPageEntity loadedPage = new LoadedPageEntity();
+                password = postedData.password;
+                PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                 // get page image
                 byte[] bytes = SignatureHandler.GetPageImage(documentGuid, pageNumber, password, null, 100);
                 // encode ByteArray into string
                 string encodedImage = Convert.ToBase64String(bytes);
-                loadedPage.pageImage = encodedImage;
+                loadedPage.SetData(encodedImage);
+                Size pageSize = SignatureHandler.GetDocumentPageSize(documentGuid, pageNumber, password, (double)0, (double)0, null);
+                // set current page info for result
+                loadedPage.height = pageSize.Height;
+                loadedPage.width = pageSize.Width;
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -344,14 +362,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             {
                 // get/set parameters
                 string documentGuid = postedData.guid;
-                LoadedPageEntity loadedPage = new LoadedPageEntity();
+                PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                 MemoryStream ms = new MemoryStream();
                 using (FileStream file = new FileStream(documentGuid, FileMode.Open, FileAccess.Read))
                 {
                     file.CopyTo(ms);
                     byte[] imageBytes = ms.ToArray();
                     // Convert byte[] to Base64 String
-                    loadedPage.pageImage = Convert.ToBase64String(imageBytes);
+                    loadedPage.SetData(Convert.ToBase64String(imageBytes));
                 }
                 ms.Close();
                 // return loaded page object
