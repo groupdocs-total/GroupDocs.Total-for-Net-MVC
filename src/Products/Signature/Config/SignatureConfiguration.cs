@@ -14,6 +14,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
         public string FilesDirectory = "DocumentSamples/Signature";
         public string DefaultDocument = "";
         public string DataDirectory = "";
+        public string TempFilesDirectory = "";
         public int PreloadPageCount = 0;
         public bool isTextSignature = true;
         public bool isImageSignature = true;
@@ -40,7 +41,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
                     Directory.CreateDirectory(FilesDirectory);
                 }
             }          
-            DataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", DataDirectory);
+            DataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", DataDirectory);            
             DefaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", DefaultDocument);
             isTextSignature = valuesGetter.GetBooleanPropertyValue("textSignature", isTextSignature);
             isImageSignature = valuesGetter.GetBooleanPropertyValue("imageSignature", isImageSignature);

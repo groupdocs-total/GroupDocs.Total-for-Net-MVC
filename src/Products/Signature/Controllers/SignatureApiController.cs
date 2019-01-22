@@ -52,7 +52,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();
             config.CertificatesPath = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
             config.ImagesPath = DirectoryUtils.DataDirectory.ImageDirectory.Path;
-            config.OutputPath = DirectoryUtils.FilesDirectory.GetPath();
+            config.OutputPath = DirectoryUtils.TempFolder.GetPath();
             // initialize instance for the Image mode
             SignatureHandler = new SignatureHandler(config);
         }
@@ -706,7 +706,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             SaveOptions saveOptions = new SaveOptions();
             saveOptions.OutputType = OutputType.String;
             saveOptions.OutputFileName = Path.GetFileName(documentGuid);
-            saveOptions.OverwriteExistingFiles = true;
+            saveOptions.OverwriteExistingFiles = false;
 
             // set password
             LoadOptions loadOptions = new LoadOptions();
@@ -718,6 +718,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             // sign document
             SignedDocumentEntity signedDocument = new SignedDocumentEntity();
             signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signsCollection, loadOptions, saveOptions);
+            File.Delete(documentGuid);
+            File.Move(signedDocument.guid, documentGuid);
+            signedDocument.guid = documentGuid;
             return signedDocument;
         }
 
