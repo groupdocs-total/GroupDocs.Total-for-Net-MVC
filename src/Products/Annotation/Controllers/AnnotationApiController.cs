@@ -427,7 +427,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 if (annotateDocumentRequest.print)
                 {
                     path = documentGuid.Replace(System.IO.Path.GetFileNameWithoutExtension(documentGuid), System.IO.Path.GetFileNameWithoutExtension(documentGuid) + "Temp");
-                    using (FileStream fileStream = new FileStream(path, FileMode.Create)) { }
+                    FileStream fileStream = new FileStream(path, FileMode.Create);
+                    fileStream.Close();
                 }
                 else
                 {
@@ -456,7 +457,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new NotSupportedException(notSupportedMessage)));
                 }
-                annotatedDocument = new AnnotatedDocumentEntity()
+                annotatedDocument = new AnnotatedDocumentEntity
                 {
                     guid = documentGuid,
                 };
@@ -549,6 +550,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     }
                     resultStream.Dispose();
                     resultStream.Close();
+                    inputStream.Close();
                 }
                 File.Delete(path);
                 File.Move(tempFilePath, path);

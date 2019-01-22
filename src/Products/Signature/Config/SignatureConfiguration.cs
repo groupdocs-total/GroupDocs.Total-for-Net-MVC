@@ -13,15 +13,15 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
     {
         public string FilesDirectory = "DocumentSamples/Signature";
         public string DefaultDocument = "";
-        public string DataDirectory = "";
-        public string TempFilesDirectory = "";
+        public string DataDirectory = "";        
         public int PreloadPageCount = 0;
         public bool isTextSignature = true;
         public bool isImageSignature = true;
         public bool isDigitalSignature = true;
         public bool isQrCodeSignature = true;
         public bool isBarCodeSignature = true;
-        public bool isStampSignature = true;            
+        public bool isStampSignature = true;
+        private string TempFilesDirectory = "";
 
         /// <summary>
         /// Get signature configuration section from the Web.config
@@ -58,6 +58,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
                 && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
+        }
+
+        public void SetTempFilesDirectory(string tempFilesDirectory)
+        {
+            this.TempFilesDirectory = tempFilesDirectory;
+        }
+
+        public string GetTempFilesDirectory()
+        {
+            return this.TempFilesDirectory;
         }
     }
 }

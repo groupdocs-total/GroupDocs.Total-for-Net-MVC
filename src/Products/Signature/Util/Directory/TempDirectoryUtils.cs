@@ -9,7 +9,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
     /// </summary>
     public class TempDirectoryUtils : IDirectoryUtils
     {
-        private String OUTPUT_FOLDER = "/SignedTemp";
+        private readonly String OUTPUT_FOLDER = "/SignedTemp";
         private SignatureConfiguration signatureConfiguration;
 
         /// <summary>
@@ -21,9 +21,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             this.signatureConfiguration = signatureConfiguration;
 
             // create output directories
-            if (String.IsNullOrEmpty(signatureConfiguration.TempFilesDirectory))
+            if (String.IsNullOrEmpty(signatureConfiguration.GetTempFilesDirectory()))
             {
-                signatureConfiguration.TempFilesDirectory = signatureConfiguration.FilesDirectory + OUTPUT_FOLDER;
+                signatureConfiguration.SetTempFilesDirectory(signatureConfiguration.FilesDirectory + OUTPUT_FOLDER);
             }
         }
 
@@ -33,7 +33,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
         /// <returns>string</returns>
         public string GetPath()
         {
-            return signatureConfiguration.TempFilesDirectory;
+            return signatureConfiguration.GetTempFilesDirectory();
         }
     }
 }
