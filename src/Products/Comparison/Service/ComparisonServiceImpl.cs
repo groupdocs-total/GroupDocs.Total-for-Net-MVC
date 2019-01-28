@@ -28,6 +28,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         private static readonly string PPTX = ".pptx";
         private static readonly string PDF = ".pdf";
         private static readonly string TXT = ".txt";
+        private static readonly string HTML = ".html";
+        private static readonly string HTM = ".htm";
 
         private GlobalConfiguration globalConfiguration;
 
@@ -169,14 +171,18 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-
+            string saveTemp = null;
+            if (Path.GetExtension(firstPath).Equals(".html") || Path.GetExtension(firstPath).Equals(".htm"))
+            {
+                saveTemp = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), "temp.html");
+            }
             // convert results
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult);
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, saveTemp);
 
             //save all results in file
             string extension = Path.GetExtension(firstPath);
             SaveFile(compareResultResponse.GetGuid(), null, compareResult.GetStream(), extension);
-
+            File.Delete(saveTemp);
             compareResultResponse.SetExtension(extension);
 
             return compareResultResponse;
@@ -201,13 +207,17 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-
+            string saveTemp = null;
+            if (fileExt.Equals(".html") || fileExt.Equals(".htm"))
+            {               
+                saveTemp = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), "temp.html");
+            }
             // convert results
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult);
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, saveTemp);
 
             //save all results in file
             SaveFile(compareResultResponse.GetGuid(), null, compareResult.GetStream(), fileExt);
-
+            File.Delete(saveTemp);
             compareResultResponse.SetExtension(fileExt);
 
             return compareResultResponse;
@@ -323,19 +333,23 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-
+            string saveTemp = null;
+            if(ext.Equals("html") || ext.Equals("htm"))
+            {
+                saveTemp = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), "temp.html");
+            }
             // convert results
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult);
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, saveTemp);
 
             //save all results in file
             SaveFile(compareResultResponse.GetGuid(), null, compareResult.GetStream(), ext);
-
+            File.Delete(saveTemp);
             compareResultResponse.SetExtension(ext);
 
             return compareResultResponse;
         }
 
-        private CompareResultResponse GetCompareResultResponse(ICompareResult compareResult)
+        private CompareResultResponse GetCompareResultResponse(ICompareResult compareResult, string saveTemp)
         {
             CompareResultResponse compareResultResponse = new CompareResultResponse();
 
@@ -348,15 +362,25 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
 
             // if there are changes save images of all pages
             // unless save only the last page with summary
+            Stream[] images = null;
             if (changes != null && changes.Length > 0)
             {
-                List<string> pages = SaveImages(compareResult.GetImages(), guid);
+                if (!String.IsNullOrEmpty(saveTemp))
+                {                                     
+                    compareResult.SaveDocument(saveTemp);
+                    images = compareResult.GetImages();                    
+                }
+                else
+                {
+                    images = compareResult.GetImages();                   
+                }
+                List<string> pages = SaveImages(images, guid);
                 // save all pages
                 compareResultResponse.SetPages(pages);
             }
             else
             {
-                Stream[] images = compareResult.GetImages();
+               images = compareResult.GetImages();
                 int last = images.Length - 1;
                 // save only summary page
                 compareResultResponse.AddPage(SaveFile(guid, last.ToString(), images[last], JPG));
@@ -383,6 +407,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 {
                     inputStream.Seek(0, SeekOrigin.Begin);
                     inputStream.CopyTo(fileStream);
+                    inputStream.Close();
                 }
             }
             catch (IOException)
@@ -417,6 +442,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                     return PDF;
                 case ".txt":
                     return TXT;
+                case ".html":
+                    return HTML;
+                case ".htm":
+                    return HTM;
                 default:
                     return ext;
             }
@@ -439,6 +468,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 case ".pptx":
                 case ".pdf":
                 case ".txt":
+                case ".html":
+                case ".htm":
                     return true;
                 default:
                     return false;
