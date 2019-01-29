@@ -53,8 +53,9 @@
                     textRedactionAnnotation: @config.Annotation.GetIsTextRedactionAnnotation().ToString().ToLowerInvariant(),
                     resourcesRedactionAnnotation: @config.Annotation.GetIsResourcesRedactionAnnotation().ToString().ToLowerInvariant(),
                     textUnderlineAnnotation: @config.Annotation.GetIsTextUnderlineAnnotation().ToString().ToLowerInvariant(),
-                    distanceAnnotation: @config.Annotation.GetIsDistanceAnnotation().ToString().ToLowerInvariant()                  
-                });
+                    distanceAnnotation: @config.Annotation.GetIsDistanceAnnotation().ToString().ToLowerInvariant(),                  
+					enableRightClick: @config.Common.enableRightClick.ToString().ToLowerInvariant()                
+            });
     </script>
 </body>
 </html>

@@ -48,7 +48,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             // create annotation application configuration
             AnnotationConfig config = new AnnotationConfig();
             // set storage path
-            config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();            
+            config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();
             // initialize total instance for the Image mode
             AnnotationImageHandler = new AnnotationImageHandler(config);
         }
@@ -200,7 +200,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
-        }      
+        }
 
         /// <summary>
         /// Get document page
@@ -225,7 +225,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     CountPagesToConvert = 1,
                     Password = password
                 };
-                string documentPath = GetDocumentPath(documentGuid);               
+                string documentPath = GetDocumentPath(documentGuid);
                 // get page image
                 byte[] bytes;
                 using (MemoryStream memoryStream = new MemoryStream())
@@ -234,7 +234,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     {
                         List<PageImage> images = AnnotationImageHandler.GetPages(document, imageOptions);
                         Stream imageStream = images[pageNumber - 1].Stream;
-                        
+
                         imageStream.Position = 0;
                         imageStream.CopyTo(memoryStream);
                         bytes = memoryStream.ToArray();
@@ -248,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 loadedPage.SetData(encodedImage);
                 DocumentInfoContainer documentDescription = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 loadedPage.height = documentDescription.Pages[pageNumber - 1].Height;
-                loadedPage.width = documentDescription.Pages[pageNumber - 1].Width;                
+                loadedPage.width = documentDescription.Pages[pageNumber - 1].Width;
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
             }
@@ -434,15 +434,15 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     path = documentGuid;
                     RemoveAnnotations(path);
-                }               
-               
+                }
+
                 // check if annotations array contains at least one annotation to add
                 if (annotations.Count != 0)
                 {
                     Stream cleanDoc = new FileStream(documentGuid, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                     Stream result = AnnotationImageHandler.ExportAnnotationsToDocument(cleanDoc, annotations, type);
                     cleanDoc.Dispose();
-                    cleanDoc.Close();    
+                    cleanDoc.Close();
                     // Save result stream to file.                       
                     using (FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                     {
@@ -485,9 +485,13 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         {
             try
             {
-                FileStream documentStream = new FileStream(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                DocumentType docType = DocumentTypesConverter.GetDocumentType(documentType);
-                return new BaseImporter(documentStream, AnnotationImageHandler, password).ImportAnnotations(docType);
+                AnnotationInfo[] annotations = null;
+                using (FileStream documentStream = new FileStream(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    DocumentType docType = DocumentTypesConverter.GetDocumentType(documentType);
+                    annotations = new BaseImporter(AnnotationImageHandler, password).ImportAnnotations(documentStream, docType);
+                }
+                return annotations;
             }
             catch (System.Exception ex)
             {

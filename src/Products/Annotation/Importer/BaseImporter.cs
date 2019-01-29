@@ -5,8 +5,7 @@ using System.IO;
 namespace GroupDocs.Total.MVC.Products.Annotation.Importer
 {
     public class BaseImporter
-    {
-        protected FileStream documentStream;
+    {        
         protected string password;
         protected AnnotationImageHandler annotator;
 
@@ -15,9 +14,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Importer
         /// </summary>
         /// <param name="documentStream"></param>
         /// <param name="annotator"></param>
-        public BaseImporter(FileStream documentStream, AnnotationImageHandler annotator, string password)
-        {
-            this.documentStream = documentStream;
+        public BaseImporter(AnnotationImageHandler annotator, string password)
+        {            
             this.annotator = annotator;
             this.password = password;
         }
@@ -27,7 +25,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Importer
         /// </summary>
         /// <param name="docType">int</param>
         /// <returns>AnnotationInfo[]</returns>
-        public AnnotationInfo[] ImportAnnotations(DocumentType docType)
+        public AnnotationInfo[] ImportAnnotations(Stream documentStream, DocumentType docType)
         {
             AnnotationInfo[] annotations = null;
 
@@ -38,7 +36,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Importer
             else
             {
                annotations = annotator.ImportAnnotations(documentStream, docType, password);
-            }           
+            }            
             return annotations;
         }
 
