@@ -15,8 +15,7 @@ namespace GroupDocs.Total.MVC.Test
 {
     [TestFixture]
     public class AnnotationControllerTest
-    {
-        private readonly AppHost appHost = AppHost.Simulate("src");
+    {       
 
         [SetUp]
         public void TestInitialize()
