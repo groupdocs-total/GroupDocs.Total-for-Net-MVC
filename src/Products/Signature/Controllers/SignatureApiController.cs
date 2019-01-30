@@ -1037,6 +1037,32 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         }
 
         /// <summary>
+        /// Save text signature
+        /// </summary>
+        /// <param name="postedData">SignaturePostedDataEntity</param>
+        /// <returns>Text signature preview image</returns>
+        [HttpGet]
+        [Route("signature/getFonts")]
+        public HttpResponseMessage GetFonts()
+        {
+            try
+            {
+                List<string> fonts = new List<string>();
+
+                foreach (FontFamily font in System.Drawing.FontFamily.Families)
+                {
+                    fonts.Add(font.Name);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, fonts);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
         /// Load signature XML data from file
         /// </summary>
         /// <typeparam name="T">Type</typeparam>
