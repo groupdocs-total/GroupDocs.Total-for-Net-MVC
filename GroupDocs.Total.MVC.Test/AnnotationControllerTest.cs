@@ -9,14 +9,13 @@ using System.Text;
 using Newtonsoft.Json;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
 using MvcIntegrationTestFramework.Hosting;
-using MvcIntegrationTestFramework.Browsing;
+using System.Threading.Tasks;
 
 namespace GroupDocs.Total.MVC.Test
 {
     [TestFixture]
     public class AnnotationControllerTest
-    {
-        private readonly AppHost appHost= AppHost.Simulate("src");
+    {       
 
         [SetUp]
         public void TestInitialize()
@@ -33,7 +32,7 @@ namespace GroupDocs.Total.MVC.Test
         [Test]
         public void ViewStatusTest()
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";            
+            string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
             using (var server = new DirectServer(path))
             {
                 var request = new SerialisableRequest
@@ -54,56 +53,30 @@ namespace GroupDocs.Total.MVC.Test
             "~/annotation".Route().ShouldMapTo<AnnotationController>(x => x.Index());
         }
 
-        //[Test]
-        //public void FileTreeStatusCodeTest()
-        //{
-        //    string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
-        //    using (var server = new DirectServer(path))
-        //    {
-        //        AnnotationPostedDataEntity requestData = new AnnotationPostedDataEntity();
-        //        requestData.path = "";
+        [Test]
+        public void FileTreeStatusCodeTest()
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
+            using (var server = new DirectServer(path))
+            {
 
-        //        var request = new SerialisableRequest
-        //        {
-        //            Method = "POST",
-        //            RequestUri = "/annotation/loadfiletree",
-        //            Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(requestData)),
-        //            Headers = new Dictionary<string, string>{
-        //                { "Content-Type", "application/json"}
-        //            }
-        //        };
+                AnnotationPostedDataEntity requestData = new AnnotationPostedDataEntity();
+                requestData.path = "";
 
-        //        var result = server.DirectCall(request);
-        //        Assert.That(result.StatusCode, Is.EqualTo(200));
-        //    }
+                var request = new SerialisableRequest
+                {
+                    Method = "POST",
+                    RequestUri = "/annotation/loadfiletree",
+                    Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(requestData)),
+                    Headers = new Dictionary<string, string>{
+                        { "Content-Type", "application/json"},
+                        { "Content-Length", JsonConvert.SerializeObject(requestData).Length.ToString()}
+                    }
+                };
 
-        //}
-
-
-        //[Test]
-        //public void FileTreeDataTest()
-        //{
-        //    string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
-        //    using (var server = new DirectServer(path))
-        //    {
-        //        AnnotationPostedDataEntity requestData = new AnnotationPostedDataEntity();
-        //        requestData.path = "";
-
-        //        var request = new SerialisableRequest
-        //        {
-        //            Method = "POST",
-        //            RequestUri = "/annotation/loadfiletree",
-        //            Content = null,
-        //            Headers = new Dictionary<string, string>{
-        //                { "Content-Type", "application/json"}                        
-        //            }
-        //        };
-
-        //        var result = server.DirectCall(request);
-        //        var resultString = Encoding.UTF8.GetString(result.Content);
-        //        dynamic data = JsonConvert.DeserializeObject(resultString);
-        //        Assert.IsTrue(data.Count > 0);
-        //    }
-        //}
+                var result = server.DirectCall(request);
+                Assert.That(result.StatusCode, Is.EqualTo(200));
+            }
+        }        
     }
 }

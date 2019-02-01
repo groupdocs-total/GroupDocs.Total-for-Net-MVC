@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 
 namespace GroupDocs.Total.MVC.Test
 {
@@ -50,48 +51,30 @@ namespace GroupDocs.Total.MVC.Test
             "~/signature".Route().ShouldMapTo<SignatureController>(x => x.Index());
         }
 
-        //[Test]
-        //public void FileTreeStatusCodeTest()
-        //{
-        //    string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
-        //    using (var server = new DirectServer(path))
-        //    {
-        //        var request = new SerialisableRequest
-        //        {
-        //            Method = "POST",
-        //            RequestUri = "/signature/loadfiletree",
-        //            Content = null,
-        //            Headers = new Dictionary<string, string>{
-        //                { "Content-Type", "application/json"}
-        //            }
-        //        };
+        [Test]
+        public void FileTreeStatusCodeTest()
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
+            using (var server = new DirectServer(path))
+            {
 
-        //        var result = server.DirectCall(request);
-        //        Assert.That(result.StatusCode, Is.EqualTo(200));
-        //    }
-        //}
+                SignaturePostedDataEntity requestData = new SignaturePostedDataEntity();
+                requestData.path = "";
 
-        //[Test]
-        //public void FileTreeDataTest()
-        //{
-        //    string path = AppDomain.CurrentDomain.BaseDirectory + "/../../../src";
-        //    using (var server = new DirectServer(path))
-        //    {
-        //        var request = new SerialisableRequest
-        //        {
-        //            Method = "POST",
-        //            RequestUri = "/signature/loadfiletree",
-        //            Content = null,
-        //            Headers = new Dictionary<string, string>{
-        //                { "Content-Type", "application/json"}
-        //            }
-        //        };
+                var request = new SerialisableRequest
+                {
+                    Method = "POST",
+                    RequestUri = "/signature/loadfiletree",
+                    Content = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(requestData)),
+                    Headers = new Dictionary<string, string>{
+                        { "Content-Type", "application/json"},
+                        { "Content-Length", JsonConvert.SerializeObject(requestData).Length.ToString()}
+                    }
+                };
 
-        //        var result = server.DirectCall(request);
-        //        var resultString = Encoding.UTF8.GetString(result.Content);
-        //        dynamic data = JsonConvert.DeserializeObject(resultString);
-        //        Assert.IsTrue(data.Count > 0);
-        //    }
-        //}
+                var result = server.DirectCall(request);
+                Assert.That(result.StatusCode, Is.EqualTo(200));
+            }
+        }
     }
 }
