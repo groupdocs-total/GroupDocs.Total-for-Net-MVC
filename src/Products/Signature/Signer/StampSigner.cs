@@ -1,4 +1,5 @@
-﻿using GroupDocs.Signature.Domain;
+﻿using System;
+using GroupDocs.Signature.Domain;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
@@ -49,42 +50,18 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     text = text + stampData[n].text;
                 }
                 // set reduction size - required to recalculate each stamp line height and font size after stamp resizing in the UI
-                int reductionSize = 0;
-                // check if reduction size is between 1 and 2. for example: 1.25
-                if ((double)stampData[n].height / signatureData.ImageHeight > 1 && (double)stampData[n].height / signatureData.ImageHeight < 2)
-                {
-                    reductionSize = 2;
-                }
-                else if (stampData[n].height / signatureData.ImageHeight == 0)
-                {
-                    reductionSize = 1;
-                }
-                else
-                {
-                    reductionSize = stampData[n].height / signatureData.ImageHeight;
-                }
+                int reductionSize = CalculateRedactionSize(stampData[n]);              
+               
                 // draw most inner line - horizontal text
                 if ((n + 1) == stampData.Length)
                 {
-                    StampLine squareLine = new StampLine();
-                    squareLine.Text = text;
-                    squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    squareLine.Font.Bold = stampData[n].bold;
-                    squareLine.Font.Italic = stampData[n].italic;
-                    squareLine.Font.Underline = stampData[n].underline;
-                    squareLine.TextColor = getColor(stampData[n].textColor);
+                    StampLine squareLine = PrepareHarisontalLine(stampData[n], text, reductionSize);
                     pdfSignOptions.InnerLines.Add(squareLine);
-                    // check if stamp contains from only one line
+                    // check if stamp contains only one line
                     if (stampData.Length == 1)
                     {
                         // if stamp contains only one line draw it as outer and inner line
-                        StampLine line = new StampLine();
-                        line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                        line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = stampData[n].strokeWidth;
-                        line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
-                        line.Height = 1;
+                        StampLine line = DrawOuterLineForSquare(stampData[n]);
                         pdfSignOptions.OuterLines.Add(line);
                     }
                 }
@@ -92,26 +69,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 {
                     // draw outer stamp lines - rounded
                     int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = new StampLine();
-                    line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                    line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = stampData[n].strokeWidth;
-                    line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
-                    line.Text = text;
-                    line.Height = height;
-                    line.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    line.Font.Bold = stampData[n].bold;
-                    line.Font.Italic = stampData[n].italic;
-                    line.Font.Underline = stampData[n].underline;
-                    line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
-                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;                    
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
                     pdfSignOptions.OuterLines.Add(line);
                 }
             }
             return pdfSignOptions;
-        }
+        }       
 
         /// <summary>
         /// Add image signature data
@@ -139,42 +102,17 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     text = text + stampData[n].text;
                 }
                 // set reduction size - required to recalculate each stamp line height and font size after stamp resizing in the UI
-                int reductionSize = 0;
-                // check if reduction size is between 1 and 2. for example: 1.25
-                if ((double)stampData[n].height / signatureData.ImageHeight > 1 && (double)stampData[n].height / signatureData.ImageHeight < 2)
-                {
-                    reductionSize = 2;
-                }
-                else if (stampData[n].height / signatureData.ImageHeight == 0)
-                {
-                    reductionSize = 1;
-                }
-                else
-                {
-                    reductionSize = stampData[n].height / signatureData.ImageHeight;
-                }
+                int reductionSize = CalculateRedactionSize(stampData[n]);
                 // draw most inner line - horizontal text
                 if ((n + 1) == stampData.Length)
                 {
-                    StampLine squareLine = new StampLine();
-                    squareLine.Text = text;
-                    squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    squareLine.Font.Bold = stampData[n].bold;
-                    squareLine.Font.Italic = stampData[n].italic;
-                    squareLine.Font.Underline = stampData[n].underline;
-                    squareLine.TextColor = getColor(stampData[n].textColor);
+                    StampLine squareLine = PrepareHarisontalLine(stampData[n], text, reductionSize);
                     imageSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
                     if (stampData.Length == 1)
                     {
                         // if stamp contains only one line draw it as outer and inner line
-                        StampLine line = new StampLine();
-                        line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                        line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = stampData[n].strokeWidth;
-                        line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
-                        line.Height = 1;
+                        StampLine line = DrawOuterLineForSquare(stampData[n]);
                         imageSignOptions.OuterLines.Add(line);
                     }
                 }
@@ -182,21 +120,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 {
                     // draw outer stamp lines - rounded
                     int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = new StampLine();
-                    line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                    line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = stampData[n].strokeWidth;
-                    line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
-                    line.Text = text;
-                    line.Font.Bold = stampData[n].bold;
-                    line.Font.Italic = stampData[n].italic;
-                    line.Font.Underline = stampData[n].underline;
-                    line.Height = height;
-                    line.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
-                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
                     imageSignOptions.OuterLines.Add(line);
                 }
             }
@@ -229,42 +153,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     text = text + stampData[n].text;
                 }
                 // set reduction size - required to recalculate each stamp line height and font size after stamp resizing in the UI
-                int reductionSize = 0;
-                // check if reduction size is between 1 and 2. for example: 1.25
-                if ((double)stampData[n].height / signatureData.ImageHeight > 1 && (double)stampData[n].height / signatureData.ImageHeight < 2)
-                {
-                    reductionSize = 2;
-                }
-                else if (stampData[n].height / signatureData.ImageHeight == 0)
-                {
-                    reductionSize = 1;
-                }
-                else
-                {
-                    reductionSize = stampData[n].height / signatureData.ImageHeight;
-                }
+                int reductionSize = CalculateRedactionSize(stampData[n]);
                 // draw most inner line - horizontal text
                 if ((n + 1) == stampData.Length)
                 {
-                    StampLine squareLine = new StampLine();
-                    squareLine.Text = text;
-                    squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    squareLine.TextColor = getColor(stampData[n].textColor);
-                    squareLine.Font.Bold = stampData[n].bold;
-                    squareLine.Font.Italic = stampData[n].italic;
-                    squareLine.Font.Underline = stampData[n].underline;
+                    StampLine squareLine = PrepareHarisontalLine(stampData[n], text, reductionSize);
                     wordsSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
                     if (stampData.Length == 1)
                     {
-                        // if stamp contains only one line draw it as outer and inner line
-                        StampLine line = new StampLine();
-                        line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                        line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = stampData[n].strokeWidth;
-                        line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
-                        line.Height = 1;
+                        StampLine line = DrawOuterLineForSquare(stampData[n]);
                         wordsSignOptions.OuterLines.Add(line);
                     }
                 }
@@ -272,21 +170,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 {
                     // draw outer stamp lines - rounded
                     int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = new StampLine();
-                    line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                    line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = stampData[n].strokeWidth;
-                    line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
-                    line.Font.Bold = stampData[n].bold;
-                    line.Font.Italic = stampData[n].italic;
-                    line.Font.Underline = stampData[n].underline;
-                    line.Text = text;
-                    line.Height = height;
-                    line.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
-                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
                     wordsSignOptions.OuterLines.Add(line);
                 }
             }
@@ -319,42 +203,17 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     text = text + stampData[n].text;
                 }
                 // set reduction size - required to recalculate each stamp line height and font size after stamp resizing in the UI
-                int reductionSize = 0;
-                // check if reduction size is between 1 and 2. for example: 1.25
-                if ((double)stampData[n].height / signatureData.ImageHeight > 1 && (double)stampData[n].height / signatureData.ImageHeight < 2)
-                {
-                    reductionSize = 2;
-                }
-                else if (stampData[n].height / signatureData.ImageHeight == 0)
-                {
-                    reductionSize = 1;
-                }
-                else
-                {
-                    reductionSize = stampData[n].height / signatureData.ImageHeight;
-                }
+                int reductionSize = CalculateRedactionSize(stampData[n]);
                 // draw most inner line - horizontal text
                 if ((n + 1) == stampData.Length)
                 {
-                    StampLine squareLine = new StampLine();
-                    squareLine.Text = text;
-                    squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    squareLine.TextColor = getColor(stampData[n].textColor);
-                    squareLine.Font.Bold = stampData[n].bold;
-                    squareLine.Font.Italic = stampData[n].italic;
-                    squareLine.Font.Underline = stampData[n].underline;
+                    StampLine squareLine = PrepareHarisontalLine(stampData[n], text, reductionSize);
                     cellsSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
                     if (stampData.Length == 1)
                     {
                         // if stamp contains only one line draw it as outer and inner line
-                        StampLine line = new StampLine();
-                        line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                        line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = stampData[n].strokeWidth;
-                        line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
-                        line.Height = 1;
+                        StampLine line = DrawOuterLineForSquare(stampData[n]);
                         cellsSignOptions.OuterLines.Add(line);
                     }
                 }
@@ -362,21 +221,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 {
                     // draw outer stamp lines - rounded
                     int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = new StampLine();
-                    line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                    line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = stampData[n].strokeWidth;
-                    line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
-                    line.Text = text;
-                    line.Height = height;
-                    line.Font.Bold = stampData[n].bold;
-                    line.Font.Italic = stampData[n].italic;
-                    line.Font.Underline = stampData[n].underline;
-                    line.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
-                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
                     cellsSignOptions.OuterLines.Add(line);
                 }
             }
@@ -409,42 +254,17 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                     text = text + stampData[n].text;
                 }
                 // set reduction size - required to recalculate each stamp line height and font size after stamp resizing in the UI
-                int reductionSize = 0;
-                // check if reduction size is between 1 and 2. for example: 1.25
-                if ((double)stampData[n].height / signatureData.ImageHeight > 1 && (double)stampData[n].height / signatureData.ImageHeight < 2)
-                {
-                    reductionSize = 2;
-                }
-                else if (stampData[n].height / signatureData.ImageHeight == 0)
-                {
-                    reductionSize = 1;
-                }
-                else
-                {
-                    reductionSize = stampData[n].height / signatureData.ImageHeight;
-                }
+                int reductionSize = CalculateRedactionSize(stampData[n]);
                 // draw most inner line - horizontal text
                 if ((n + 1) == stampData.Length)
                 {
-                    StampLine squareLine = new StampLine();
-                    squareLine.Text = text;
-                    squareLine.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    squareLine.Font.Bold = stampData[n].bold;
-                    squareLine.Font.Italic = stampData[n].italic;
-                    squareLine.Font.Underline = stampData[n].underline;
-                    squareLine.TextColor = getColor(stampData[n].textColor);
+                    StampLine squareLine = PrepareHarisontalLine(stampData[n], text, reductionSize);
                     slidesSignOptions.InnerLines.Add(squareLine);
                     // check if stamp contains from only one line
                     if (stampData.Length == 1)
                     {
                         // if stamp contains only one line draw it as outer and inner line
-                        StampLine line = new StampLine();
-                        line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                        line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                        line.OuterBorder.Weight = stampData[n].strokeWidth;
-                        line.InnerBorder.Color = getColor(stampData[n].backgroundColor);
-                        line.InnerBorder.Weight = 0.5;
-                        line.Height = 1;
+                        StampLine line = DrawOuterLineForSquare(stampData[n]);                       
                         slidesSignOptions.OuterLines.Add(line);
                     }
                 }
@@ -452,25 +272,73 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 {
                     // draw outer stamp lines - rounded
                     int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = new StampLine();
-                    line.BackgroundColor = getColor(stampData[n].backgroundColor);
-                    line.OuterBorder.Color = getColor(stampData[n].strokeColor);
-                    line.OuterBorder.Weight = stampData[n].strokeWidth;
-                    line.InnerBorder.Color = getColor(stampData[n + 1].strokeColor);
-                    line.InnerBorder.Weight = 0.5;
-                    line.Text = text;
-                    line.Font.Bold = stampData[n].bold;
-                    line.Font.Italic = stampData[n].italic;
-                    line.Font.Underline = stampData[n].underline;
-                    line.Height = height;
-                    line.Font.FontSize = stampData[n].fontSize / reductionSize;
-                    line.TextColor = getColor(stampData[n].textColor);
-                    line.TextBottomIntent = (height / 2) - (stampData[n].fontSize / 2);
-                    line.TextRepeatType = StampTextRepeatType.RepeatWithTruncation;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);                   
                     slidesSignOptions.OuterLines.Add(line);
                 }
             }
             return slidesSignOptions;
+        }
+
+        private StampLine DrawOuterCircle(StampXmlEntity stampData, string innerBorderColor, string text, int height, int reductionSize)
+        {
+            StampLine line = new StampLine();           
+            line.BackgroundColor = getColor(stampData.backgroundColor);
+            line.OuterBorder.Color = getColor(stampData.strokeColor);
+            line.OuterBorder.Weight = stampData.strokeWidth;
+            line.InnerBorder.Color = getColor(innerBorderColor);
+            line.InnerBorder.Weight = 0.5;
+            line.Text = text;
+            line.Font.Bold = stampData.bold;
+            line.Font.Italic = stampData.italic;
+            line.Font.Underline = stampData.underline;
+            line.Height = height;
+            line.Font.FontSize = stampData.fontSize / reductionSize;
+            line.TextColor = getColor(stampData.textColor);
+            line.TextBottomIntent = (height / 2) - (stampData.fontSize / 2);
+            line.TextRepeatType = StampTextRepeatType.None;            
+            return line;
+        }
+
+        private StampLine DrawOuterLineForSquare(StampXmlEntity stampData)
+        {
+            StampLine line = new StampLine();
+            line.BackgroundColor = getColor(stampData.backgroundColor);
+            line.OuterBorder.Color = getColor(stampData.strokeColor);
+            line.OuterBorder.Weight = stampData.strokeWidth;
+            line.InnerBorder.Color = getColor(stampData.backgroundColor);
+            line.InnerBorder.Weight = 0.5;
+            line.Height = 1;
+            return line;
+        }
+
+        private int CalculateRedactionSize(StampXmlEntity stampData)
+        {
+            int reductionSize = 0;
+            if ((double)stampData.height / signatureData.ImageHeight > 1 && (double)stampData.height / signatureData.ImageHeight < 2)
+            {
+                reductionSize = 2;
+            }
+            else if (stampData.height / signatureData.ImageHeight == 0)
+            {
+                reductionSize = 1;
+            }
+            else
+            {
+                reductionSize = stampData.height / signatureData.ImageHeight;
+            }
+            return reductionSize;
+        }
+
+        private StampLine PrepareHarisontalLine(StampXmlEntity stampData, string text, int reductionSize)
+        {
+            StampLine squareLine = new StampLine();
+            squareLine.Text = text;
+            squareLine.Font.FontSize = stampData.fontSize / reductionSize;
+            squareLine.Font.Bold = stampData.bold;
+            squareLine.Font.Italic = stampData.italic;
+            squareLine.Font.Underline = stampData.underline;
+            squareLine.TextColor = getColor(stampData.textColor);
+            return squareLine;
         }
     }
 }
