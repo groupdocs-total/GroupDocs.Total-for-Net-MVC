@@ -40,7 +40,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;            
+            signOptions.RotationAngle = signatureData.Angle;
             return signOptions;
         }
 
@@ -53,14 +53,14 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             // setup options
             ImagesQRCodeSignOptions signOptions = new ImagesQRCodeSignOptions(qrCodeData.text);
             signOptions.EncodeType = QRCodeTypes.QR;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
+            signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
+            signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
             signOptions.Width = signatureData.ImageWidth;
             signOptions.Height = signatureData.ImageHeight;
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;            
+            signOptions.RotationAngle = signatureData.Angle;
             return signOptions;
         }
 
@@ -80,7 +80,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;            
+            signOptions.RotationAngle = signatureData.Angle;
             return signOptions;
         }
 
@@ -100,7 +100,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;           
+            signOptions.RotationAngle = signatureData.Angle;
             return signOptions;
         }
 
@@ -120,7 +120,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;          
+            signOptions.RotationAngle = signatureData.Angle;
             return signOptions;
         }
 

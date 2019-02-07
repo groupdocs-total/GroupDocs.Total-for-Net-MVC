@@ -10,7 +10,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
     /// </summary>
     public class BarCodeSigner : BaseSigner
     {
-        private OpticalXmlEntity QrCodeData;
+        private OpticalXmlEntity QrCodeData;       
 
         /// <summary>
         /// Constructor
@@ -52,8 +52,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             // setup options
             ImagesBarcodeSignOptions signOptions = new ImagesBarcodeSignOptions(QrCodeData.text);
             signOptions.EncodeType = BarcodeTypes.Code39Standard;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
+            signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
+            signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
             signOptions.Width = signatureData.ImageWidth;
             signOptions.Height = signatureData.ImageHeight;
             signOptions.Top = signatureData.Top;

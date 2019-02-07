@@ -420,7 +420,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Total\Index.cshtml" />
+    <EmbeddedResource Include="Views\Total\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Viewer\Index.cshtml" />

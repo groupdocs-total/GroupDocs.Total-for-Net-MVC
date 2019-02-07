@@ -533,10 +533,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string signatureType = postedData.signatureType;
                 // initiate signature data wrapper with default values
                 SignatureDataEntity signaturesData = new SignatureDataEntity();
-                signaturesData.ImageHeight = 250;
-                signaturesData.ImageWidth = 250;
+                signaturesData.ImageHeight = 200;
+                signaturesData.ImageWidth = 270;               
                 signaturesData.Left = 0;
                 signaturesData.Top = 0;
+                signaturesData.setHorizontalAlignment(HorizontalAlignment.Center);
+                signaturesData.setVerticalAlignment(VerticalAlignment.Center);
                 // initiate signer object
                 string previewPath;
                 string xmlPath;
@@ -547,7 +549,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // check optical signature type
                 if (signatureType.Equals("qrCode"))
                 {
-                    qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);
+                    qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);                   
                     // get preview path
                     previewPath = DirectoryUtils.DataDirectory.QrCodeDirectory.PreviewPath;
                     // get xml file path
@@ -557,7 +559,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 }
                 else
                 {
-                    barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);
+                    barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);                  
                     // get preview path
                     previewPath = DirectoryUtils.DataDirectory.BarcodeDirectory.PreviewPath;
                     // get xml file path
