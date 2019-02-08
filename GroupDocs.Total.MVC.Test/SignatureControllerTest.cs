@@ -75,6 +75,6 @@ namespace GroupDocs.Total.MVC.Test
                 var result = server.DirectCall(request);
                 Assert.That(result.StatusCode, Is.EqualTo(200));
             }
-        }
+        }        
     }
 }

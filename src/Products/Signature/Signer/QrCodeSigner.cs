@@ -1,4 +1,5 @@
 ﻿
+using System;
 using GroupDocs.Signature.Domain;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
@@ -32,15 +33,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             PdfQRCodeSignOptions signOptions = new PdfQRCodeSignOptions(qrCodeData.text);
-            signOptions.EncodeType = QRCodeTypes.QR;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -52,15 +45,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             ImagesQRCodeSignOptions signOptions = new ImagesQRCodeSignOptions(qrCodeData.text);
-            signOptions.EncodeType = QRCodeTypes.QR;
-            signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
-            signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -72,15 +57,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             WordsQRCodeSignOptions signOptions = new WordsQRCodeSignOptions(qrCodeData.text);
-            signOptions.EncodeType = QRCodeTypes.QR;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -92,15 +69,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             CellsQRCodeSignOptions signOptions = new CellsQRCodeSignOptions(qrCodeData.text);
-            signOptions.EncodeType = QRCodeTypes.QR;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -111,18 +80,25 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         public override SignOptions SignSlides()
         {
             // setup options
-            SlidesQRCodeSignOptions signOptions = new SlidesQRCodeSignOptions(qrCodeData.text);
+            SlidesQRCodeSignOptions signOptions = new SlidesQRCodeSignOptions(qrCodeData.text);            
+            SetOptions(signOptions);
+            return signOptions;
+        }
+
+        private void SetOptions(QRCodeSignOptions signOptions)
+        {
             signOptions.EncodeType = QRCodeTypes.QR;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
+            signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
+            signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
             signOptions.Width = signatureData.ImageWidth;
             signOptions.Height = signatureData.ImageHeight;
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;
-            return signOptions;
+            if (signatureData.Angle != 0)
+            {
+                signOptions.RotationAngle = signatureData.Angle;
+            }
         }
-
     }
 }

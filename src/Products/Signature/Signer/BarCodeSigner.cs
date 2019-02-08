@@ -1,4 +1,5 @@
-﻿using GroupDocs.Signature.Domain;
+﻿using System;
+using GroupDocs.Signature.Domain;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
@@ -31,17 +32,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             PdfBarcodeSignOptions signOptions = new PdfBarcodeSignOptions(QrCodeData.text);
-            signOptions.EncodeType = BarcodeTypes.Code39Standard;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;           
+            SetOptions(signOptions);                     
             return signOptions;
         }
+
+        
 
         /// <summary>
         /// Add signature data for image file
@@ -51,17 +46,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             ImagesBarcodeSignOptions signOptions = new ImagesBarcodeSignOptions(QrCodeData.text);
-            signOptions.EncodeType = BarcodeTypes.Code39Standard;
-            signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
-            signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            if (signatureData.Angle != 0)
-            {
-                signOptions.RotationAngle = signatureData.Angle;
-            }            
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -73,15 +58,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             WordsBarcodeSignOptions signOptions = new WordsBarcodeSignOptions(QrCodeData.text);
-            signOptions.EncodeType = BarcodeTypes.Code39Standard;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;            
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -93,15 +70,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             CellsBarcodeSignOptions signOptions = new CellsBarcodeSignOptions(QrCodeData.text);
-            signOptions.EncodeType = BarcodeTypes.Code39Standard;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
-            signOptions.Width = signatureData.ImageWidth;
-            signOptions.Height = signatureData.ImageHeight;
-            signOptions.Top = signatureData.Top;
-            signOptions.Left = signatureData.Left;
-            signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;           
+            SetOptions(signOptions);
             return signOptions;
         }
 
@@ -113,16 +82,24 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
         {
             // setup options
             SlidesBarcodeSignOptions signOptions = new SlidesBarcodeSignOptions(QrCodeData.text);
+            SetOptions(signOptions);
+            return signOptions;
+        }
+
+        private void SetOptions(BarcodeSignOptions signOptions)
+        {
             signOptions.EncodeType = BarcodeTypes.Code39Standard;
-            signOptions.HorizontalAlignment = HorizontalAlignment.None;
-            signOptions.VerticalAlignment = VerticalAlignment.None;
+            signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
+            signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
             signOptions.Width = signatureData.ImageWidth;
             signOptions.Height = signatureData.ImageHeight;
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
             signOptions.DocumentPageNumber = signatureData.PageNumber;
-            signOptions.RotationAngle = signatureData.Angle;            
-            return signOptions;
+            if (signatureData.Angle != 0)
+            {
+                signOptions.RotationAngle = signatureData.Angle;
+            }
         }
     }
 }
