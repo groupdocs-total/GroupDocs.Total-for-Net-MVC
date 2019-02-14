@@ -595,15 +595,15 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     }
                 }
                 // generate empty image for future signing with Optical signature, such approach required to get QR-Code as image
-                using (Bitmap bitMap = new Bitmap(signaturesData.ImageWidth, signaturesData.ImageHeight))
+                using (Bitmap bitMap = new Bitmap(200, 200))
                 {
                     using (MemoryStream memory = new MemoryStream())
-                    {
+                    {                        
                         using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
-                        {
-                            bitMap.Save(memory, ImageFormat.Png);
+                        {                           
+                            bitMap.Save(memory, ImageFormat.Png);                           
                             byte[] bytes = memory.ToArray();
-                            fs.Write(bytes, 0, bytes.Length);
+                            fs.Write(bytes, 0, bytes.Length);                          
                         }
                     }
                 }

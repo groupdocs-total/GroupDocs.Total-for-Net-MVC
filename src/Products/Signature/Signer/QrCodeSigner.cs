@@ -1,6 +1,4 @@
-﻿
-using System;
-using GroupDocs.Signature.Domain;
+﻿using GroupDocs.Signature.Domain;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
@@ -90,7 +88,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
             signOptions.EncodeType = QRCodeTypes.QR;
             signOptions.HorizontalAlignment = signatureData.getHorizontalAlignment();
             signOptions.VerticalAlignment = signatureData.getVerticalAlignment();
-            signOptions.Width = signatureData.ImageWidth;
+            signOptions.Width = signatureData.ImageWidth;           
             signOptions.Height = signatureData.ImageHeight;
             signOptions.Top = signatureData.Top;
             signOptions.Left = signatureData.Left;
