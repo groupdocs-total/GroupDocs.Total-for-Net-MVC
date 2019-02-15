@@ -68,8 +68,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 else
                 {
                     // draw outer stamp lines - rounded
-                    int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
+                    double height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, Convert.ToInt32(height), reductionSize);
                     pdfSignOptions.OuterLines.Add(line);
                 }
             }
@@ -119,8 +119,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 else
                 {
                     // draw outer stamp lines - rounded
-                    int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
+                    double height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, Convert.ToInt32(height), reductionSize);
                     imageSignOptions.OuterLines.Add(line);
                 }
             }
@@ -169,8 +169,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 else
                 {
                     // draw outer stamp lines - rounded
-                    int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
+                    double height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, Convert.ToInt32(height), reductionSize);
                     wordsSignOptions.OuterLines.Add(line);
                 }
             }
@@ -220,8 +220,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 else
                 {
                     // draw outer stamp lines - rounded
-                    int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);
+                    double height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, Convert.ToInt32(height), reductionSize);
                     cellsSignOptions.OuterLines.Add(line);
                 }
             }
@@ -271,8 +271,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Signer
                 else
                 {
                     // draw outer stamp lines - rounded
-                    int height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
-                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, height, reductionSize);                   
+                    double height = (stampData[n].radius - stampData[n + 1].radius) / reductionSize;
+                    StampLine line = DrawOuterCircle(stampData[n], stampData[n + 1].strokeColor, text, Convert.ToInt32(height), reductionSize);                   
                     slidesSignOptions.OuterLines.Add(line);
                 }
             }

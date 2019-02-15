@@ -24,7 +24,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Xml
         public string backgroundColor = "rgb(0,0,0)";
 
         [XmlElement("radius")]
-        public int radius { get; set; }
+        public double radius { get; set; }
 
         [XmlElement("fontSize")]
         public int fontSize { get; set; }
