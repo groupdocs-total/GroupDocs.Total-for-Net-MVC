@@ -48,17 +48,17 @@
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Annotation, Version=18.12.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Annotation.18.12.0\lib\GroupDocs.Annotation.dll</HintPath>
+    <Reference Include="GroupDocs.Annotation, Version=19.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Annotation.19.1.0\lib\GroupDocs.Annotation.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Comparison, Version=18.11.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Comparison.18.11.0\lib\GroupDocs.Comparison.dll</HintPath>
+    <Reference Include="GroupDocs.Comparison, Version=19.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Comparison.19.1.0\lib\GroupDocs.Comparison.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Signature, Version=18.12.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Signature.18.12.0\lib\GroupDocs.Signature.dll</HintPath>
+    <Reference Include="GroupDocs.Signature, Version=19.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Signature.19.1.0\lib\GroupDocs.Signature.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Viewer, Version=19.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Viewer.19.1.0\lib\GroupDocs.Viewer.dll</HintPath>
+    <Reference Include="GroupDocs.Viewer, Version=19.2.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Viewer.19.2.0\lib\GroupDocs.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -487,11 +487,11 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
-   <Target Name="BeforeBuild">
-    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' "/>
-    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js update" Condition=" '$(OS)' == 'Windows_NT' "/>
-    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe .\node_modules\gulp\bin\gulp.js build" Condition=" '$(OS)' == 'Windows_NT' "/>
-</Target>
+  <Target Name="BeforeBuild">
+    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js update" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe .\node_modules\gulp\bin\gulp.js build" Condition=" '$(OS)' == 'Windows_NT' " />
+  </Target>
   <Target Name="AfterBuild">
     <ItemGroup>
       <ZipFiles Include="$(OutDir)**\*.*" />
