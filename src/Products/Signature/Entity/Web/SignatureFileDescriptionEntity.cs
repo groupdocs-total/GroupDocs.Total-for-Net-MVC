@@ -9,5 +9,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Web
     {
         public string image { get; set; }
         public string text { get; set; }
+        public string fontColor { get; set; }
     }
 }

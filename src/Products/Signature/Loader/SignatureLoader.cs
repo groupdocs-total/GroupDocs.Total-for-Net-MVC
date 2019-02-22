@@ -176,15 +176,27 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                             byte[] imageArray = File.ReadAllBytes(file);
                             string base64ImageRepresentation = Convert.ToBase64String(imageArray);
                             fileDescription.image = base64ImageRepresentation;
-                            if ("qrCode".Equals(signatureType) || "barCode".Equals(signatureType))
+                            if ("qrCode".Equals(signatureType) || "barCode".Equals(signatureType) || "text".Equals(signatureType))
                             {
                                 // get stream of the xml file
                                 StreamReader xmlStream = new StreamReader(Path.Combine(xmlPath, Path.GetFileNameWithoutExtension(file) + ".xml"));
                                 // initiate serializer
-                                XmlSerializer serializer = new XmlSerializer(typeof(OpticalXmlEntity));
-                                // deserialize XML into the object
-                                OpticalXmlEntity xmlData = (OpticalXmlEntity)serializer.Deserialize(xmlStream);
-                                fileDescription.text = xmlData.text;
+                                XmlSerializer serializer = null;
+                                dynamic xmlData = null;
+                                if ("text".Equals(signatureType))
+                                {
+                                    serializer = new XmlSerializer(typeof(TextXmlEntity));
+                                    // deserialize XML into the object
+                                    xmlData = (TextXmlEntity)serializer.Deserialize(xmlStream);
+                                    fileDescription.fontColor = xmlData.fontColor;
+                                }
+                                else
+                                {
+                                    serializer = new XmlSerializer(typeof(OpticalXmlEntity));
+                                    // deserialize XML into the object
+                                    xmlData = (OpticalXmlEntity)serializer.Deserialize(xmlStream);
+                                }
+                                fileDescription.text = xmlData.text;                                
                                 xmlStream.Close();
                                 xmlStream.Dispose();                                
                             }
