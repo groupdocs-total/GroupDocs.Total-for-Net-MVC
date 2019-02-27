@@ -58,8 +58,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             System.IO.Directory.CreateDirectory(BarcodeDirectory.XmlPath);
             System.IO.Directory.CreateDirectory(BarcodeDirectory.PreviewPath);
 
-            System.IO.Directory.CreateDirectory(TextDirectory.XmlPath);
-            System.IO.Directory.CreateDirectory(TextDirectory.PreviewPath);
+            System.IO.Directory.CreateDirectory(TextDirectory.XmlPath);          
         }
 
         /// <summary>

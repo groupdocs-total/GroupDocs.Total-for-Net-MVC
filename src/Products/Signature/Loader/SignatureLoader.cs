@@ -176,34 +176,57 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                             byte[] imageArray = File.ReadAllBytes(file);
                             string base64ImageRepresentation = Convert.ToBase64String(imageArray);
                             fileDescription.image = base64ImageRepresentation;
-                            if ("qrCode".Equals(signatureType) || "barCode".Equals(signatureType) || "text".Equals(signatureType))
+                            if ("qrCode".Equals(signatureType) || "barCode".Equals(signatureType))
                             {
                                 // get stream of the xml file
                                 StreamReader xmlStream = new StreamReader(Path.Combine(xmlPath, Path.GetFileNameWithoutExtension(file) + ".xml"));
                                 // initiate serializer
                                 XmlSerializer serializer = null;
-                                dynamic xmlData = null;
-                                if ("text".Equals(signatureType))
-                                {
-                                    serializer = new XmlSerializer(typeof(TextXmlEntity));
-                                    // deserialize XML into the object
-                                    xmlData = (TextXmlEntity)serializer.Deserialize(xmlStream);
-                                    fileDescription.fontColor = xmlData.fontColor;
-                                }
-                                else
-                                {
-                                    serializer = new XmlSerializer(typeof(OpticalXmlEntity));
-                                    // deserialize XML into the object
-                                    xmlData = (OpticalXmlEntity)serializer.Deserialize(xmlStream);
-                                }
-                                fileDescription.text = xmlData.text;                                
+                                serializer = new XmlSerializer(typeof(OpticalXmlEntity));
+                                // deserialize XML into the object
+                                OpticalXmlEntity xmlData = (OpticalXmlEntity)serializer.Deserialize(xmlStream);
+                                fileDescription.text = xmlData.text;
                                 xmlStream.Close();
-                                xmlStream.Dispose();                                
+                                xmlStream.Dispose();
                             }
                             // add object to array list
                             fileList.Add(fileDescription);
                         }
                     }
+                }
+                return fileList;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public List<SignatureFileDescriptionEntity> loadTextSignatures(string xmlFolder)
+        {
+            try
+            {
+                string xmlPath = CurrentPath + xmlFolder;
+                string[] xmlFiles = Directory.GetFiles(xmlPath);
+                // get all files from the directory
+                List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
+                foreach (string xmlFile in xmlFiles)
+                {
+                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
+                    fileDescription.guid = xmlFile;
+                    fileDescription.name = Path.GetFileName(xmlFile);
+                    // get stream of the xml file
+                    StreamReader xmlStream = new StreamReader(xmlFile);
+                    // initiate serializer
+                    XmlSerializer serializer = new XmlSerializer(typeof(TextXmlEntity));
+                    // deserialize XML into the object
+                    TextXmlEntity xmlData = (TextXmlEntity)serializer.Deserialize(xmlStream);
+                    fileDescription.text = xmlData.text;
+                    fileDescription.fontColor = xmlData.fontColor;
+                    xmlStream.Close();
+                    xmlStream.Dispose();
+                    // add object to array list
+                    fileList.Add(fileDescription);
                 }
                 return fileList;
             }

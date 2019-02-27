@@ -125,11 +125,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     case "image":
                     case "hand":
                         fileList = signatureLoader.LoadImageSignatures();
-                        break;
-                    case "stamp":
+                        break;                    
                     case "text":
+                        fileList = signatureLoader.loadTextSignatures(DataDirectoryEntity.DATA_XML_FOLDER);
+                        break;
                     case "qrCode":
                     case "barCode":
+                    case "stamp":
                         fileList = signatureLoader.LoadStampSignatures(DataDirectoryEntity.DATA_PREVIEW_FOLDER, DataDirectoryEntity.DATA_XML_FOLDER, signatureType);
                         break;
                     default:
@@ -157,13 +159,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             string password = "";
             try
             {
-                
+
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 password = postedData.password;
                 DocumentDescription documentDescription;
                 // get document info container
-                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);               
+                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);
                 List<SignatureLoadedPageEntity> pagesDescription = new List<SignatureLoadedPageEntity>();
                 // get info about each document page
                 Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -179,9 +181,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     description.number = i;
                     if (GlobalConfiguration.Signature.PreloadPageCount == 0)
                     {
-                        byte[] pageBytes = SignatureHandler.GetPageImage(documentGuid, i, password, null, 100);                        
+                        byte[] pageBytes = SignatureHandler.GetPageImage(documentGuid, i, password, null, 100);
                         string encodedImage = Convert.ToBase64String(pageBytes);
-                        description.SetData(encodedImage);                       
+                        description.SetData(encodedImage);
                     }
 
                     pagesDescription.Add(description);
@@ -534,7 +536,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // initiate signature data wrapper with default values
                 SignatureDataEntity signaturesData = new SignatureDataEntity();
                 signaturesData.ImageHeight = 200;
-                signaturesData.ImageWidth = 270;               
+                signaturesData.ImageWidth = 270;
                 signaturesData.Left = 0;
                 signaturesData.Top = 0;
                 signaturesData.setHorizontalAlignment(HorizontalAlignment.Center);
@@ -549,7 +551,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // check optical signature type
                 if (signatureType.Equals("qrCode"))
                 {
-                    qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);                   
+                    qrSigner = new QrCodeSigner(opticalCodeData, signaturesData);
                     // get preview path
                     previewPath = DirectoryUtils.DataDirectory.QrCodeDirectory.PreviewPath;
                     // get xml file path
@@ -559,7 +561,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 }
                 else
                 {
-                    barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);                  
+                    barCodeSigner = new BarCodeSigner(opticalCodeData, signaturesData);
                     // get preview path
                     previewPath = DirectoryUtils.DataDirectory.BarcodeDirectory.PreviewPath;
                     // get xml file path
@@ -598,12 +600,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 using (Bitmap bitMap = new Bitmap(200, 200))
                 {
                     using (MemoryStream memory = new MemoryStream())
-                    {                        
+                    {
                         using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
-                        {                           
-                            bitMap.Save(memory, ImageFormat.Png);                           
+                        {
+                            bitMap.Save(memory, ImageFormat.Png);
                             byte[] bytes = memory.ToArray();
-                            fs.Write(bytes, 0, bytes.Length);                          
+                            fs.Write(bytes, 0, bytes.Length);
                         }
                     }
                 }
@@ -655,30 +657,19 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         [Route("signature/saveText")]
         public HttpResponseMessage SaveText([FromBody] dynamic postedData)
         {
-            string previewPath = DirectoryUtils.DataDirectory.TextDirectory.PreviewPath;
             string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
             try
             {
                 TextXmlEntity textData = JsonConvert.DeserializeObject<TextXmlEntity>(postedData.properties.ToString());
-                // initiate signature data wrapper with default values
-                SignatureDataEntity signaturesData = new SignatureDataEntity();
-                signaturesData.ImageHeight = textData.height;
-                signaturesData.ImageWidth = textData.width;
-                signaturesData.Left = 0;
-                signaturesData.Top = 0;
-                // initiate signer object
-                TextSigner textSigner = new TextSigner(textData, signaturesData);
                 // initiate signature options collection
                 SignatureOptionsCollection collection = new SignatureOptionsCollection();
-                // generate unique file names for preview image and xml file
-                collection.Add(textSigner.SignImage());
-                string[] listOfFiles = Directory.GetFiles(previewPath);
+                string[] listOfFiles = Directory.GetFiles(xmlPath);
                 string fileName = "";
                 string filePath = "";
-                if (!String.IsNullOrEmpty(textData.imageGuid))
+                if (File.Exists(textData.imageGuid))
                 {
-                    filePath = textData.imageGuid;
                     fileName = Path.GetFileNameWithoutExtension(textData.imageGuid);
+                    filePath = textData.imageGuid;
                 }
                 else
                 {
@@ -687,7 +678,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         int number = i + 1;
                         // set file name, for example 001
                         fileName = String.Format("{0:000}", number);
-                        filePath = Path.Combine(previewPath, fileName + ".png");
+                        filePath = Path.Combine(xmlPath, fileName + ".xml");
                         // check if file with such name already exists
                         if (System.IO.File.Exists(filePath))
                         {
@@ -699,43 +690,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         }
                     }
                 }
-                // generate empty image for future signing with Optical signature, such approach required to get QR-Code as image
-                using (Bitmap bitMap = new Bitmap(signaturesData.ImageWidth, signaturesData.ImageHeight))
-                {
-                    using (MemoryStream memory = new MemoryStream())
-                    {
-                        using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
-                        {
-                            bitMap.Save(memory, ImageFormat.Png);
-                            byte[] bytes = memory.ToArray();
-                            fs.Write(bytes, 0, bytes.Length);
-                        }
-                    }
-                }
                 // Save text data to an xml file
                 SaveXmlData(xmlPath, fileName, textData);
-                // set signing save options
-                SaveOptions saveOptions = new SaveOptions();
-                saveOptions.OutputType = OutputType.String;
-                saveOptions.OutputFileName = fileName + "signed";
-                saveOptions.OverwriteExistingFiles = true;
-                // set temporary signed documents path to Text/BarCode image previews folder
-                SignatureHandler.SignatureConfig.OutputPath = previewPath;
-                // sign generated image with Text
-                SignatureHandler.Sign<string>(filePath, collection, saveOptions);
-                System.IO.File.Delete(filePath);
-                string tempFile = Path.Combine(previewPath, fileName + "signed.png");
-                System.IO.File.Move(tempFile, filePath);
-                // set signed documents path back to correct path
-                SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.OutputDirectory.GetPath();
                 // set Text data for response
                 textData.imageGuid = filePath;
-                // get signature preview as Base64 string
-                byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
-                string base64ImageRepresentation = Convert.ToBase64String(imageArray);
-                textData.encodedImage = base64ImageRepresentation;
-                // return loaded page object
-                // return loaded page object
+                // return loaded page object               
                 return Request.CreateResponse(HttpStatusCode.OK, textData);
             }
             catch (System.Exception ex)
@@ -835,11 +794,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                 {
                     postedData.documentType = "image";
-                }
-                else
-                {
-
-                }
+                }              
                 // set signature password if required
                 for (int i = 0; i < signaturesData.Length; i++)
                 {
@@ -1008,7 +963,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 if (!signaturesData.isDeleted)
                 {
                     // get xml data of the Text signature
-                    string xmlFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(signaturesData.SignatureGuid));
+                    string xmlFileName = Path.GetFileNameWithoutExtension(signaturesData.SignatureGuid);
                     // Load xml data
                     TextXmlEntity textData = LoadXmlData<TextXmlEntity>(xmlPath, xmlFileName);
                     // initiate QRCode signer object
@@ -1077,7 +1032,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             SignedDocumentEntity signedDocument = new SignedDocumentEntity();
             signedDocument.guid = SignatureHandler.Sign<string>(documentGuid, signsCollection, loadOptions, saveOptions);
             return signedDocument;
-        }      
+        }
 
         private string GetXmlFilePath(string signatureType, string fileName)
         {
