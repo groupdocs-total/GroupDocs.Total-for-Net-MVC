@@ -21,8 +21,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Web
         public int Top{ get; set; }
         public int ImageWidth{ get; set; }
         public int ImageHeight{ get; set; }
-        public int Angle{ get; set; }
-        public bool isDeleted{ get; set; }
+        public int Angle{ get; set; }       
 
         private HorizontalAlignment horizontalAlignment = HorizontalAlignment.None;
         private VerticalAlignment verticalAlignment = VerticalAlignment.None;

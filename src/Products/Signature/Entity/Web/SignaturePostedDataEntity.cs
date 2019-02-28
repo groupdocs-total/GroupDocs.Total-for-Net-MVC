@@ -14,5 +14,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Web
         public StampXmlEntity[] stampData { get; set; }
         public XmlEntity properties { get; set; }
         public string documentType { get; set; }
+        public bool temp { get; set; }
     }
 }
