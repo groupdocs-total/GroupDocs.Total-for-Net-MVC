@@ -2,6 +2,7 @@
 using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Directory;
 using System;
+using System.IO;
 
 namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
 {
@@ -58,7 +59,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             System.IO.Directory.CreateDirectory(BarcodeDirectory.XmlPath);
             System.IO.Directory.CreateDirectory(BarcodeDirectory.PreviewPath);
 
-            System.IO.Directory.CreateDirectory(TextDirectory.XmlPath);          
+            System.IO.Directory.CreateDirectory(TextDirectory.XmlPath);
+
+            string uploadedImagePath = ImageDirectory.Path + ImageDirectory.UPLOADED_IMAGE;
+            System.IO.Directory.CreateDirectory(uploadedImagePath);
         }
 
         /// <summary>

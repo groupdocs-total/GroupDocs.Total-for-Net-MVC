@@ -7,6 +7,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Directory
     /// </summary>
     public class ImageDataDirectoryEntity : DataDirectoryEntity
     {
+        public string UPLOADED_IMAGE = "/Uploaded";
 
         /// <summary>
         /// Constructor
