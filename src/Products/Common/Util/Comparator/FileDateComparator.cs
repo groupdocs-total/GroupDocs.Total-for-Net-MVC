@@ -22,11 +22,11 @@ namespace GroupDocs.Total.MVC.Products.Common.Util.Comparator
 
             if (strExt1.Equals(strExt2))
             {
-                return x.CompareTo(y);
+                return x.CompareTo(y.ToLower(CultureInfo.InvariantCulture));
             }
             else
             {
-                return strExt1.CompareTo(strExt2);
+                return strExt1.CompareTo(strExt2.ToLower(CultureInfo.InvariantCulture));
             }
         }
     }
