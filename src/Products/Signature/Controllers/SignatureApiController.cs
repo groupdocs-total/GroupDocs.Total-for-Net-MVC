@@ -276,7 +276,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             if (signaturesData == null || signaturesData.Count() == 0)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new NullReferenceException("Signature data is empty")));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new ArgumentNullException("Signature data is empty")));
             }
 
             // get document path
@@ -732,9 +732,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             string xmlPath = DirectoryUtils.DataDirectory.TextDirectory.XmlPath;
             try
             {
-                TextXmlEntity textData = JsonConvert.DeserializeObject<TextXmlEntity>(postedData.properties.ToString());
-                // initiate signature options collection
-                SignatureOptionsCollection collection = new SignatureOptionsCollection();
+                TextXmlEntity textData = JsonConvert.DeserializeObject<TextXmlEntity>(postedData.properties.ToString());               
                 string[] listOfFiles = Directory.GetFiles(xmlPath);
                 string fileName = "";
                 string filePath = "";
@@ -890,6 +888,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                             SignDigital(postedData.documentType, password, signaturesData[i], signsCollection);
                             break;
                         default:
+                            SignImage(postedData.documentType, signaturesData[i], signsCollection);
                             break;
                     }
                 }
@@ -1009,7 +1008,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             }
             catch (System.Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -1141,7 +1140,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     path = Path.Combine(DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath, fileName);
                     break;
                 default:
-                    break;
+                    throw new ArgumentNullException("Signature type is not defined");                   
             }
             return path;
         }

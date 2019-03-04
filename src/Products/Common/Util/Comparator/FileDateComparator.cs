@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace GroupDocs.Total.MVC.Products.Common.Util.Comparator
@@ -16,8 +17,8 @@ namespace GroupDocs.Total.MVC.Products.Common.Util.Comparator
         /// <returns></returns>
         public int Compare(string x, string y)
         {
-            string strExt1 = File.GetCreationTime(x).ToString().ToLowerInvariant();
-            string strExt2 = File.GetCreationTime(y).ToString().ToLowerInvariant();
+            string strExt1 = File.GetCreationTime(x).ToString(CultureInfo.InvariantCulture);
+            string strExt2 = File.GetCreationTime(y).ToString(CultureInfo.InvariantCulture);
 
             if (strExt1.Equals(strExt2))
             {
