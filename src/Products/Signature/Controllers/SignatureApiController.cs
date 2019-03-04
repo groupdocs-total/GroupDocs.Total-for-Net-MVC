@@ -53,7 +53,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();
             config.CertificatesPath = DirectoryUtils.DataDirectory.CertificateDirectory.Path;
             config.ImagesPath = DirectoryUtils.DataDirectory.ImageDirectory.Path;
-            config.OutputPath = DirectoryUtils.TempFolder.GetPath();
+            config.OutputPath = DirectoryUtils.GetTempFolder().GetPath();
             // initialize instance for the Image mode
             SignatureHandler = new SignatureHandler(config);
         }
@@ -942,10 +942,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch
+            catch (Exception e)
             {
-                // set exception message
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 
@@ -970,9 +969,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch
+            catch (Exception e)
             {
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 
