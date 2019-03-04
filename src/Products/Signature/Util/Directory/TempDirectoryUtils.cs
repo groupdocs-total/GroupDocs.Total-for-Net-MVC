@@ -9,7 +9,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
     /// </summary>
     public class TempDirectoryUtils : IDirectoryUtils
     {
-        private String OUTPUT_FOLDER = "/SignedTemp";
+        private readonly String OUTPUT_FOLDER = "/SignedTemp";
         private SignatureConfiguration signatureConfiguration;
 
         /// <summary>

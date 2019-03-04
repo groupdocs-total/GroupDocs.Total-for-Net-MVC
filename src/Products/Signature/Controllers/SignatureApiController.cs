@@ -337,6 +337,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         case "digital":
                             SignDigital(postedData.documentType, password, signaturesData[i], signsCollection);
                             break;
+                        default:
+                            SignImage(postedData.documentType, signaturesData[i], signsCollection);
+                            break;
                     }
                 }
                 // return loaded page object
@@ -344,7 +347,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // return loaded page object
                 return signedDocument;
             }
-            catch (System.Exception)
+            catch
             {
                 // set exception message
                 throw;
@@ -919,7 +922,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 DigitalSigner signer = new DigitalSigner(signaturesData, password);
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch (System.Exception)
+            catch
             {
                 // set exception message
                 throw;
@@ -941,7 +944,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch (System.Exception)
+            catch
             {
                 // set exception message
                 throw;
@@ -969,7 +972,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch (System.Exception)
+            catch
             {
                 throw;
             }
@@ -1006,7 +1009,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch (System.Exception)
+            catch
             {
                 throw;
             }
@@ -1032,7 +1035,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch (System.Exception)
+            catch
             {
                 // set exception message
                 throw;
