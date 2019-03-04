@@ -276,7 +276,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             if (signaturesData == null || signaturesData.Count() == 0)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new Exception("Signature data is empty")));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new NullReferenceException("Signature data is empty")));
             }
 
             // get document path
@@ -653,8 +653,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 else
                 {
                     for (int i = 0; i <= listOfFiles.Length; i++)
-                    {
-                        int number = i + 1;
+                    {                       
                         // set file name, for example 001
                         fileName = opticalCodeData.text;
                         filePath = Path.Combine(previewPath, fileName + ".png");
@@ -890,6 +889,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         case "digital":
                             SignDigital(postedData.documentType, password, signaturesData[i], signsCollection);
                             break;
+                        default:
+                            break;
                     }
                 }
                 // return loaded page object
@@ -1035,7 +1036,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                throw ex;
+                throw;
             }
         }
 
@@ -1138,6 +1139,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     break;
                 case "barCode":
                     path = Path.Combine(DirectoryUtils.DataDirectory.BarcodeDirectory.XmlPath, fileName);
+                    break;
+                default:
                     break;
             }
             return path;

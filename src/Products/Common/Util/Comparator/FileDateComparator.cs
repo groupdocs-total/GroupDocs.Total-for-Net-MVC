@@ -16,8 +16,8 @@ namespace GroupDocs.Total.MVC.Products.Common.Util.Comparator
         /// <returns></returns>
         public int Compare(string x, string y)
         {
-            string strExt1 = File.GetCreationTime(x).ToString();
-            string strExt2 = File.GetCreationTime(y).ToString();
+            string strExt1 = File.GetCreationTime(x).ToString().ToLowerInvariant();
+            string strExt2 = File.GetCreationTime(y).ToString().ToLowerInvariant();
 
             if (strExt1.Equals(strExt2))
             {

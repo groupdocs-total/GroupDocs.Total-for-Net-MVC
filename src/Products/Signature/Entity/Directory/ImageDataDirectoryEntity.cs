@@ -7,7 +7,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Directory
     /// </summary>
     public class ImageDataDirectoryEntity : DataDirectoryEntity
     {
-        public string UPLOADED_IMAGE = "/Uploaded";
+        private string UPLOADED_IMAGE = "/Uploaded";
 
         /// <summary>
         /// Constructor
@@ -16,6 +16,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Entity.Directory
         public ImageDataDirectoryEntity(SignatureConfiguration signatureConfiguration)
             : base(signatureConfiguration, "/Image")
         {
+        }
+
+        public string GetUploadedImageFolder()
+        {
+            return this.UPLOADED_IMAGE;
+        }
+
+        public void SetUploadedImageFolder(string path)
+        {
+            this.UPLOADED_IMAGE = path;
         }
     }
 }

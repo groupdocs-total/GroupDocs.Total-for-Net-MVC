@@ -61,7 +61,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
 
             System.IO.Directory.CreateDirectory(TextDirectory.XmlPath);
 
-            string uploadedImagePath = ImageDirectory.Path + ImageDirectory.UPLOADED_IMAGE;
+            string uploadedImagePath = ImageDirectory.Path + ImageDirectory.GetUploadedImageFolder();
             System.IO.Directory.CreateDirectory(uploadedImagePath);
         }
 
