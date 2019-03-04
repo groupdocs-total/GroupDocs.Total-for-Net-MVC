@@ -347,10 +347,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // return loaded page object
                 return signedDocument;
             }
-            catch
+            catch (Exception e)
             {
-                // set exception message
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 
@@ -922,10 +921,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 DigitalSigner signer = new DigitalSigner(signaturesData, password);
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch
+            catch (Exception e)
             {
-                // set exception message
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 
@@ -1009,9 +1007,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch
+            catch (Exception e)
             {
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 
@@ -1035,10 +1033,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 // prepare signing options and sign document
                 AddSignOptions(documentType, signsCollection, signer);
             }
-            catch
+            catch (Exception e)
             {
-                // set exception message
-                throw;
+                throw new InvalidOperationException(e.Message);
             }
         }
 

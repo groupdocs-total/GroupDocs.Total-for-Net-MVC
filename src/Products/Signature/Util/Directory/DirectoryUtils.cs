@@ -9,7 +9,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
     {
         public FilesDirectoryUtils FilesDirectory;        
         public DataDirectoryUtils DataDirectory;
-        public TempDirectoryUtils TempFolder;
+        private TempDirectoryUtils TempFolder;
 
         /// <summary>
         /// Constructor
@@ -20,6 +20,15 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             FilesDirectory = new FilesDirectoryUtils(signatureConfiguration);           
             DataDirectory = new DataDirectoryUtils(signatureConfiguration);
             TempFolder = new TempDirectoryUtils(signatureConfiguration);
+        }
+
+        public TempDirectoryUtils GetTempFolder() {
+            return this.TempFolder;
+        }
+
+        public void SetTempFolder(TempDirectoryUtils tempFolder)
+        {
+            this.TempFolder = tempFolder;
         }
     }
 }
