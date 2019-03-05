@@ -21,6 +21,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
         public bool isQrCodeSignature = true;
         public bool isBarCodeSignature = true;
         public bool isStampSignature = true;
+        public bool isHandSignature = true;
         public bool isDownloadOriginal = true;
         public bool isDownloadSigned = true;
         private string TempFilesDirectory = "";
@@ -51,6 +52,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
             isQrCodeSignature = valuesGetter.GetBooleanPropertyValue("qrCodeSignature", isQrCodeSignature);
             isBarCodeSignature = valuesGetter.GetBooleanPropertyValue("barCodeSignature", isBarCodeSignature);
             isStampSignature = valuesGetter.GetBooleanPropertyValue("stampSignature", isStampSignature);
+            isHandSignature = valuesGetter.GetBooleanPropertyValue("handSignature", isHandSignature);
             isDownloadOriginal = valuesGetter.GetBooleanPropertyValue("downloadOriginal", isDownloadOriginal);
             isDownloadSigned = valuesGetter.GetBooleanPropertyValue("downloadSigned", isDownloadSigned);            
             PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
