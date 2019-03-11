@@ -1,5 +1,5 @@
 # GroupDocs.Total for .NET MVC Example
-###### version 0.4.19
+###### version 0.4.20
 
 [![Build status](https://ci.appveyor.com/api/projects/status/kvkv1oswg5xfd6uq/branch/master?svg=true)](https://ci.appveyor.com/project/egorovpavel/groupdocs-total-for-net-mvc/branch/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b5cf669acf9043888c8fc4a8d46abdc3)](https://www.codacy.com/app/GroupDocs/GroupDocs.Total-for-NET-MVC?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=groupdocs-total/GroupDocs.Total-for-NET-MVC&amp;utm_campaign=Badge_Grade)
