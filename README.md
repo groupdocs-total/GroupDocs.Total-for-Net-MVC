@@ -124,20 +124,32 @@ Coming soon
 - Cross-platform support (Windows, Linux, MacOS)
 
 ## How to run
-1. Download/Clone GroupDocs.Total for .NET MVC Sample.
-2. Extract/Copy GroupDocs.Total for .NET MVC Sample to working directory.
-3. Navigate to GroupDocs.Total for .NET MVC Sample root directory.
-4. Open solution in the VisualStudio.
-5. Update common parameters in `web.config` and example related properties in the 'configuration.yml' to meet your requirements.
-6. Go to `http://localhost:{PORT}/`.
-PORT - port number specified in `web.config` (by default http://localhost:8080).
 
-## How to run in standalone mode
-1. Navigate to GroupDocs.Total for .NET MVC Sample root directory.
-2. Update parameters in `web.config` to meet your requirements.
-3. Execute the 'LaunchServer.bat' file.
-4. Go to `http://localhost:{PORT}/`.
-PORT - port number specified in `web.config` and in 'LaunchServer.bat'(by default http://localhost:8080).
+You can run this sample by one of following methods
+
+#### Build from source
+
+Download [source code](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/archive/master.zip) from github or clone this repository.
+
+```bash
+git clone https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC
+```
+
+Open solution in the VisualStudio.
+Update common parameters in `web.config` and example related properties in the `configuration.yml` to meet your requirements.
+
+Open http://localhost:8080/ in your favorite browser
+
+#### Docker image
+Use [docker](https://www.docker.com/) image.
+
+```bash
+mkdir DocumentSamples
+mkdir Licenses
+docker run -p 8080:8080 --env application.hostAddress=localhost -v `pwd`/DocumentSamples:/home/groupdocs/app/DocumentSamples -v `pwd`/Licenses:/home/groupdocs/app/Licenses groupdocs/total
+## Open http://localhost:8080/ in your favorite browser.
+```
+
 
 
 ## Resources
