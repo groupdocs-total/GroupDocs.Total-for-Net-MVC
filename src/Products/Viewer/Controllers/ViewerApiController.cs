@@ -333,6 +333,37 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             return LoadDocument(loadDocumentRequest, true);
         }
 
+        [HttpPost]
+        [Route("viewer/loadPrint")]
+        public HttpResponseMessage loadPrint(PostedDataEntity loadDocumentRequest)
+        {
+            try
+            {
+                LoadDocumentEntity loadPrintDocument = new LoadDocumentEntity();
+                if (Path.GetExtension(loadDocumentRequest.guid) == ".pdf") {
+                    loadPrintDocument = GetPrintPdf(loadDocumentRequest.guid);
+                } else {
+                    loadPrintDocument = LoadDocument(loadDocumentRequest, true);
+                }
+                // return document description
+                return Request.CreateResponse(HttpStatusCode.OK, loadPrintDocument);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, loadDocumentRequest.password));
+            }
+        }
+
+        private LoadDocumentEntity GetPrintPdf(string guid)
+        {
+            string pdfPath = globalConfiguration.Viewer.GetFilesDirectory().Replace(AppDomain.CurrentDomain.BaseDirectory, "") + 
+                "/" + Path.GetFileName(guid);
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            loadDocumentEntity.SetGuid(pdfPath);
+            return loadDocumentEntity;
+        }
+
         private LoadDocumentEntity LoadDocument(PostedDataEntity postedData, bool loadAllPages)
         {
             // get/set parameters
@@ -358,7 +389,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             else
             {
                 documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions);
-            }           
+            }
             List<string> pagesContent = new List<string>();
             if (loadAllPages)
             {
