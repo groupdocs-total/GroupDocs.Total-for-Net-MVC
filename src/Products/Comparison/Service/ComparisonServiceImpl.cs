@@ -281,29 +281,32 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             }
         }
 
-        public PageDescriptionEntity LoadResultPage(PostedDataEntity loadResultPageRequest)
+        public LoadDocumentEntity LoadDocumentPages(PostedDataEntity loadResultPageRequest)
         {
-            PageDescriptionEntity loadedPage = new PageDescriptionEntity();
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();           
             //load file with results
             try
             {
-                using (Stream inputStream = new FileStream(loadResultPageRequest.path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
+                Comparer comparer = new Comparer();
+                List<PageImage> resultImages = comparer.ConvertToImages(loadResultPageRequest.path);
+
+                foreach (PageImage page in resultImages) {
+                    PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                     byte[] bytes = null;
                     using (MemoryStream ms = new MemoryStream())
                     {
-                        inputStream.CopyTo(ms);
+                        page.PageStream.CopyTo(ms);
                         bytes = ms.ToArray();
                     }
-
                     loadedPage.SetData(Convert.ToBase64String(bytes));
+                    loadDocumentEntity.SetPages(loadedPage);
                 }
+                return loadDocumentEntity;
             }
             catch (Exception ex)
             {
                 throw new Exception("Exception occurred while loading result page", ex);
-            }
-            return loadedPage;
+            }           
         }
 
         public CompareResultResponse MultiCompareFiles(List<Stream> files, List<string> passwords, string ext)

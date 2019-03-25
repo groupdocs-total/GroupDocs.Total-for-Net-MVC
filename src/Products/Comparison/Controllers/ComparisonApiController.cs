@@ -282,10 +282,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         /// <param name="loadResultPageRequest"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("comparison/loadResultPage")]
-        public HttpResponseMessage LoadResultPage(PostedDataEntity loadResultPageRequest)
+        [Route("comparison/LoadDocumentPages")]
+        public HttpResponseMessage LoadDocumentPages(PostedDataEntity loadResultPageRequest)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadResultPage(loadResultPageRequest));
+            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentPages(loadResultPageRequest));
         }
 
         /// <summary>

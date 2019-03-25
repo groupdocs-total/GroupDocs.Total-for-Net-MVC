@@ -37,11 +37,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         CompareResultResponse CompareFiles(Stream firstContent, string firstPassword, Stream secondContent, string secondPassword, string fileExt);
 
         /// <summary>
-        ///  Load the page of results
+        ///  Load document pages as images
         /// </summary>
         /// <param name="loadResultPageRequest">PostedDataEntity</param>
         /// <returns>LoadedPageEntity</returns>
-        PageDescriptionEntity LoadResultPage(PostedDataEntity loadResultPageRequest);
+        LoadDocumentEntity LoadDocumentPages(PostedDataEntity loadResultPageRequest);
 
         /// <summary>
         ///  Produce file names for results
