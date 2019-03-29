@@ -262,7 +262,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 pageImages.Add(page.GetData());
             }
             compareResultResponse.SetPages(pageImages);
-            compareResultResponse.SetGuid(resultGuid);
+            compareResultResponse.SetGuid(resultGuid);           
             return compareResultResponse;
         }
 
