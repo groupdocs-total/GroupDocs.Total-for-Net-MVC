@@ -16,9 +16,10 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
         /// <returns></returns>
         public static BaseAnnotator createAnnotator(AnnotationDataEntity annotationData, PageData pageData)
         {
+            annotationData = RoundCoordinates(annotationData);
             switch (annotationData.type)
             {
-                case "text":
+                case "text":                    
                     return new TextAnnotator(annotationData, pageData);
                 case "area":
                     return new AreaAnnotator(annotationData, pageData);
@@ -47,6 +48,15 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
                 default:
                     throw new ArgumentNullException("Wrong annotation data without annotation type!");
             }
+        }
+
+        private static AnnotationDataEntity RoundCoordinates(AnnotationDataEntity annotationData)
+        {
+            annotationData.height = (float)Math.Round(annotationData.height, 0);
+            annotationData.left = (float)Math.Round(annotationData.left, 0);
+            annotationData.top = (float)Math.Round(annotationData.top, 0);
+            annotationData.width = (float)Math.Round(annotationData.width, 0);
+            return annotationData;
         }
     }
 }
