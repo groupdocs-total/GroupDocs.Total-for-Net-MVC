@@ -308,7 +308,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             if (annotationsData == null || annotationsData.Length == 0)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new ArgumentNullException("Annotations data is empty")));
+                return Request.CreateResponse(HttpStatusCode.Accepted, new Resources().GenerateException(new ArgumentNullException("Annotations data is empty")));
             }
 
             // get document path
@@ -328,7 +328,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.Accepted, new Resources().GenerateException(ex));
             }
         }
 
