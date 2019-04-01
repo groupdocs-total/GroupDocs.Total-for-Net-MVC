@@ -406,7 +406,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 }
                 else
                 {
-                    throw new NullReferenceException("Annotations data are empty");
+                    throw new InvalidDataException("Annotations data are empty");
                 }               
             }
             catch (System.Exception ex)
