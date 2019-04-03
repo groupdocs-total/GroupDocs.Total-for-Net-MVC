@@ -151,7 +151,6 @@ docker run -p 8080:8080 --env application.hostAddress=localhost -v `pwd`/Documen
 ```
 
 
-
 ## Resources
 - **Website:** [www.groupdocs.com](http://www.groupdocs.com)
 - **Product Home:** [GroupDocs.Total for .NET](https://products.groupdocs.com/total/net)
