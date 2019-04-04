@@ -10,9 +10,6 @@ using GroupDocs.Comparison.Common;
 using GroupDocs.Comparison;
 using GroupDocs.Comparison.Common.ComparisonSettings;
 using GroupDocs.Comparison.Common.Changes;
-using System.Web;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Comparison.Service
 {
@@ -94,22 +91,6 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             }
         }
 
-        //public string CalculateResultFileName(string documentGuid, string index, string ext)
-        //{
-        //    // configure file name for results
-        //    string directory = globalConfiguration.Comparison.GetResultDirectory();
-        //    string resultDirectory = String.IsNullOrEmpty(directory) ? globalConfiguration.Comparison.GetFilesDirectory() : directory;
-        //    if (!Directory.Exists(resultDirectory))
-        //    {
-        //        Directory.CreateDirectory(resultDirectory);
-        //    }
-        //    string extension = (ext != null) ? GetRightExt(ext) : "";
-        //    // for images of pages specify index, for all result pages file specify "all" prefix
-        //    string idx = (String.IsNullOrEmpty(index)) ? "all" : index;
-        //    string suffix = idx + extension;
-        //    return string.Format("{0}{1}{2}-{3}-{4}", resultDirectory, Path.DirectorySeparatorChar, COMPARE_RESULT, documentGuid, suffix);
-        //}       
-
         public bool CheckFiles(CompareRequest files)
         {
             string extension = Path.GetExtension(files.guids[0].GetGuid());
@@ -149,22 +130,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-            //string saveTemp = null;
-            //if (Path.GetExtension(firstPath).Equals(".html") || Path.GetExtension(firstPath).Equals(".htm"))
-            //{
-            //    saveTemp = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), "temp.html");
-            //}
-            // convert results
-            //save all results in file
+          
             string extension = Path.GetExtension(firstPath);
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, extension);
-
            
-           // SaveFile(compareResultResponse.GetGuid(), null, compareResult.GetStream(), extension);
-            //if (!String.IsNullOrEmpty(saveTemp))
-            //{
-            //    File.Delete(saveTemp);
-            //}
+            
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, extension);
             compareResultResponse.SetExtension(extension);
 
             return compareResultResponse;
@@ -256,25 +226,18 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             //save all results in file
             string resultGuid = SaveFile(compareResultResponse.GetGuid(), compareResult.GetStream(), ext);
             List<PageDescriptionEntity> pages = LoadDocumentPages(resultGuid).GetPages();
-            List<string> pageImages = new List<string>();
+            List<PageData> pageImages = new List<PageData>();
             foreach (PageDescriptionEntity page in pages)
             {
-                pageImages.Add(page.GetData());
+                PageData pageData = new PageData();
+                pageData.data = page.GetData();
+
+                pageImages.Add(pageData);
             }
             compareResultResponse.SetPages(pageImages);
             compareResultResponse.SetGuid(resultGuid);           
             return compareResultResponse;
-        }
-
-        //private List<string> SaveImages(Stream[] images, string guid)
-        //{
-        //    List<string> paths = new List<string>(images.Length);
-        //    for (int i = 0; i < images.Length; i++)
-        //    {
-        //        paths.Add(SaveFile(guid, i.ToString(), images[i], JPG));
-        //    }
-        //    return paths;
-        //}
+        }       
 
         private string SaveFile(string guid, Stream inputStream, string ext)
         {

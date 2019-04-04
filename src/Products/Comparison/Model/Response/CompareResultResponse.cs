@@ -16,7 +16,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Model.Response
         /// List of images of pages with marked changes
         /// </summary>
         [JsonProperty]
-        private List<string> pages;
+        private List<PageData> pages;
 
         /// <summary>
         /// Unique key of results
@@ -40,17 +40,17 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Model.Response
             return changes;
         }
 
-        public void SetPages(List<string> pages)
+        public void SetPages(List<PageData> pages)
         {
             this.pages = pages;
         }
 
-        public void AddPage(string page)
+        public void AddPage(PageData page)
         {
             this.pages.Add(page);
         }
 
-        public List<string> GetPages()
+        public List<PageData> GetPages()
         {
             return pages;
         }
