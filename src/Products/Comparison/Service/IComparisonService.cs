@@ -17,40 +17,34 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         /// </summary>
         /// <param name="compareRequest">PostedDataEntity</param>
         /// <returns>CompareResultResponse</returns>
-        CompareResultResponse Compare(CompareRequest compareRequest);        
+        CompareResultResponse Compare(CompareRequest compareRequest);
 
         /// <summary>
         ///  Load document pages as images
         /// </summary>
         /// <param name="loadResultPageRequest">PostedDataEntity</param>
-        /// <returns>LoadedPageEntity</returns>
+        /// <returns>LoadDocumentEntity</returns>
         LoadDocumentEntity LoadDocumentPages(string path);
 
         /// <summary>
-        ///  Produce file names for results
+        ///  Load document page as images
         /// </summary>
-        /// <param name="documentGuid">string</param>
-        /// <param name="index">int</param>
-        /// <param name="ext">string</param>
-        /// <returns>string</returns>
-       // string CalculateResultFileName(string documentGuid, string index, string ext);
+        /// <param name="postedData">PostedDataEntity</param>
+        /// <returns>LoadDocumentEntity</returns>
+        LoadDocumentEntity LoadDocumentPage(PostedDataEntity postedData);
 
-
+        /// <summary>
+        ///  Load document info
+        /// </summary>
+        /// <param name="postedData">PostedDataEntity</param>
+        /// <returns>LoadDocumentEntity</returns>
+        LoadDocumentEntity LoadDocumentInfo(PostedDataEntity postedData);
 
         /// <summary>
         /// Check format files for comparing
         /// </summary>
         /// <param name="file">CompareRequest</param>
         /// <returns>bool</returns>
-        bool CheckFiles(CompareRequest files);
-
-        /// <summary>
-        /// Compare more than two files at once
-        /// </summary>
-        /// <param name="files"></param>
-        /// <param name="passwords"></param>
-        /// <param name="ext"></param>
-        /// <returns></returns>
-        CompareResultResponse MultiCompareFiles(List<Stream> files, List<string> passwords, string ext);
+        bool CheckFiles(CompareRequest files);       
     }
 }

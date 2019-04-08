@@ -1,4 +1,5 @@
 ﻿using GroupDocs.Comparison.Common.Changes;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -16,7 +17,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Model.Response
         /// List of images of pages with marked changes
         /// </summary>
         [JsonProperty]
-        private List<PageData> pages;
+        private List<PageDescriptionEntity> pages;
 
         /// <summary>
         /// Unique key of results
@@ -40,17 +41,17 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Model.Response
             return changes;
         }
 
-        public void SetPages(List<PageData> pages)
+        public void SetPages(List<PageDescriptionEntity> pages)
         {
             this.pages = pages;
         }
 
-        public void AddPage(PageData page)
+        public void AddPage(PageDescriptionEntity page)
         {
             this.pages.Add(page);
         }
 
-        public List<PageData> GetPages()
+        public List<PageDescriptionEntity> GetPages()
         {
             return pages;
         }

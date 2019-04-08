@@ -14,7 +14,7 @@ using GroupDocs.Comparison.Common.Changes;
 namespace GroupDocs.Total.MVC.Products.Comparison.Service
 {
     public class ComparisonServiceImpl : IComparisonService
-    {               
+    {
         private static readonly string DOCX = ".docx";
         private static readonly string DOC = ".doc";
         private static readonly string XLS = ".xls";
@@ -111,6 +111,152 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
 
         public CompareResultResponse Compare(CompareRequest compareRequest)
         {
+            CompareResultResponse compareResultResponse = new CompareResultResponse();
+            if (compareRequest.guids.Count > 2)
+            {
+                compareResultResponse = MultiCompareFiles(compareRequest);
+            }
+            else
+            {
+                compareResultResponse = CompareTwoDocuments(compareRequest);
+            }
+            return compareResultResponse;
+        }
+
+        public LoadDocumentEntity LoadDocumentPages(string path)
+        {
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            //load file with results
+            try
+            {
+                Comparer comparer = new Comparer();
+                List<PageImage> resultImages = comparer.ConvertToImages(path);
+
+                foreach (PageImage page in resultImages)
+                {
+                    PageDescriptionEntity loadedPage = new PageDescriptionEntity();
+                    byte[] bytes = null;
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        page.PageStream.CopyTo(ms);
+                        bytes = ms.ToArray();
+                    }
+                    loadedPage.SetData(Convert.ToBase64String(bytes));
+                    loadDocumentEntity.SetPages(loadedPage);
+                }
+                return loadDocumentEntity;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception occurred while loading result page", ex);
+            }
+        }
+
+        public LoadDocumentEntity LoadDocumentPage(PostedDataEntity postedData)
+        {
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+
+            string password = "";
+            try
+            {
+                // get/set parameters
+                string documentGuid = postedData.path;
+                int pageNumber = postedData.page;
+                password = (String.IsNullOrEmpty(postedData.password)) ? null : postedData.password;
+                Comparer comparer = new Comparer();
+                List<PageImage> resultImages = comparer.ConvertToImages(documentGuid);
+
+
+                PageDescriptionEntity loadedPage = new PageDescriptionEntity();
+                byte[] bytes = null;
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    resultImages[pageNumber - 1].PageStream.CopyTo(ms);
+                    bytes = ms.ToArray();
+                }
+                loadedPage.SetData(Convert.ToBase64String(bytes));
+                loadedPage.number = pageNumber;
+                loadDocumentEntity.SetPages(loadedPage);
+
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                throw new Exception("Exception occurred while loading result page", ex);
+            }
+            return loadDocumentEntity;
+        }
+
+        public LoadDocumentEntity LoadDocumentInfo(PostedDataEntity postedData)
+        {
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+
+            string password = "";
+            try
+            {
+                // get/set parameters
+                string documentGuid = postedData.path;                
+                password = (String.IsNullOrEmpty(postedData.password)) ? null : postedData.password;
+                Comparer comparer = new Comparer();
+                List<PageImage> resultImages = comparer.ConvertToImages(documentGuid);
+
+                foreach (PageImage page in resultImages)
+                {
+                    PageDescriptionEntity loadedPage = new PageDescriptionEntity();                   
+                    loadDocumentEntity.SetPages(loadedPage);
+                }
+                return loadDocumentEntity;                
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                throw new Exception("Exception occurred while loading document info", ex);
+            }           
+        }
+
+        private CompareResultResponse MultiCompareFiles(CompareRequest compareRequest)
+        {
+            ICompareResult compareResult;
+
+            // create new comparer
+            MultiComparer multiComparer = new MultiComparer();
+            // create setting for comparing
+            ComparisonSettings settings = new ComparisonSettings();
+
+            // transform lists of files and passwords
+            List<Stream> files = new List<Stream>();
+            List<string> passwords = new List<string>();
+            Stream firstFile = new FileStream(compareRequest.guids[0].GetGuid(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            string extension = Path.GetExtension(compareRequest.guids[0].GetGuid());
+            string firstPassword = compareRequest.guids[0].GetPassword();
+            for (int i = 1; i < compareRequest.guids.Count; i++)
+            {
+                Stream st = new FileStream(compareRequest.guids[i].GetGuid(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                files.Add(st);
+                passwords.Add(compareRequest.guids[i].GetPassword());
+
+            }
+            // compare two documents
+            compareResult = multiComparer.Compare(firstFile, firstPassword, files, passwords, settings);
+            firstFile.Dispose();
+            firstFile.Close();
+            foreach (Stream st in files)
+            {
+                st.Dispose();
+                st.Close();
+            }
+            if (compareResult == null)
+            {
+                throw new Exception("Something went wrong. We've got null result.");
+            }
+
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, extension);
+            compareResultResponse.SetExtension(extension);
+            return compareResultResponse;
+        }
+
+        private CompareResultResponse CompareTwoDocuments(CompareRequest compareRequest)
+        {
             string firstPath = compareRequest.guids[0].GetGuid();
 
             ICompareResult compareResult;
@@ -130,86 +276,12 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-          
+
             string extension = Path.GetExtension(firstPath);
-           
-            
+
+
             CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, extension);
             compareResultResponse.SetExtension(extension);
-
-            return compareResultResponse;
-        }
-               
-        public LoadDocumentEntity LoadDocumentPages(string path)
-        {
-            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();           
-            //load file with results
-            try
-            {
-                Comparer comparer = new Comparer();
-                List<PageImage> resultImages = comparer.ConvertToImages(path);
-
-                foreach (PageImage page in resultImages) {
-                    PageDescriptionEntity loadedPage = new PageDescriptionEntity();
-                    byte[] bytes = null;
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        page.PageStream.CopyTo(ms);
-                        bytes = ms.ToArray();
-                    }
-                    loadedPage.SetData(Convert.ToBase64String(bytes));
-                    loadDocumentEntity.SetPages(loadedPage);
-                }
-                return loadDocumentEntity;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Exception occurred while loading result page", ex);
-            }           
-        }
-
-        public CompareResultResponse MultiCompareFiles(List<Stream> files, List<string> passwords, string ext)
-        {
-            ICompareResult compareResult;
-
-
-            // create new comparer
-            MultiComparer multiComparer = new MultiComparer();
-            // create setting for comparing
-            ComparisonSettings settings = new ComparisonSettings();
-
-            // transform lists of files and passwords
-            List<Stream> newFiles = new List<Stream>();
-            List<string> newPasswords = new List<string>();
-            for (int i = 1; i < files.Count; i++)
-            {
-                newFiles.Add(files[i]);
-                newPasswords.Add(passwords[i]);
-            }
-
-            // compare two documents
-            compareResult = multiComparer.Compare(files[0], passwords[0], newFiles, newPasswords, settings);
-
-
-            if (compareResult == null)
-            {
-                throw new Exception("Something went wrong. We've got null result.");
-            }
-            string saveTemp = null;
-            if(ext.Equals("html") || ext.Equals("htm"))
-            {
-                saveTemp = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), "temp.html");
-            }
-            // convert results
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, saveTemp);
-
-           
-            if (!String.IsNullOrEmpty(saveTemp))
-            {
-                File.Delete(saveTemp);
-            }
-            compareResultResponse.SetExtension(ext);
-
             return compareResultResponse;
         }
 
@@ -226,18 +298,17 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             //save all results in file
             string resultGuid = SaveFile(compareResultResponse.GetGuid(), compareResult.GetStream(), ext);
             List<PageDescriptionEntity> pages = LoadDocumentPages(resultGuid).GetPages();
-            List<PageData> pageImages = new List<PageData>();
+            List<PageDescriptionEntity> pageImages = new List<PageDescriptionEntity>();
             foreach (PageDescriptionEntity page in pages)
             {
-                PageData pageData = new PageData();
-                pageData.data = page.GetData();
-
+                PageDescriptionEntity pageData = new PageDescriptionEntity();
+                pageData.SetData(page.GetData());
                 pageImages.Add(pageData);
             }
             compareResultResponse.SetPages(pageImages);
-            compareResultResponse.SetGuid(resultGuid);           
+            compareResultResponse.SetGuid(resultGuid);
             return compareResultResponse;
-        }       
+        }
 
         private string SaveFile(string guid, Stream inputStream, string ext)
         {
@@ -286,7 +357,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 case ".html":
                     return HTML;
                 case ".htm":
-                    return HTM;                    
+                    return HTM;
                 default:
                     return ext;
             }

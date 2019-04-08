@@ -31,9 +31,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
             globalConfiguration = new Common.Config.GlobalConfiguration();
             comparisonService = new ComparisonServiceImpl(globalConfiguration);
         }
-
-
-
+               
         /// <summary>
         /// Get all files and directories from storage
         /// </summary>
@@ -180,6 +178,30 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         public HttpResponseMessage LoadDocumentPages(PostedDataEntity loadResultPageRequest)
         {
             return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentPages(loadResultPageRequest.path));
+        }
+
+        /// <summary>
+        /// Get document page
+        /// </summary>
+        /// <param name="postedData">Post data</param>
+        /// <returns>Document page object</returns>
+        [HttpPost]
+        [Route("comparison/loadDocumentPage")]
+        public HttpResponseMessage LoadDocumentPage(PostedDataEntity postedData)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentPage(postedData));            
+        }
+
+        /// <summary>
+        /// Get document info
+        /// </summary>
+        /// <param name="postedData">Post data</param>
+        /// <returns>Document info object</returns>
+        [HttpPost]
+        [Route("comparison/loadDocumentInfo")]
+        public HttpResponseMessage LoadDocumentInfo(PostedDataEntity postedData)
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentInfo(postedData));
         }
     }
 }

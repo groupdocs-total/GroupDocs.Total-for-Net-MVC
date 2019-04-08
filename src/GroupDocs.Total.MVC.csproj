@@ -264,7 +264,6 @@
     <Compile Include="Products\Comparison\Model\Request\CompareFileDataRequest.cs" />
     <Compile Include="Products\Comparison\Model\Request\CompareRequest.cs" />
     <Compile Include="Products\Comparison\Model\Response\CompareResultResponse.cs" />
-    <Compile Include="Products\Comparison\Model\Response\PageData.cs" />
     <Compile Include="Products\Comparison\Service\ComparisonServiceImpl.cs" />
     <Compile Include="Products\Comparison\Service\IComparisonService.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
