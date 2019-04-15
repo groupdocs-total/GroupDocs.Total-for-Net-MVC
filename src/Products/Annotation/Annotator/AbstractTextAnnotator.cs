@@ -16,6 +16,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
             annotationInfo.FieldText = annotationData.text;
             annotationInfo.FontFamily = annotationData.font;
             annotationInfo.FontSize = annotationData.fontSize;
+            annotationInfo.FontColor = annotationData.fontColor;
             return annotationInfo;
         }
 
