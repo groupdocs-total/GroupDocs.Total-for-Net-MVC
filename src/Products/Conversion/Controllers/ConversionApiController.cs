@@ -98,13 +98,13 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                         {
                             fileDescription.size = fileInfo.Length;
                         }
-                       
+
                         string documentExtension = Path.GetExtension(fileDescription.name).TrimStart('.');
                         if (!String.IsNullOrEmpty(documentExtension))
                         {
-                            Dictionary<string, SaveOptions> availableConversions = conversionHandler.GetSaveOptions(documentExtension);
+                            string[] availableConversions = conversionHandler.GetPossibleConversions(documentExtension);
                             //list all available conversions
-                            foreach (string name in availableConversions.Keys)
+                            foreach (string name in availableConversions)
                             {
                                 fileDescription.conversionTypes.Add(name);
                             }
@@ -191,5 +191,55 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all files and directories from storage
+        /// </summary>
+        /// <param name="postedData">Post data</param>
+        /// <returns>List of files and directories</returns>
+        [HttpPost]
+        [Route("conversion/convert")]
+        public HttpResponseMessage Convert(ConversionPostedData postedData)
+        {
+            try
+            {
+                string sourceType = Path.GetExtension(postedData.guid).TrimStart('.');
+                string destinationType = postedData.GetDestinationType();
+                string resultFileName = Path.GetFileNameWithoutExtension(postedData.guid) + "." + postedData.GetDestinationType();
+                dynamic saveOptions = GetSaveOptions(sourceType, destinationType, postedData.password);
+                ConvertedDocument convertedDocument = conversionHandler.Convert(postedData.guid, saveOptions);
+                if (convertedDocument.PageCount > 1 && saveOptions is ImageSaveOptions)
+                {
+                    for(int i = 1; i <= convertedDocument.PageCount; i++)
+                    {                        
+                        string fileName = Path.GetFileNameWithoutExtension(resultFileName) + "-page" + i + "." + Path.GetExtension(resultFileName);
+                        convertedDocument.Save(fileName, i);
+                    }
+                }
+                else
+                {
+                    convertedDocument.Save(resultFileName);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (System.Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+            }
+        }
+
+        private SaveOptions GetSaveOptions(string sourceType, string destinationType, string password)
+        {
+            dynamic saveOptions = null;
+            Dictionary<string, SaveOptions> availableConversions = conversionHandler.GetSaveOptions(sourceType);
+            //list all available conversions
+            foreach (var conversion in availableConversions)
+            {
+                if (conversion.Key.Equals(destinationType))
+                {
+                    saveOptions = conversion.Value;
+                }
+            }
+            return saveOptions;
+        }
     }
 }

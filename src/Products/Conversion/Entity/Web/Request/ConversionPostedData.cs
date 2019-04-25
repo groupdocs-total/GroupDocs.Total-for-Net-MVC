@@ -1,35 +1,22 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Request
 {
-    public class ConversionPostedData
+    public class ConversionPostedData : PostedDataEntity
     {
         [JsonProperty]
-        private List<string> guids { get; set; }
+        private string destinationType { get; set; }
 
-        [JsonProperty]
-        private List<ConversionProperties> conversionProperties { get; set; }
-
-        public List<string> GetGuids()
+        public string GetDestinationType()
         {
-            return this.guids;
+            return this.destinationType;
         }
 
-        public void SetGuids(List<string> guids) {
-            this.guids = guids;
-        }
-
-        public List<ConversionProperties> GetConversionProperties()
+        public void SetDestinationType(string type)
         {
-            return this.conversionProperties;
-        }
-
-        public void SetConversionProperties(List<ConversionProperties> properties) {
-            this.conversionProperties = properties;
+            this.destinationType = type;
         }
     }
 }
