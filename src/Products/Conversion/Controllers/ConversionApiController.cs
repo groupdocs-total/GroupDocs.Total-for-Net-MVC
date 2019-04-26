@@ -1,14 +1,15 @@
 ﻿using GroupDocs.Conversion.Config;
 using GroupDocs.Conversion.Handler;
-using GroupDocs.Conversion.Options.Save;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Response;
+using GroupDocs.Total.MVC.Products.Conversion.Manager;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -25,8 +26,10 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
     public class ConversionApiController : ApiController
     {
 
-        private static Common.Config.GlobalConfiguration globalConfiguration;
-        private static ConversionHandler conversionHandler;
+        private static Common.Config.GlobalConfiguration GlobalConfiguration;
+        private static ConversionHandler ConversionHandler;
+        private ConversionManager Manager;
+        private List<string> SupportedImageFormats = new List<string>() { ".jp2", ".ico", ".psd", ".svg", ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".dxf", ".jpe", ".jfif" };
 
         /// <summary>
         /// Constructor
@@ -34,14 +37,15 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         public ConversionApiController()
         {
             // Check if filesDirectory is relative or absolute path           
-            globalConfiguration = new Common.Config.GlobalConfiguration();
+            GlobalConfiguration = new Common.Config.GlobalConfiguration();
             // Setup Conversion configuration
             var conversionConfig = new ConversionConfig
             {
-                StoragePath = globalConfiguration.Conversion.GetFilesDirectory(),
-                OutputPath = globalConfiguration.Conversion.GetResultDirectory()
+                StoragePath = GlobalConfiguration.Conversion.GetFilesDirectory(),
+                OutputPath = GlobalConfiguration.Conversion.GetResultDirectory()
             };
-            conversionHandler = new ConversionHandler(conversionConfig);
+            ConversionHandler = new ConversionHandler(conversionConfig);
+            Manager = new ConversionManager(ConversionHandler);
         }
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="postedData">Post data</param>
         /// <returns>List of files and directories</returns>
         [HttpPost]
-        [Route("conversion/loadFileTree")]
+        [Route("loadFileTree")]
         public HttpResponseMessage loadFileTree(PostedDataEntity postedData)
         {
             // get request body       
@@ -61,11 +65,11 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                 // get all the files from a directory
                 if (string.IsNullOrEmpty(relDirPath))
                 {
-                    relDirPath = globalConfiguration.Conversion.GetFilesDirectory();
+                    relDirPath = GlobalConfiguration.Conversion.GetFilesDirectory();
                 }
                 else
                 {
-                    relDirPath = Path.Combine(globalConfiguration.Conversion.GetFilesDirectory(), relDirPath);
+                    relDirPath = Path.Combine(GlobalConfiguration.Conversion.GetFilesDirectory(), relDirPath);
                 }
 
                 List<string> allFiles = new List<string>(Directory.GetFiles(relDirPath));
@@ -80,7 +84,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
                     if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.Conversion.GetFilesDirectory())))
+                        Path.GetFileName(file).Equals(Path.GetFileName(GlobalConfiguration.Conversion.GetFilesDirectory())))
                     {
                         // ignore current file and skip to next one
                         continue;
@@ -102,7 +106,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                         string documentExtension = Path.GetExtension(fileDescription.name).TrimStart('.');
                         if (!String.IsNullOrEmpty(documentExtension))
                         {
-                            string[] availableConversions = conversionHandler.GetPossibleConversions(documentExtension);
+                            string[] availableConversions = ConversionHandler.GetPossibleConversions(documentExtension);
                             //list all available conversions
                             foreach (string name in availableConversions)
                             {
@@ -127,14 +131,14 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="postedData">Post data</param>
         /// <returns>Uploaded document object</returns>
         [HttpPost]
-        [Route("conversion/uploadDocument")]
+        [Route("uploadDocument")]
         public HttpResponseMessage UploadDocument()
         {
             try
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = globalConfiguration.Conversion.GetFilesDirectory();
+                string documentStoragePath = GlobalConfiguration.Conversion.GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))
@@ -197,28 +201,12 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="postedData">Post data</param>
         /// <returns>List of files and directories</returns>
         [HttpPost]
-        [Route("conversion/convert")]
+        [Route("convert")]
         public HttpResponseMessage Convert(ConversionPostedData postedData)
         {
             try
             {
-                string sourceType = Path.GetExtension(postedData.guid).TrimStart('.');
-                string destinationType = postedData.GetDestinationType();
-                string resultFileName = Path.GetFileNameWithoutExtension(postedData.guid) + "." + postedData.GetDestinationType();
-                dynamic saveOptions = GetSaveOptions(sourceType, destinationType, postedData.password);
-                ConvertedDocument convertedDocument = conversionHandler.Convert(postedData.guid, saveOptions);
-                if (convertedDocument.PageCount > 1 && saveOptions is ImageSaveOptions)
-                {
-                    for(int i = 1; i <= convertedDocument.PageCount; i++)
-                    {                        
-                        string fileName = Path.GetFileNameWithoutExtension(resultFileName) + "-page" + i + "." + Path.GetExtension(resultFileName);
-                        convertedDocument.Save(fileName, i);
-                    }
-                }
-                else
-                {
-                    convertedDocument.Save(resultFileName);
-                }
+                Manager.Convert(postedData);
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (System.Exception ex)
@@ -227,19 +215,44 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
             }
         }
 
-        private SaveOptions GetSaveOptions(string sourceType, string destinationType, string password)
+        /// <summary>
+        /// Download curerntly viewed document
+        /// </summary>
+        /// <param name="path">Path of the document to download</param>
+        /// <returns>Document stream as attachement</returns>
+        [HttpGet]
+        [Route("downloadDocument")]
+        public HttpResponseMessage DownloadDocument(string path)
         {
-            dynamic saveOptions = null;
-            Dictionary<string, SaveOptions> availableConversions = conversionHandler.GetSaveOptions(sourceType);
-            //list all available conversions
-            foreach (var conversion in availableConversions)
+            if (!string.IsNullOrEmpty(path))
             {
-                if (conversion.Key.Equals(destinationType))
+                path = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), path);
+                if (SupportedImageFormats.Contains(Path.GetExtension(path)))
                 {
-                    saveOptions = conversion.Value;
+                    string zipName = Path.GetFileNameWithoutExtension(path) + ".zip";
+                    string zipPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), zipName);
+                    string[] files = Directory.GetFiles(GlobalConfiguration.Conversion.GetResultDirectory(),
+                        Path.GetFileNameWithoutExtension(path) + "*" + Path.GetExtension(path));
+                    using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
+                    {
+                        foreach (string file in files) {
+                            zip.CreateEntryFromFile(file, Path.GetFileName(file));
+                        }                        
+                    }
+                    path = zipPath;
+                }               
+                if (File.Exists(path))
+                {
+                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                    var fileStream = new FileStream(path, FileMode.Open);
+                    response.Content = new StreamContent(fileStream);
+                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
+                    return response;
                 }
             }
-            return saveOptions;
+            return new HttpResponseMessage(HttpStatusCode.NotFound);
         }
     }
 }

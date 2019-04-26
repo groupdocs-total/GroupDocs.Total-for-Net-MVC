@@ -7,7 +7,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Request
     public class ConversionPostedData : PostedDataEntity
     {
         [JsonProperty]
-        private string destinationType { get; set; }
+        private string destinationType { get; set; }     
 
         public string GetDestinationType()
         {
@@ -17,6 +17,6 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Request
         public void SetDestinationType(string type)
         {
             this.destinationType = type;
-        }
+        }       
     }
 }

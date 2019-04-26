@@ -273,6 +273,7 @@
     <Compile Include="Products\Comparison\Util\TransformFiles.cs" />
     <Compile Include="Products\Conversion\Entity\Web\Request\ConversionPostedData.cs" />
     <Compile Include="Products\Conversion\Entity\Web\Response\ConversionTypesEntity.cs" />
+    <Compile Include="Products\Conversion\Manager\ConversionManager.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
