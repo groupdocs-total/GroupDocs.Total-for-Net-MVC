@@ -9,7 +9,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Manager
     public class ConversionManager
     {
       
-        private ConversionHandler conversionHandler;
+        private readonly ConversionHandler conversionHandler;
 
         public ConversionManager(ConversionHandler conversionHandler)
         {
@@ -23,7 +23,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Manager
                 string sourceType = Path.GetExtension(postedData.guid).TrimStart('.');
                 string destinationType = postedData.GetDestinationType();
                 string resultFileName = Path.GetFileNameWithoutExtension(postedData.guid) + "." + postedData.GetDestinationType();
-                dynamic saveOptions = GetSaveOptions(sourceType, destinationType, postedData.password);
+                dynamic saveOptions = GetSaveOptions(sourceType, destinationType);
 
                 ConvertedDocument convertedDocument = conversionHandler.Convert(postedData.guid, saveOptions);
 
@@ -40,13 +40,13 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Manager
                     convertedDocument.Save(resultFileName);
                 }
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
-                throw ex;
+                throw;
             }
         }
 
-        private SaveOptions GetSaveOptions(string sourceType, string destinationType, string password)
+        private SaveOptions GetSaveOptions(string sourceType, string destinationType)
         {
             dynamic saveOptions = null;
             Dictionary<string, SaveOptions> availableConversions = conversionHandler.GetSaveOptions(sourceType);

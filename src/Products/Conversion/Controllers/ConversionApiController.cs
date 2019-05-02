@@ -26,10 +26,10 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
     public class ConversionApiController : ApiController
     {
 
-        private static Common.Config.GlobalConfiguration GlobalConfiguration;
-        private static ConversionHandler ConversionHandler;
-        private ConversionManager Manager;
-        private List<string> SupportedImageFormats = new List<string>() { ".jp2", ".ico", ".psd", ".svg", ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".dxf", ".jpe", ".jfif" };
+        private Common.Config.GlobalConfiguration GlobalConfiguration;
+        private ConversionHandler ConversionHandler;
+        private readonly ConversionManager Manager;
+        private readonly List<string> SupportedImageFormats = new List<string>() { ".jp2", ".ico", ".psd", ".svg", ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".dxf", ".jpe", ".jfif" };
 
         /// <summary>
         /// Constructor
@@ -226,29 +226,30 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         {
             if (!string.IsNullOrEmpty(path))
             {
-                path = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), path);
-                if (SupportedImageFormats.Contains(Path.GetExtension(path)))
+                string resultPath = path;
+                string destinationPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), resultPath);
+                if (SupportedImageFormats.Contains(Path.GetExtension(destinationPath)))
                 {
-                    string zipName = Path.GetFileNameWithoutExtension(path) + ".zip";
+                    string zipName = Path.GetFileNameWithoutExtension(destinationPath) + ".zip";
                     string zipPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), zipName);
                     string[] files = Directory.GetFiles(GlobalConfiguration.Conversion.GetResultDirectory(),
-                        Path.GetFileNameWithoutExtension(path) + "*" + Path.GetExtension(path));
+                        Path.GetFileNameWithoutExtension(destinationPath) + "*" + Path.GetExtension(destinationPath));
                     using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
                     {
                         foreach (string file in files) {
                             zip.CreateEntryFromFile(file, Path.GetFileName(file));
                         }                        
                     }
-                    path = zipPath;
+                    resultPath = zipPath;
                 }               
                 if (File.Exists(path))
                 {
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                    var fileStream = new FileStream(path, FileMode.Open);
+                    var fileStream = new FileStream(resultPath, FileMode.Open);
                     response.Content = new StreamContent(fileStream);
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
+                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(resultPath);
                     return response;
                 }
             }
