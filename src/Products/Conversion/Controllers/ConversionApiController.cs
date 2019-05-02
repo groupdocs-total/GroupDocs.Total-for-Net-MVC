@@ -54,7 +54,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="postedData">Post data</param>
         /// <returns>List of files and directories</returns>
         [HttpPost]
-        [Route("loadFileTree")]
+        [Route("conversion/loadFileTree")]
         public HttpResponseMessage loadFileTree(PostedDataEntity postedData)
         {
             // get request body       
@@ -131,7 +131,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="postedData">Post data</param>
         /// <returns>Uploaded document object</returns>
         [HttpPost]
-        [Route("uploadDocument")]
+        [Route("conversion/uploadDocument")]
         public HttpResponseMessage UploadDocument()
         {
             try
@@ -201,7 +201,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="postedData">Post data</param>
         /// <returns>List of files and directories</returns>
         [HttpPost]
-        [Route("convert")]
+        [Route("conversion/convert")]
         public HttpResponseMessage Convert(ConversionPostedData postedData)
         {
             try
@@ -221,7 +221,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         /// <param name="path">Path of the document to download</param>
         /// <returns>Document stream as attachement</returns>
         [HttpGet]
-        [Route("downloadDocument")]
+        [Route("conversion/downloadDocument")]
         public HttpResponseMessage DownloadDocument(string path)
         {
             if (!string.IsNullOrEmpty(path))
