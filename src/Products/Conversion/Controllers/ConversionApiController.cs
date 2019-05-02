@@ -226,30 +226,36 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         {
             if (!string.IsNullOrEmpty(path))
             {
-                string resultPath = path;
-                string destinationPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), resultPath);
+                string destinationPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), path);
+
+
                 if (SupportedImageFormats.Contains(Path.GetExtension(destinationPath)))
                 {
                     string zipName = Path.GetFileNameWithoutExtension(destinationPath) + ".zip";
                     string zipPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), zipName);
                     string[] files = Directory.GetFiles(GlobalConfiguration.Conversion.GetResultDirectory(),
                         Path.GetFileNameWithoutExtension(destinationPath) + "*" + Path.GetExtension(destinationPath));
+                    if (File.Exists(zipPath))
+                    {
+                        File.Delete(zipPath);
+                    }
                     using (ZipArchive zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
                     {
-                        foreach (string file in files) {
+                        foreach (string file in files)
+                        {
                             zip.CreateEntryFromFile(file, Path.GetFileName(file));
-                        }                        
+                        }
                     }
-                    resultPath = zipPath;
-                }               
-                if (File.Exists(path))
+                    destinationPath = zipPath;
+                }
+                if (File.Exists(destinationPath))
                 {
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                    var fileStream = new FileStream(resultPath, FileMode.Open);
+                    var fileStream = new FileStream(destinationPath, FileMode.Open);
                     response.Content = new StreamContent(fileStream);
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(resultPath);
+                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(destinationPath);
                     return response;
                 }
             }
