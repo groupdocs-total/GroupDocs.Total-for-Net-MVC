@@ -8,41 +8,34 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Manager
 {
     public class ConversionManager
     {
-      
+
         private readonly ConversionHandler conversionHandler;
 
         public ConversionManager(ConversionHandler conversionHandler)
         {
-            this.conversionHandler = conversionHandler;          
-        }      
+            this.conversionHandler = conversionHandler;
+        }
 
         public void Convert(ConversionPostedData postedData)
         {
-            try
+            string sourceType = Path.GetExtension(postedData.guid).TrimStart('.');
+            string destinationType = postedData.GetDestinationType();
+            string resultFileName = Path.GetFileNameWithoutExtension(postedData.guid) + "." + postedData.GetDestinationType();
+            dynamic saveOptions = GetSaveOptions(sourceType, destinationType);
+
+            ConvertedDocument convertedDocument = conversionHandler.Convert(postedData.guid, saveOptions);
+
+            if (convertedDocument.PageCount > 1 && saveOptions is ImageSaveOptions)
             {
-                string sourceType = Path.GetExtension(postedData.guid).TrimStart('.');
-                string destinationType = postedData.GetDestinationType();
-                string resultFileName = Path.GetFileNameWithoutExtension(postedData.guid) + "." + postedData.GetDestinationType();
-                dynamic saveOptions = GetSaveOptions(sourceType, destinationType);
-
-                ConvertedDocument convertedDocument = conversionHandler.Convert(postedData.guid, saveOptions);
-
-                if (convertedDocument.PageCount > 1 && saveOptions is ImageSaveOptions)
+                for (int i = 1; i <= convertedDocument.PageCount; i++)
                 {
-                    for (int i = 1; i <= convertedDocument.PageCount; i++)
-                    {
-                        string fileName = Path.GetFileNameWithoutExtension(resultFileName) + "-page" + i + "." + Path.GetExtension(resultFileName);
-                        convertedDocument.Save(fileName, i);
-                    }
-                }
-                else
-                {
-                    convertedDocument.Save(resultFileName);
+                    string fileName = Path.GetFileNameWithoutExtension(resultFileName) + "-page" + i + "." + Path.GetExtension(resultFileName);
+                    convertedDocument.Save(fileName, i);
                 }
             }
-            catch (System.Exception)
+            else
             {
-                throw;
+                convertedDocument.Save(resultFileName);
             }
         }
 
