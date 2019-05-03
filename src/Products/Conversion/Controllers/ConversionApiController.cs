@@ -29,7 +29,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         private readonly Common.Config.GlobalConfiguration GlobalConfiguration;
         private readonly ConversionHandler ConversionHandler;
         private readonly ConversionManager Manager;
-        private readonly List<string> SupportedImageFormats = new List<string>() { ".jp2", ".ico", ".psd", ".svg", ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".dxf", ".jpe", ".jfif" };
+        private readonly List<string> SupportedImageFormats = new List<string> { ".jp2", ".ico", ".psd", ".svg", ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".dxf", ".jpe", ".jfif" };
 
         /// <summary>
         /// Constructor
@@ -41,8 +41,8 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
             // Setup Conversion configuration
             var conversionConfig = new ConversionConfig
             {
-                StoragePath = GlobalConfiguration.Conversion.GetFilesDirectory(),
-                OutputPath = GlobalConfiguration.Conversion.GetResultDirectory()
+                StoragePath = GlobalConfiguration.GetConversionConfiguration().GetFilesDirectory(),
+                OutputPath = GlobalConfiguration.GetConversionConfiguration().GetResultDirectory()
             };
             ConversionHandler = new ConversionHandler(conversionConfig);
             Manager = new ConversionManager(ConversionHandler);
@@ -65,11 +65,11 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                 // get all the files from a directory
                 if (string.IsNullOrEmpty(relDirPath))
                 {
-                    relDirPath = GlobalConfiguration.Conversion.GetFilesDirectory();
+                    relDirPath = GlobalConfiguration.GetConversionConfiguration().GetFilesDirectory();
                 }
                 else
                 {
-                    relDirPath = Path.Combine(GlobalConfiguration.Conversion.GetFilesDirectory(), relDirPath);
+                    relDirPath = Path.Combine(GlobalConfiguration.GetConversionConfiguration().GetFilesDirectory(), relDirPath);
                 }
 
                 List<string> allFiles = new List<string>(Directory.GetFiles(relDirPath));
@@ -84,7 +84,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
                     if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(GlobalConfiguration.Conversion.GetFilesDirectory())))
+                        Path.GetFileName(file).Equals(Path.GetFileName(GlobalConfiguration.GetConversionConfiguration().GetFilesDirectory())))
                     {
                         // ignore current file and skip to next one
                         continue;
@@ -138,7 +138,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = GlobalConfiguration.Conversion.GetFilesDirectory();
+                string documentStoragePath = GlobalConfiguration.GetConversionConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))
@@ -226,14 +226,14 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
         {
             if (!string.IsNullOrEmpty(path))
             {
-                string destinationPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), path);
+                string destinationPath = Path.Combine(GlobalConfiguration.GetConversionConfiguration().GetResultDirectory(), path);
 
 
                 if (SupportedImageFormats.Contains(Path.GetExtension(destinationPath)))
                 {
                     string zipName = Path.GetFileNameWithoutExtension(destinationPath) + ".zip";
-                    string zipPath = Path.Combine(GlobalConfiguration.Conversion.GetResultDirectory(), zipName);
-                    string[] files = Directory.GetFiles(GlobalConfiguration.Conversion.GetResultDirectory(),
+                    string zipPath = Path.Combine(GlobalConfiguration.GetConversionConfiguration().GetResultDirectory(), zipName);
+                    string[] files = Directory.GetFiles(GlobalConfiguration.GetConversionConfiguration().GetResultDirectory(),
                         Path.GetFileNameWithoutExtension(destinationPath) + "*" + Path.GetExtension(destinationPath));
                     if (File.Exists(zipPath))
                     {
