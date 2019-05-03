@@ -26,8 +26,8 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
     public class ConversionApiController : ApiController
     {
 
-        private Common.Config.GlobalConfiguration GlobalConfiguration;
-        private ConversionHandler ConversionHandler;
+        private readonly Common.Config.GlobalConfiguration GlobalConfiguration;
+        private readonly ConversionHandler ConversionHandler;
         private readonly ConversionManager Manager;
         private readonly List<string> SupportedImageFormats = new List<string>() { ".jp2", ".ico", ".psd", ".svg", ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".dxf", ".jpe", ".jfif" };
 
