@@ -25,6 +25,6 @@
     "@groupdocs.examples.jquery/viewer": "^0.14.0"
   },
   "devDependencies": {
-    "gulp": "^4.0.1"
+    "gulp": "^4.0.2"
   }
 }

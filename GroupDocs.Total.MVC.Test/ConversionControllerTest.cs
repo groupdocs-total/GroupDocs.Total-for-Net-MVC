@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
-using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
-using MvcIntegrationTestFramework.Hosting;
-using System.Threading.Tasks;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 
 namespace GroupDocs.Total.MVC.Test
 {
@@ -60,7 +58,7 @@ namespace GroupDocs.Total.MVC.Test
             using (var server = new DirectServer(path))
             {
 
-                AnnotationPostedDataEntity requestData = new AnnotationPostedDataEntity();
+                PostedDataEntity requestData = new PostedDataEntity();
                 requestData.path = "";
 
                 var request = new SerialisableRequest
