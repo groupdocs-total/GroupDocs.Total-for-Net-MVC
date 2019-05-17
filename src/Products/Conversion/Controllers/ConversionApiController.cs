@@ -5,6 +5,7 @@ using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Response;
+using GroupDocs.Total.MVC.Products.Conversion.Filter;
 using GroupDocs.Total.MVC.Products.Conversion.Manager;
 using System;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
                         string documentExtension = Path.GetExtension(fileDescription.name).TrimStart('.');
                         if (!String.IsNullOrEmpty(documentExtension))
                         {
-                            string[] availableConversions = ConversionHandler.GetPossibleConversions(documentExtension);
+                            string[] availableConversions = new DestinationTypesFilter().GetPosibleConversions(documentExtension);
                             //list all available conversions
                             foreach (string name in availableConversions)
                             {
