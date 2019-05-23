@@ -3,6 +3,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/kvkv1oswg5xfd6uq/branch/master?svg=true)](https://ci.appveyor.com/project/egorovpavel/groupdocs-total-for-net-mvc/branch/master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b5cf669acf9043888c8fc4a8d46abdc3)](https://www.codacy.com/app/GroupDocs/GroupDocs.Total-for-NET-MVC?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=groupdocs-total/GroupDocs.Total-for-NET-MVC&amp;utm_campaign=Badge_Grade)
+[![GitHub license](https://img.shields.io/github/license/groupdocs-total/GroupDocs.Total-for-NET-MVC.svg)](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/blob/master/LICENSE)
 
 ## System Requirements
 - .NET Framework 4.5
@@ -184,7 +185,7 @@ Update common parameters in `web.config` and example related properties in the `
 Open http://localhost:8080/ in your favorite browser
 
 #### Docker image
-Use [docker](https://www.docker.com/) image.
+Use [docker image](https://hub.docker.com/u/groupdocs).
 
 ```bash
 mkdir DocumentSamples
@@ -204,7 +205,7 @@ Please have a look at the LICENSE.md for more details
 ## GroupDocs Total on other platforms & frameworks
 
 - [GroupDocs.Total with JAVA Spring ](https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Spring)
-- [GroupDocs.Total with JAVA Dropwizrd ](https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard)
+- [GroupDocs.Total with JAVA Dropwizard ](https://github.com/groupdocs-total/GroupDocs.Total-for-Java-Dropwizard)
 - [GroupDocs.Total with .NET WebForms ](https://github.com/groupdocs-total/GroupDocs.Total-for-.NET-WebForms)
 
 ## Resources
