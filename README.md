@@ -19,8 +19,7 @@ This web application demonstrates the following document manipulation capabiliti
 - Document viewer
 - Annotate & write on documents 
 - Digitally sign documents
-- Compare documents  
-
+- Compare documents 
 
 **Note:** without a license application will run in trial mode, purchase [GroupDocs.Total for .NET license](https://purchase.groupdocs.com/order-online-step-1-of-8.aspx) or request [GroupDocs.Total for .NET temporary license](https://purchase.groupdocs.com/temporary-license).
 
@@ -45,6 +44,7 @@ This web application demonstrates the following document manipulation capabiliti
 | Electronic publication      | `EPUB`                                                                                                                             |
 | Windows Icon                | `ICO`                                                                                                                              |
 | Medical image files         | `DCM`                                                                                                                              | 
+
 
 
 ## Demo Video
@@ -154,6 +154,18 @@ Coming soon
 - Multi-language support for displaying errors
 - Cross-browser support (Safari, Chrome, Opera, Firefox)
 - Cross-platform support (Windows, Linux, MacOS)
+#### [Document converter](https://github.com/groupdocs-conversion/GroupDocs.Conversion-for-.NET-MVC) with GroupDocs.Conversion
+- Clean, modern and intuitive design
+- Easily switchable colour theme (create your own colour theme in 5 minutes)
+- Responsive design
+- Convert individual documents
+- Batch convert multiple documents
+- Drag and drop support
+- Mobile support (open application on any mobile device)
+- HTML and image modes
+- Upload documents
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
 
 ## How to run
 
@@ -181,6 +193,9 @@ mkdir Licenses
 docker run -p 8080:8080 --env application.hostAddress=localhost -v `pwd`/DocumentSamples:/home/groupdocs/app/DocumentSamples -v `pwd`/Licenses:/home/groupdocs/app/Licenses groupdocs/total
 ## Open http://localhost:8080/ in your favorite browser.
 ```
+
+#### Configuration
+For all methods above you can adjust settings in `configuration.yml`. By default in this sample will lookup for license file in `./Licenses` folder, so you can simply put your license file in that folder or specify relative/absolute path by setting `licensePath` value in `configuration.yml`. 
 
 ## License
 The MIT License (MIT). 

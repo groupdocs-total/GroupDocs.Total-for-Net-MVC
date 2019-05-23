@@ -108,6 +108,18 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             SetLicense(obj);
         }
 
+        /// <summary>
+        /// Set GroupDocs.Conversion license
+        /// </summary>
+        /// <param name="type">Type</param>
+        public void SetConversionLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Conversion.License)Activator.CreateInstance(CurrentType);
+            // Set license
+            SetLicense(obj);
+        }
+
         private void SetLicense(dynamic obj) {
             if (!String.IsNullOrEmpty(globalConfiguration.Application.LicensePath))
             {
