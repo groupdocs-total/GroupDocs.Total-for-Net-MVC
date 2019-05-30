@@ -7,6 +7,6 @@ gulp.task('build', function () {
 
 gulp.task('copy', function () {
     return gulp
-        .src('./node_modules/@groupdocs.examples.angular/viewer/dist/**')     
+        .src('./node_modules/@groupdocs.examples.angular/**')     
         .pipe(gulp.dest('./Resources/angular'))
 })
