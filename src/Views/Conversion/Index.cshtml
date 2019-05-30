@@ -28,10 +28,10 @@
     <script type="text/javascript">
         $('#element').conversion({
             applicationPath: 'http://@config.Server.HostAddress:@config.Server.HttpPort/conversion',           
-            download: @config.Common.isDownload.ToString().ToLowerInvariant(),
-            upload: @config.Common.isUpload.ToString().ToLowerInvariant(),           
-            browse: @config.Common.isBrowse.ToString().ToLowerInvariant(),
-            rewrite: @config.Common.isRewrite.ToString().ToLowerInvariant(),            
+            download: @config.Common.download.ToString().ToLowerInvariant(),
+            upload: @config.Common.upload.ToString().ToLowerInvariant(),           
+            browse: @config.Common.browse.ToString().ToLowerInvariant(),
+            rewrite: @config.Common.rewrite.ToString().ToLowerInvariant(),            
             enableRightClick: @config.Common.enableRightClick.ToString().ToLowerInvariant()
         });
     </script>
