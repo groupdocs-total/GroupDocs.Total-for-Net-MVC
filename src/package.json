@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC#readme",
   "dependencies": {
-    "@groupdocs.examples.angular/viewer": "^0.1.1",
+    "@groupdocs.examples.angular/viewer": "^0.1.3",
     "@groupdocs.examples.jquery/annotation": "^0.16.0",
     "@groupdocs.examples.jquery/common": "^0.16.0",
     "@groupdocs.examples.jquery/comparison": "^0.16.0",
