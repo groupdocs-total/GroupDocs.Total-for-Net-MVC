@@ -461,7 +461,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             if (globalConfiguration.Viewer.GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
-                SetOptions(htmlOptions, password, page.Number);
+                SetOptions(htmlOptions, password, page.Number);               
                 // get page HTML              
                 return this.GetHandler().GetPages(documentGuid, htmlOptions)[0].HtmlContent;
 
@@ -541,6 +541,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 options.PageNumber = pageNumber;
                 options.CountPagesToRender = 1;
             }
+            options.CellsOptions.ShowGridLines = true;
         }
 
         private void SetOptions(ImageOptions options, string password, int pageNumber)
@@ -568,6 +569,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 options.PageNumber = pageNumber;
                 options.CountPagesToRender = 1;
             }
+            options.CellsOptions.ShowGridLines = true;
         }
     }
 }
