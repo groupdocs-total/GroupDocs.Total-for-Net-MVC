@@ -136,12 +136,16 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 {
                     PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                     byte[] bytes = null;
+                    page.PageStream.Position = 0;
                     using (MemoryStream ms = new MemoryStream())
                     {
                         page.PageStream.CopyTo(ms);
                         bytes = ms.ToArray();
                     }
                     loadedPage.SetData(Convert.ToBase64String(bytes));
+                    loadedPage.height = page.Height;
+                    loadedPage.width = page.Width;
+                    loadedPage.number = page.PageNumber;
                     loadDocumentEntity.SetPages(loadedPage);
                 }
                 return loadDocumentEntity;
@@ -169,6 +173,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
 
                 PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                 byte[] bytes = null;
+                resultImages[pageNumber - 1].PageStream.Position = 0;
                 using (MemoryStream ms = new MemoryStream())
                 {
                     resultImages[pageNumber - 1].PageStream.CopyTo(ms);
@@ -176,6 +181,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 }
                 loadedPage.SetData(Convert.ToBase64String(bytes));
                 loadedPage.number = pageNumber;
+                loadedPage.height = resultImages[pageNumber - 1].Height;
+                loadedPage.width = resultImages[pageNumber - 1].Width;
                 loadDocumentEntity.SetPages(loadedPage);
 
             }
@@ -222,7 +229,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             MultiComparer multiComparer = new MultiComparer();
             // create setting for comparing
             ComparisonSettings settings = new ComparisonSettings();
-
+            
             // transform lists of files and passwords
             List<Stream> files = new List<Stream>();
             List<string> passwords = new List<string>();
