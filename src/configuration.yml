@@ -205,3 +205,17 @@ conversion:
   # FResult files directory path
   # Absolute path to result files directory
   resultDirectory: ''
+
+################################################
+# GroupDocs.Editor configurations
+################################################
+editor:
+  # Files directory path
+  # Absolute path to files directory
+  filesDirectory: 'DocumentSamples/Editor'
+  # Fonts path
+  # Absolute path to custom fonts directory
+  fontsDirectory: ''
+  # Default document
+  # Absolute path to default document
+  defaultDocument: ''

@@ -3,6 +3,7 @@ using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Viewer.Config;
 using GroupDocs.Total.MVC.Products.Comparison.Config;
 using GroupDocs.Total.MVC.Products.Conversion.Config;
+using GroupDocs.Total.MVC.Products.Editor.Config;
 
 namespace GroupDocs.Total.MVC.Products.Common.Config
 {
@@ -19,7 +20,8 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         public AnnotationConfiguration Annotation;
         public ComparisonConfiguration Comparison;
         private readonly ConversionConfiguration Conversion;
-       
+        private readonly EditorConfiguration Editor;
+
         /// <summary>
         /// Get all configurations
         /// </summary>
@@ -33,10 +35,16 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             Annotation = new AnnotationConfiguration();
             Comparison = new ComparisonConfiguration();
             Conversion = new ConversionConfiguration();
+            Editor = new EditorConfiguration();
         }
 
         public ConversionConfiguration GetConversionConfiguration() {
             return Conversion;
+        }
+
+        public EditorConfiguration GetEditorConfiguration()
+        {
+            return Editor;
         }
     }
 }
