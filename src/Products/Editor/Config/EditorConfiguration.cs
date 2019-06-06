@@ -19,7 +19,10 @@ namespace GroupDocs.Total.MVC.Products.Editor.Config
         private string fontsDirectory = "";
 
         [JsonProperty]
-        private string defaultDocument = "";      
+        private string defaultDocument = "";
+
+        [JsonProperty]
+        private bool createNewFile = true;
 
         /// <summary>
         /// Constructor
@@ -41,7 +44,8 @@ namespace GroupDocs.Total.MVC.Products.Editor.Config
                 }
             }
             fontsDirectory = valuesGetter.GetStringPropertyValue("fontsDirectory", fontsDirectory);
-            defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);           
+            defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
+            createNewFile = valuesGetter.GetBooleanPropertyValue("createNewFile", createNewFile);
         }
 
         private static bool IsFullPath(string path)
@@ -80,6 +84,11 @@ namespace GroupDocs.Total.MVC.Products.Editor.Config
         public string GetDefaultDocument()
         {
             return defaultDocument;
-        }       
+        }   
+        
+        public bool GetCreateNewFile()
+        {
+            return createNewFile;
+        }
     }
 }
