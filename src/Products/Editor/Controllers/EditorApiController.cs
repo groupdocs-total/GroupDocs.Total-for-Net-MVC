@@ -1,7 +1,9 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+﻿using GroupDocs.Editor.Options;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Editor.Config;
+using GroupDocs.Total.MVC.Products.Editor.Entity.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +17,7 @@ using System.Web.Http.Cors;
 namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 {
     /// <summary>
-    /// ViewerApiController
+    /// EditorApiController
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class EditorApiController : ApiController
@@ -35,11 +37,11 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
         /// <summary>
         /// Load Viewr configuration
         /// </summary>       
-        /// <returns>Viewer configuration</returns>
+        /// <returns>Editor configuration</returns>
         [HttpGet]
         [Route("editor/loadConfig")]
         public EditorConfiguration LoadConfig()
-        {            
+        {
             return globalConfiguration.GetEditorConfiguration();
         }
 
@@ -70,7 +72,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
                 List<string> allFiles = new List<string>(Directory.GetFiles(relDirPath));
                 allFiles.AddRange(Directory.GetDirectories(relDirPath));
-              
+
                 allFiles.Sort(new FileNameComparator());
                 allFiles.Sort(new FileTypeComparator());
 
@@ -87,7 +89,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                     }
                     else
                     {
-                        FileDescriptionEntity fileDescription = new FileDescriptionEntity();                   
+                        FileDescriptionEntity fileDescription = new FileDescriptionEntity();
                         fileDescription.guid = Path.GetFullPath(file);
                         fileDescription.name = Path.GetFileName(file);
                         // set is directory true/false
@@ -96,7 +98,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                         if (!fileDescription.isDirectory)
                         {
                             fileDescription.size = fileInfo.Length;
-                        }                        
+                        }
                         // add object to array list
                         fileList.Add(fileDescription);
                     }
@@ -107,7 +109,18 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
-        }           
+        }
+
+        /// <summary>
+        /// Load supported file types
+        /// </summary>       
+        /// <returns>Editor configuration</returns>
+        [HttpGet]
+        [Route("editor/loadFormats")]
+        public List<string> LoadFormats()
+        {
+            return PrepareFormats();
+        }
 
         /// <summary>
         /// Download curerntly viewed document
@@ -202,6 +215,30 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
-        }       
+        }
+
+        private static List<string> PrepareFormats()
+        {
+            List<string> outputListItems = new List<string>();
+
+
+            foreach (var item in Enum.GetNames(typeof(WordProcessingFormats)))
+            {
+                if (item.Equals("Auto"))
+                {
+                    continue;
+                }
+                outputListItems.Add(item);
+            }
+            foreach (var item in Enum.GetNames(typeof(SpreadsheetFormats)))
+            {
+                if (item.Equals("Auto"))
+                {
+                    continue;
+                }
+                outputListItems.Add(item);
+            }
+            return outputListItems;
+        }
     }
 }
