@@ -13,7 +13,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Config
     public class EditorConfiguration : CommonConfiguration
     {
         [JsonProperty]
-        private string filesDirectory = "DocumentSamples/Viewer";
+        private string filesDirectory = "DocumentSamples/Editor";
 
         [JsonProperty]
         private string fontsDirectory = "";

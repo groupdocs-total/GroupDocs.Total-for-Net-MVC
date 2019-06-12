@@ -1,4 +1,5 @@
-﻿using GroupDocs.Editor.Options;
+﻿using GroupDocs.Editor;
+using GroupDocs.Editor.Options;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
@@ -120,6 +121,93 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
         public List<string> LoadFormats()
         {
             return PrepareFormats();
+        }
+
+        /// <summary>
+        /// Load document description
+        /// </summary>
+        /// <param name="postedData">Post data</param>
+        /// <returns>Document info object</returns>
+        [HttpPost]
+        [Route("editor/loadDocumentDescription")]
+        public HttpResponseMessage LoadDocumentDescription(PostedDataEntity postedData)
+        {
+            string password = "";
+            try
+            {
+
+
+
+                IDocumentLoadOptions options = EditorHandler.DetectOptionsFromExtension(postedData.guid);
+                //GroupDocs.Editor cannot detect text-based Cells documents formats (like CSV) automatically
+                if (options is SpreadsheetToHtmlOptions && postedData.guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
+                {
+                    options = new SpreadsheetToHtmlOptions()
+                    {
+                        TextOptions = new SpreadsheetToHtmlOptions.TextLoadOptions(",")//here can be also ";" or any other string depending from your document
+                    };
+                }
+                string bodyContent;
+
+                using (System.IO.FileStream inputDoc = System.IO.File.OpenRead(postedData.guid))
+                using (InputHtmlDocument htmlDoc = EditorHandler.ToHtml(inputDoc, options))
+                {
+                    bodyContent = htmlDoc.GetEmbeddedHtml();
+                }
+
+                EditableDocumentType documentType;
+                if (options is WordProcessingToHtmlOptions)
+                {
+                    documentType = EditableDocumentType.Words;
+                }
+                else if (options is SpreadsheetToHtmlOptions)
+                {
+                    documentType = EditableDocumentType.Cells;
+                }
+                else
+                {
+                    throw new FileLoadException(string.Format("Cannot detect a type of editable document from its filename '{0}'.", postedData.guid));
+                }
+                EditDocument loadDocumentEntity = new EditDocument();
+                loadDocumentEntity.SetGuid(System.IO.Path.GetFileName(postedData.guid));
+                PageDescriptionEntity page = new PageDescriptionEntity();
+                page.SetData(bodyContent);
+                loadDocumentEntity.SetPages(page);
+                loadDocumentEntity.outputFormats = PrepareFormats();
+                loadDocumentEntity.isNewDocument = false;
+                loadDocumentEntity.documentType = documentType;
+
+                // return document description
+                return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+            }
+        }
+
+        public static bool ClearOrCreate(string fullPath)
+        {
+            if (fullPath == null) { throw new ArgumentNullException("fullPath"); }
+            DirectoryInfo inputDir = new DirectoryInfo(fullPath);
+            if (!inputDir.Exists)
+            {
+                Directory.CreateDirectory(fullPath);
+                return true;
+            }
+            else
+            {
+                foreach (DirectoryInfo dir in inputDir.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+                foreach (FileInfo file in inputDir.GetFiles())
+                {
+                    file.Delete();
+                }
+                return false;
+            }
         }
 
         /// <summary>
