@@ -133,17 +133,18 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             string password = "";
             try
             {
-
-
-
-                dynamic options = EditorHandler.DetectOptionsFromExtension(postedData.guid);
+                dynamic options = null;
                 //GroupDocs.Editor cannot detect text-based Cells documents formats (like CSV) automatically
-                if (options is SpreadsheetToHtmlOptions && postedData.guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
+                if (postedData.guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
                 {
-                    options = new SpreadsheetToHtmlOptions()
-                    {
-                        TextOptions = options.TextLoadOptions(",")//here can be also ";" or any other string depending from your document
-                    };
+                    options = new SpreadsheetToHtmlOptions();
+                } else {
+                    options = EditorHandler.DetectOptionsFromExtension(postedData.guid);
+                }
+              
+                if (options is SpreadsheetToHtmlOptions)
+                {
+                    options.TextOptions = options.TextLoadOptions(",");
                 }
                 string bodyContent;
 
@@ -319,10 +320,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                     break;
                 case "Dot":
                     format = WordProcessingFormats.Dot;
-                    break;
-                case "Docx":
-                    format = WordProcessingFormats.Docx;
-                    break;
+                    break;             
                 case "Docm":
                     format = WordProcessingFormats.Docm;
                     break;
