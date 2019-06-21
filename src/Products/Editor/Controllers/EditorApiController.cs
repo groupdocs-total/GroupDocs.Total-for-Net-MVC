@@ -24,14 +24,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
     public class EditorApiController : ApiController
     {
 
-        private static Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public EditorApiController()
-        {           
-        }
+        private static Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();       
 
         /// <summary>
         /// Load Viewr configuration
