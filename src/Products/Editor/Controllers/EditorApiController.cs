@@ -24,15 +24,13 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
     public class EditorApiController : ApiController
     {
 
-        private static Common.Config.GlobalConfiguration globalConfiguration;
+        private static Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();
 
         /// <summary>
         /// Constructor
         /// </summary>
         public EditorApiController()
-        {
-            // Check if filesDirectory is relative or absolute path           
-            globalConfiguration = new Common.Config.GlobalConfiguration();
+        {           
         }
 
         /// <summary>
@@ -138,13 +136,13 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
 
 
-                IDocumentLoadOptions options = EditorHandler.DetectOptionsFromExtension(postedData.guid);
+                dynamic options = EditorHandler.DetectOptionsFromExtension(postedData.guid);
                 //GroupDocs.Editor cannot detect text-based Cells documents formats (like CSV) automatically
                 if (options is SpreadsheetToHtmlOptions && postedData.guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
                 {
                     options = new SpreadsheetToHtmlOptions()
                     {
-                        TextOptions = new SpreadsheetToHtmlOptions.TextLoadOptions(",")//here can be also ";" or any other string depending from your document
+                        TextOptions = options.TextLoadOptions(",")//here can be also ";" or any other string depending from your document
                     };
                 }
                 string bodyContent;
@@ -357,11 +355,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                     break;
                 case "WordML":
                     format = WordProcessingFormats.WordML;
-                    break;
-            }
-            switch (extension)
-            {
-
+                    break;           
                 case "Csv":
                     format = SpreadsheetFormats.Csv;
                     break;
@@ -392,6 +386,10 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 case "Xltx":
                     format = SpreadsheetFormats.Xltx;
                     break;
+                default:
+                    format = WordProcessingFormats.Docx;
+                    break;
+
             }
             return format;
         }
@@ -414,11 +412,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 {
                     options = new WordProcessingSaveOptions();
                     break;
-                }
-                else
-                {
-                    continue;
-                }
+                }              
             }
             if (options == null)
             {
