@@ -4,10 +4,10 @@ using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Editor.Config;
-using GroupDocs.Total.MVC.Products.Editor.Entity.Web;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -154,28 +154,11 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 {
                     bodyContent = htmlDoc.GetEmbeddedHtml();
                 }
-
-                EditableDocumentType documentType;
-                if (options is WordProcessingToHtmlOptions)
-                {
-                    documentType = EditableDocumentType.Words;
-                }
-                else if (options is SpreadsheetToHtmlOptions)
-                {
-                    documentType = EditableDocumentType.Cells;
-                }
-                else
-                {
-                    throw new FileLoadException(string.Format("Cannot detect a type of editable document from its filename '{0}'.", postedData.guid));
-                }
-                EditDocument loadDocumentEntity = new EditDocument();
+                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
                 loadDocumentEntity.SetGuid(System.IO.Path.GetFileName(postedData.guid));
                 PageDescriptionEntity page = new PageDescriptionEntity();
                 page.SetData(bodyContent);
                 loadDocumentEntity.SetPages(page);
-                loadDocumentEntity.outputFormats = PrepareFormats();
-                loadDocumentEntity.isNewDocument = false;
-                loadDocumentEntity.documentType = documentType;
 
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
@@ -184,29 +167,6 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             {
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
-            }
-        }
-
-        public static bool ClearOrCreate(string fullPath)
-        {
-            if (fullPath == null) { throw new ArgumentNullException("fullPath"); }
-            DirectoryInfo inputDir = new DirectoryInfo(fullPath);
-            if (!inputDir.Exists)
-            {
-                Directory.CreateDirectory(fullPath);
-                return true;
-            }
-            else
-            {
-                foreach (DirectoryInfo dir in inputDir.GetDirectories())
-                {
-                    dir.Delete(true);
-                }
-                foreach (FileInfo file in inputDir.GetFiles())
-                {
-                    file.Delete();
-                }
-                return false;
             }
         }
 
@@ -305,19 +265,189 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             }
         }
 
-        private static List<string> PrepareFormats()
+        /// <summary>
+        /// Load document description
+        /// </summary>
+        /// <param name="postedData">Post data</param>
+        /// <returns>Document info object</returns>
+        [HttpPost]
+        [Route("editor/saveFile")]
+        public HttpResponseMessage SaveFile(LoadDocumentEntity postedData)
         {
-            List<string> outputListItems = new List<string>();
+            string password ="";
+            try
+            {
+                string htmlContent = postedData.GetPages()[0].GetData(); // Initialize with HTML markup of the edited document
 
+                string saveFilePath = Path.Combine(globalConfiguration.GetEditorConfiguration().GetFilesDirectory(), postedData.GetGuid());
+                if (File.Exists(saveFilePath))
+                {
+                    File.Delete(saveFilePath);
+                }
+                using (OutputHtmlDocument editedHtmlDoc = new OutputHtmlDocument(htmlContent, null))
+                {
+                    dynamic options = GetSaveOptions(saveFilePath);
+                    if (options.GetType().Equals(typeof(WordProcessingSaveOptions)))
+                    {
+                        options.EnablePagination = true;
+                    }
+                    options.Password = password;
+                    options.OutputFormat = GetSaveFormat(saveFilePath);
+                    using (System.IO.FileStream outputStream = System.IO.File.Create(saveFilePath))
+                    {
+                        EditorHandler.ToDocument(editedHtmlDoc, outputStream, options);
+                    }
+                }
 
+                // return document description
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+            }
+        }
+
+        private dynamic GetSaveFormat(string saveFilePath)
+        {
+            string extension = Path.GetExtension(saveFilePath).Replace(".", "");
+            dynamic format = null;
+            switch (extension)
+            {
+
+                case "Doc":
+                    format = WordProcessingFormats.Doc;
+                    break;
+                case "Dot":
+                    format = WordProcessingFormats.Dot;
+                    break;
+                case "Docx":
+                    format = WordProcessingFormats.Docx;
+                    break;
+                case "Docm":
+                    format = WordProcessingFormats.Docm;
+                    break;
+                case "Dotx":
+                    format = WordProcessingFormats.Dotx;
+                    break;
+                case "Dotm":
+                    format = WordProcessingFormats.Dotm;
+                    break;
+                case "FlatOpc":
+                    format = WordProcessingFormats.FlatOpc;
+                    break;
+                case "Rtf":
+                    format = WordProcessingFormats.Rtf;
+                    break;
+                case "Odt":
+                    format = WordProcessingFormats.Odt;
+                    break;
+                case "Ott":
+                    format = WordProcessingFormats.Ott;
+                    break;
+                case "txt":
+                    format = WordProcessingFormats.Text;
+                    break;
+                case "Html":
+                    format = WordProcessingFormats.Html;
+                    break;
+                case "Mhtml":
+                    format = WordProcessingFormats.Mhtml;
+                    break;
+                case "WordML":
+                    format = WordProcessingFormats.WordML;
+                    break;
+            }
+            switch (extension)
+            {
+
+                case "Csv":
+                    format = SpreadsheetFormats.Csv;
+                    break;
+                case "Ods":
+                    format = SpreadsheetFormats.Ods;
+                    break;
+                case "SpreadsheetML":
+                    format = SpreadsheetFormats.SpreadsheetML;
+                    break;
+                case "TabDelimited":
+                    format = SpreadsheetFormats.TabDelimited;
+                    break;
+                case "Xls":
+                    format = SpreadsheetFormats.Xls;
+                    break;
+                case "Xlsb":
+                    format = SpreadsheetFormats.Xlsb;
+                    break;
+                case "Xlsm":
+                    format = SpreadsheetFormats.Xlsm;
+                    break;
+                case "Xlsx":
+                    format = SpreadsheetFormats.Xlsx;
+                    break;
+                case "Xltm":
+                    format = SpreadsheetFormats.Xltm;
+                    break;
+                case "Xltx":
+                    format = SpreadsheetFormats.Xltx;
+                    break;
+            }
+            return format;
+        }
+
+        private dynamic GetSaveOptions(string saveFilePath)
+        {
+            string extension = Path.GetExtension(saveFilePath).Replace(".", "");
+            if (extension.Equals("Txt"))
+            {
+                extension = "Text";
+            }
+            dynamic options = null;
             foreach (var item in Enum.GetNames(typeof(WordProcessingFormats)))
             {
                 if (item.Equals("Auto"))
                 {
                     continue;
                 }
-                outputListItems.Add(item);
+                if (item.Equals(extension))
+                {
+                    options = new WordProcessingSaveOptions();
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
             }
+            if (options == null)
+            {
+                options = new SpreadsheetSaveOptions();
+            }
+            return options;
+        }
+
+        private static List<string> PrepareFormats()
+        {
+            List<string> outputListItems = new List<string>();
+                       
+            foreach (var item in Enum.GetNames(typeof(WordProcessingFormats)))
+            {
+                if (item.Equals("Auto"))
+                {
+                    continue;
+                }
+                if (item.Equals("Text"))
+                {
+                    outputListItems.Add("Txt");
+                }
+                else
+                {
+                    outputListItems.Add(item);
+                }
+
+            }
+
             foreach (var item in Enum.GetNames(typeof(SpreadsheetFormats)))
             {
                 if (item.Equals("Auto"))
@@ -326,6 +456,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 }
                 outputListItems.Add(item);
             }
+
             return outputListItems;
         }
     }
