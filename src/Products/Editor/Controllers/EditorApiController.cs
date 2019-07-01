@@ -6,6 +6,7 @@ using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Editor.Config;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -304,6 +305,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
         private dynamic GetSaveFormat(string saveFilePath)
         {
             string extension = Path.GetExtension(saveFilePath).Replace(".", "");
+            extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
             dynamic format = null;
             switch (extension)
             {
@@ -388,6 +390,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
         private dynamic GetSaveOptions(string saveFilePath)
         {
             string extension = Path.GetExtension(saveFilePath).Replace(".", "");
+            extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
             if (extension.Equals("Txt"))
             {
                 extension = "Text";

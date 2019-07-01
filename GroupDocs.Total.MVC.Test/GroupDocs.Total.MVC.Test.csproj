@@ -194,6 +194,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EditorControllerTest - Copy.cs" />
     <Compile Include="ConversionControllerTest.cs" />
     <Compile Include="AnnotationControllerTest.cs" />
     <Compile Include="ComparisonControllerTest.cs" />
