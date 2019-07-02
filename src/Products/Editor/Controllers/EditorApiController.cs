@@ -423,46 +423,39 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
         private LoadDocumentEntity LoadDocument(string guid, string password)
         {
-            try
+            dynamic options = null;
+            //GroupDocs.Editor cannot detect text-based Cells documents formats (like CSV) automatically
+            if (guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
             {
-                dynamic options = null;
-                //GroupDocs.Editor cannot detect text-based Cells documents formats (like CSV) automatically
-                if (guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
-                {
-                    options = new SpreadsheetToHtmlOptions();
-                }
-                else
-                {
-                    options = EditorHandler.DetectOptionsFromExtension(guid);
-                }
-
-                if (options is SpreadsheetToHtmlOptions)
-                {
-                    options.TextOptions = options.TextLoadOptions(",");
-                }
-                else
-                {
-                    options.Password = password;
-                }
-                string bodyContent;
-
-                using (System.IO.FileStream inputDoc = System.IO.File.OpenRead(guid))
-
-                using (InputHtmlDocument htmlDoc = EditorHandler.ToHtml(inputDoc, options))
-                {
-                    bodyContent = htmlDoc.GetEmbeddedHtml();
-                }
-                LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-                loadDocumentEntity.SetGuid(System.IO.Path.GetFileName(guid));
-                PageDescriptionEntity page = new PageDescriptionEntity();
-                page.SetData(bodyContent);
-                loadDocumentEntity.SetPages(page);
-                return loadDocumentEntity;
+                options = new SpreadsheetToHtmlOptions();
             }
-            catch
+            else
             {
-                throw;
+                options = EditorHandler.DetectOptionsFromExtension(guid);
             }
+
+            if (options is SpreadsheetToHtmlOptions)
+            {
+                options.TextOptions = options.TextLoadOptions(",");
+            }
+            else
+            {
+                options.Password = password;
+            }
+            string bodyContent;
+
+            using (System.IO.FileStream inputDoc = System.IO.File.OpenRead(guid))
+
+            using (InputHtmlDocument htmlDoc = EditorHandler.ToHtml(inputDoc, options))
+            {
+                bodyContent = htmlDoc.GetEmbeddedHtml();
+            }
+            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            loadDocumentEntity.SetGuid(System.IO.Path.GetFileName(guid));
+            PageDescriptionEntity page = new PageDescriptionEntity();
+            page.SetData(bodyContent);
+            loadDocumentEntity.SetPages(page);
+            return loadDocumentEntity;
         }
     }
 }
