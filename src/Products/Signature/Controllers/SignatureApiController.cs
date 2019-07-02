@@ -47,7 +47,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             // get global configurations 
             GlobalConfiguration = new Common.Config.GlobalConfiguration();
             // initiate DirectoryUtils
-            DirectoryUtils = new DirectoryUtils(GlobalConfiguration.Signature);
+            DirectoryUtils = new DirectoryUtils(GlobalConfiguration.GetSignatureConfiguration());
             // create signature application configuration
             SignatureConfig config = new SignatureConfig();
             config.StoragePath = DirectoryUtils.FilesDirectory.GetPath();
@@ -177,7 +177,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     description.height = pageSize.Height;
                     description.width = pageSize.Width;
                     description.number = i;
-                    if (GlobalConfiguration.Signature.PreloadPageCount == 0)
+                    if (GlobalConfiguration.GetSignatureConfiguration().PreloadPageCount == 0)
                     {
                         byte[] pageBytes = SignatureHandler.GetPageImage(documentGuid, i, password, null, 100);
                         string encodedImage = Convert.ToBase64String(pageBytes);
