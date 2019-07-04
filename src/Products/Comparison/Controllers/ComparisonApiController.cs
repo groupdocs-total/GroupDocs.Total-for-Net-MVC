@@ -174,10 +174,21 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         /// <param name="loadResultPageRequest"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("comparison/LoadDocumentPages")]
-        public HttpResponseMessage LoadDocumentPages(PostedDataEntity loadResultPageRequest)
+        [Route("comparison/loadDocumentDescription")]
+        public HttpResponseMessage LoadDocumentDescription(PostedDataEntity loadResultPageRequest)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentPages(loadResultPageRequest.path));
+            try
+            {
+                LoadDocumentEntity document = comparisonService.LoadDocumentPages(loadResultPageRequest.path);
+                return Request.CreateResponse(HttpStatusCode.OK, document);
+            } catch (System.Exception ex) {
+                if (ex.InnerException.ToString().Contains("Password"))
+                {
+                    ex = new Exception("Invalid password");
+                }
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, loadResultPageRequest.password));
+            }        
         }
 
         /// <summary>

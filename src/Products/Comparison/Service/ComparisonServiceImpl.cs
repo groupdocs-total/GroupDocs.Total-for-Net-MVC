@@ -6,10 +6,9 @@ using GroupDocs.Total.MVC.Products.Comparison.Model.Response;
 using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Comparison.Model.Request;
-using GroupDocs.Comparison.Common;
 using GroupDocs.Comparison;
-using GroupDocs.Comparison.Common.ComparisonSettings;
-using GroupDocs.Comparison.Common.Changes;
+using GroupDocs.Comparison.Options;
+using GroupDocs.Comparison.Changes;
 
 namespace GroupDocs.Total.MVC.Products.Comparison.Service
 {
@@ -202,23 +201,23 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             try
             {
                 // get/set parameters
-                string documentGuid = postedData.path;                
+                string documentGuid = postedData.path;
                 password = (String.IsNullOrEmpty(postedData.password)) ? null : postedData.password;
                 Comparer comparer = new Comparer();
                 List<PageImage> resultImages = comparer.ConvertToImages(documentGuid);
 
                 foreach (PageImage page in resultImages)
                 {
-                    PageDescriptionEntity loadedPage = new PageDescriptionEntity();                   
+                    PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                     loadDocumentEntity.SetPages(loadedPage);
                 }
-                return loadDocumentEntity;                
+                return loadDocumentEntity;
             }
             catch (System.Exception ex)
             {
                 // set exception message
                 throw new Exception("Exception occurred while loading document info", ex);
-            }           
+            }
         }
 
         private CompareResultResponse MultiCompareFiles(CompareRequest compareRequest)
@@ -229,6 +228,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             MultiComparer multiComparer = new MultiComparer();
             // create setting for comparing
             ComparisonSettings settings = new ComparisonSettings();
+            settings.CalculateComponentCoordinates = true;
+            settings.StyleChangeDetection = true;           
             
             // transform lists of files and passwords
             List<Stream> files = new List<Stream>();
@@ -256,22 +257,32 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, extension);
+            ChangeInfo[] changes = compareResult.GetChanges();
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, changes, extension);
             compareResultResponse.SetExtension(extension);
             return compareResultResponse;
         }
 
         private CompareResultResponse CompareTwoDocuments(CompareRequest compareRequest)
         {
-            string firstPath = compareRequest.guids[0].GetGuid();
+            ICompareResult compareResult = CompareFiles(compareRequest);
+            string extension = Path.GetExtension(compareRequest.guids[0].GetGuid());
+            ChangeInfo[] changes = compareResult.GetChanges();           
+            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, changes, extension);
+            compareResultResponse.SetExtension(extension);
+            return compareResultResponse;
+        }
 
+        private ICompareResult CompareFiles(CompareRequest compareRequest)
+        {
+            string firstPath = compareRequest.guids[0].GetGuid();
             ICompareResult compareResult;
             // create new comparer
             Comparer comparer = new Comparer();
             // create setting for comparing
             ComparisonSettings settings = new ComparisonSettings();
             settings.StyleChangeDetection = true;
+            settings.CalculateComponentCoordinates = true;           
             // compare two documents
             compareResult = comparer.Compare(firstPath,
                 compareRequest.guids[0].GetPassword(),
@@ -283,21 +294,12 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             {
                 throw new Exception("Something went wrong. We've got null result.");
             }
-
-            string extension = Path.GetExtension(firstPath);
-
-
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, extension);
-            compareResultResponse.SetExtension(extension);
-            return compareResultResponse;
+            return compareResult;
         }
 
-        private CompareResultResponse GetCompareResultResponse(ICompareResult compareResult, string ext)
+        private CompareResultResponse GetCompareResultResponse(ICompareResult compareResult, ChangeInfo[] changes, string ext)
         {
             CompareResultResponse compareResultResponse = new CompareResultResponse();
-
-            // list of changes
-            ChangeInfo[] changes = compareResult.GetChanges();
             compareResultResponse.SetChanges(changes);
 
             string guid = System.Guid.NewGuid().ToString();
