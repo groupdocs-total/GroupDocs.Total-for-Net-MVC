@@ -112,14 +112,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         public CompareResultResponse Compare(CompareRequest compareRequest)
         {
             CompareResultResponse compareResultResponse = new CompareResultResponse();
-            if (compareRequest.guids.Count > 2)
-            {
-                compareResultResponse = MultiCompareFiles(compareRequest);
-            }
-            else
-            {
-                compareResultResponse = CompareTwoDocuments(compareRequest);
-            }
+            compareResultResponse = CompareTwoDocuments(compareRequest);
             return compareResultResponse;
         }
 
@@ -156,9 +149,9 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             }
         }
 
-        public LoadDocumentEntity LoadDocumentPage(PostedDataEntity postedData)
+        public PageDescriptionEntity LoadDocumentPage(PostedDataEntity postedData)
         {
-            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            PageDescriptionEntity loadedPage = new PageDescriptionEntity();
 
             string password = "";
             try
@@ -170,8 +163,6 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 Comparer comparer = new Comparer();
                 List<PageImage> resultImages = comparer.ConvertToImages(documentGuid);
 
-
-                PageDescriptionEntity loadedPage = new PageDescriptionEntity();
                 byte[] bytes = null;
                 resultImages[pageNumber - 1].PageStream.Position = 0;
                 using (MemoryStream ms = new MemoryStream())
@@ -183,7 +174,6 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 loadedPage.number = pageNumber;
                 loadedPage.height = resultImages[pageNumber - 1].Height;
                 loadedPage.width = resultImages[pageNumber - 1].Width;
-                loadDocumentEntity.SetPages(loadedPage);
 
             }
             catch (System.Exception ex)
@@ -191,7 +181,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 // set exception message
                 throw new Exception("Exception occurred while loading result page", ex);
             }
-            return loadDocumentEntity;
+            return loadedPage;
         }
 
         public LoadDocumentEntity LoadDocumentInfo(PostedDataEntity postedData)
@@ -221,48 +211,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             }
         }
 
-        private CompareResultResponse MultiCompareFiles(CompareRequest compareRequest)
-        {
-            ICompareResult compareResult;
 
-            // create new comparer
-            MultiComparer multiComparer = new MultiComparer();
-            // create setting for comparing
-            ComparisonSettings settings = new ComparisonSettings();
-            settings.CalculateComponentCoordinates = true;
-            settings.StyleChangeDetection = true;           
-            
-            // transform lists of files and passwords
-            List<Stream> files = new List<Stream>();
-            List<string> passwords = new List<string>();
-            Stream firstFile = new FileStream(compareRequest.guids[0].GetGuid(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            string extension = Path.GetExtension(compareRequest.guids[0].GetGuid());
-            string firstPassword = compareRequest.guids[0].GetPassword();
-            for (int i = 1; i < compareRequest.guids.Count; i++)
-            {
-                Stream st = new FileStream(compareRequest.guids[i].GetGuid(), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                files.Add(st);
-                passwords.Add(compareRequest.guids[i].GetPassword());
-
-            }
-            // compare two documents
-            compareResult = multiComparer.Compare(firstFile, firstPassword, files, passwords, settings);
-            firstFile.Dispose();
-            firstFile.Close();
-            foreach (Stream st in files)
-            {
-                st.Dispose();
-                st.Close();
-            }
-            if (compareResult == null)
-            {
-                throw new Exception("Something went wrong. We've got null result.");
-            }
-            ChangeInfo[] changes = compareResult.GetChanges();
-            CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, changes, extension);
-            compareResultResponse.SetExtension(extension);
-            return compareResultResponse;
-        }
 
         private CompareResultResponse CompareTwoDocuments(CompareRequest compareRequest)
         {
@@ -273,9 +222,9 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             ChangeInfo[] changes = compareResult.GetChanges();
             // We need to remove fake deleting changies
             List<ChangeInfo> listOFChangies = changes.ToList<ChangeInfo>();
-            foreach(ChangeInfo info in changes)
+            foreach (ChangeInfo info in changes)
             {
-                if(info.Type == TypeChanged.Deleted)
+                if (info.Type == TypeChanged.Deleted)
                 {
                     listOFChangies.Remove(info);
                 }
@@ -286,7 +235,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             compareResult = CompareFiles(compareRequest, true);
             ChangeInfo[] deletingChanges = compareResult.GetChanges();
             // filter changes array and add deletions
-            foreach(ChangeInfo change in deletingChanges)
+            foreach (ChangeInfo change in deletingChanges)
             {
                 if (change.Type == TypeChanged.Inserted)
                 {
@@ -310,7 +259,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             ComparisonSettings settings = new ComparisonSettings();
             settings.ShowDeletedContent = false;
             settings.StyleChangeDetection = true;
-            settings.CalculateComponentCoordinates = true;           
+            settings.CalculateComponentCoordinates = true;
             // compare two documents            
             // if we need to detect deletions we should revers compared files to get correct coordinates
             if (detectDeletions)

@@ -31,7 +31,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         /// </summary>
         /// <param name="postedData">PostedDataEntity</param>
         /// <returns>LoadDocumentEntity</returns>
-        LoadDocumentEntity LoadDocumentPage(PostedDataEntity postedData);
+        PageDescriptionEntity LoadDocumentPage(PostedDataEntity postedData);
 
         /// <summary>
         ///  Load document info
