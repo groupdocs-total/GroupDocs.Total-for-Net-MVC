@@ -4,7 +4,7 @@ using System.IO;
 
 namespace GroupDocs.Total.MVC.Products.Comparison.Model.Request
 {
-    public class CompareRequest : PostedDataEntity
+    public class CompareRequest
     {
         /// <summary>
         /// Contains list of the documents paths
