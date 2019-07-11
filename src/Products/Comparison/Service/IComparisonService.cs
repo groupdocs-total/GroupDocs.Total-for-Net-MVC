@@ -22,9 +22,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         /// <summary>
         ///  Load document pages as images
         /// </summary>
-        /// <param name="loadResultPageRequest">PostedDataEntity</param>
+        /// <param name="path">string</param>
+        /// <param name="password">string</param>
         /// <returns>LoadDocumentEntity</returns>
-        LoadDocumentEntity LoadDocumentPages(string path);
+        LoadDocumentEntity LoadDocumentPages(string path, string password);
 
         /// <summary>
         ///  Load document page as images

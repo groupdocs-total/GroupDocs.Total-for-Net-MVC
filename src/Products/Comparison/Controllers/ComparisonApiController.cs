@@ -179,7 +179,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         {
             try
             {
-                LoadDocumentEntity document = comparisonService.LoadDocumentPages(loadResultPageRequest.path);
+                LoadDocumentEntity document = comparisonService.LoadDocumentPages(loadResultPageRequest.guid, loadResultPageRequest.password);
                 return Request.CreateResponse(HttpStatusCode.OK, document);
             } catch (System.Exception ex) {
                 if (ex.InnerException.ToString().Contains("Password"))

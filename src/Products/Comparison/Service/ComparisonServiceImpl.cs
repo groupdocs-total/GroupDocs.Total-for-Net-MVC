@@ -116,14 +116,14 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             return compareResultResponse;
         }
 
-        public LoadDocumentEntity LoadDocumentPages(string path)
+        public LoadDocumentEntity LoadDocumentPages(string path, string password)
         {
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
             //load file with results
             try
             {
                 Comparer comparer = new Comparer();
-                List<PageImage> resultImages = comparer.ConvertToImages(path);
+                List<PageImage> resultImages = comparer.ConvertToImages(path, password);
 
                 foreach (PageImage page in resultImages)
                 {
@@ -157,11 +157,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             try
             {
                 // get/set parameters
-                string documentGuid = postedData.path;
+                string documentGuid = postedData.guid;
                 int pageNumber = postedData.page;
                 password = (String.IsNullOrEmpty(postedData.password)) ? null : postedData.password;
                 Comparer comparer = new Comparer();
-                List<PageImage> resultImages = comparer.ConvertToImages(documentGuid);
+                List<PageImage> resultImages = comparer.ConvertToImages(documentGuid, password);
 
                 byte[] bytes = null;
                 resultImages[pageNumber - 1].PageStream.Position = 0;
@@ -192,10 +192,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             try
             {
                 // get/set parameters
-                string documentGuid = postedData.path;
+                string documentGuid = postedData.guid;
                 password = (String.IsNullOrEmpty(postedData.password)) ? null : postedData.password;
                 Comparer comparer = new Comparer();
-                List<PageImage> resultImages = comparer.ConvertToImages(documentGuid);
+                List<PageImage> resultImages = comparer.ConvertToImages(documentGuid, password);
 
                 foreach (PageImage page in resultImages)
                 {
@@ -294,7 +294,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             compareResultResponse.SetGuid(guid);
             //save all results in file
             string resultGuid = SaveFile(compareResultResponse.GetGuid(), compareResult.GetStream(), ext);
-            List<PageDescriptionEntity> pages = LoadDocumentPages(resultGuid).GetPages();
+            List<PageDescriptionEntity> pages = LoadDocumentPages(resultGuid, "").GetPages();
             List<PageDescriptionEntity> pageImages = new List<PageDescriptionEntity>();
             foreach (PageDescriptionEntity page in pages)
             {
