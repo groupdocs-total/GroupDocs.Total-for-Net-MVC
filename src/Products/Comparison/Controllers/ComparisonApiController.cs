@@ -1,7 +1,10 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Common.Util.LowercaseContractResolver;
 using GroupDocs.Total.MVC.Products.Comparison.Model.Request;
+using GroupDocs.Total.MVC.Products.Comparison.Model.Response;
 using GroupDocs.Total.MVC.Products.Comparison.Service;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
@@ -155,7 +158,12 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                 if (comparisonService.CheckFiles(compareRequest))
                 {
                     // compare
-                    return Request.CreateResponse(HttpStatusCode.OK, comparisonService.Compare(compareRequest));
+                    CompareResultResponse result = comparisonService.Compare(compareRequest);
+                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    settings.ContractResolver = new LowercaseContractResolver();
+                    string json = JsonConvert.SerializeObject(result, Formatting.Indented, settings);
+                    var compareResult = JsonConvert.DeserializeObject(json);
+                    return Request.CreateResponse(HttpStatusCode.OK, compareResult);
                 }
                 else
                 {

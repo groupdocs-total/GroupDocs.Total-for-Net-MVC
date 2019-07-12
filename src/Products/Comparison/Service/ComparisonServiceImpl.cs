@@ -244,6 +244,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                     changes = changes.Concat(new ChangeInfo[] { change }).ToArray();
                 }
             }
+
             CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, changes, extension);
             compareResultResponse.SetExtension(extension);
             return compareResultResponse;

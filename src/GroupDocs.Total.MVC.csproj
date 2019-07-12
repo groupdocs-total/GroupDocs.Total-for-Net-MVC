@@ -258,6 +258,7 @@
     <Compile Include="Products\Common\Entity\Web\UploadedDocumentEntity.cs" />
     <Compile Include="Products\Common\Resources\Resources.cs" />
     <Compile Include="Products\Common\Util\Comparator\FileDateComparator.cs" />
+    <Compile Include="Products\Common\Util\LowercaseContractResolver\LowercaseContractResolver.cs" />
     <Compile Include="Products\Common\Util\Parser\YamlParser.cs" />
     <Compile Include="Products\Comparison\Config\ComparisonConfiguration.cs" />
     <Compile Include="Products\Comparison\Controllers\ComparisonApiController.cs" />
