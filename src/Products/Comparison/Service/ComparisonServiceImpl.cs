@@ -207,7 +207,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             catch (System.Exception ex)
             {
                 // set exception message
-                throw new Exception("Exception occurred while loading document info", ex);
+                throw new FileLoadException("Exception occurred while loading document info", ex);
             }
         }
 
@@ -241,7 +241,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 {
                     // change change type to deleted
                     change.Type = TypeChanged.Deleted;
-                    changes = changes.Concat(new ChangeInfo[] { change }).ToArray();
+                    changes = changes.Concat(new [] { change }).ToArray();
                 }
             }
 

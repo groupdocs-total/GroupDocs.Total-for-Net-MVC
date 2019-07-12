@@ -54,8 +54,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         [HttpGet]
         [Route("comparison/downloadDocument")]
         public HttpResponseMessage DownloadDocument(string guid)
-        {
-            //ext = (ext.Contains(".")) ? ext : "." + ext;
+        {          
             string filePath = guid;
             if (!string.IsNullOrEmpty(filePath))
             {
@@ -192,7 +191,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
             } catch (System.Exception ex) {
                 if (ex.InnerException.ToString().Contains("Password"))
                 {
-                    ex = new Exception("Invalid password");
+                    ex = new FileLoadException("Invalid password");
                 }
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, loadResultPageRequest.password));
