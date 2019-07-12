@@ -1,5 +1,6 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Viewer.Config;
 using GroupDocs.Total.MVC.Products.Viewer.Entity.Web;
 using GroupDocs.Viewer.Config;
 using GroupDocs.Viewer.Converter.Options;
@@ -60,6 +61,17 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 // initialize Viewer instance for the Image mode
                 viewerImageHandler = new ViewerImageHandler(config);
             }
+        }
+
+        /// <summary>
+        /// Load Viewr configuration
+        /// </summary>       
+        /// <returns>Viewer configuration</returns>
+        [HttpGet]
+        [Route("viewer/loadConfig")]
+        public ViewerConfiguration LoadConfig()
+        {            
+            return globalConfiguration.Viewer;
         }
 
         /// <summary>
@@ -140,7 +152,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -176,7 +188,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -451,7 +463,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             if (globalConfiguration.Viewer.GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
-                SetOptions(htmlOptions, password, page.Number);
+                SetOptions(htmlOptions, password, page.Number);               
                 // get page HTML              
                 return this.GetHandler().GetPages(documentGuid, htmlOptions)[0].HtmlContent;
 
@@ -531,6 +543,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 options.PageNumber = pageNumber;
                 options.CountPagesToRender = 1;
             }
+            options.CellsOptions.ShowGridLines = true;
         }
 
         private void SetOptions(ImageOptions options, string password, int pageNumber)
@@ -558,6 +571,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 options.PageNumber = pageNumber;
                 options.CountPagesToRender = 1;
             }
+            options.CellsOptions.ShowGridLines = true;
         }
     }
 }

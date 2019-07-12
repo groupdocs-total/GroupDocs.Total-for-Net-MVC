@@ -192,3 +192,14 @@ comparison:
   # How many pages from a result document should be loaded, remaining pages will be loaded on page scrolling
   # Set 0 to load all pages at once
   preloadResultPageCount: 0
+
+################################################
+# GroupDocs.Conversion configurations
+################################################
+conversion:
+  # Files directory path
+  # Absolute path to files directory
+  filesDirectory: 'DocumentSamples/Conversion'
+  # FResult files directory path
+  # Absolute path to result files directory
+  resultDirectory: ''

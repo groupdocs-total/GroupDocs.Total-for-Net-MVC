@@ -49,7 +49,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
                 {                   
                     Directory.CreateDirectory(FilesDirectory);
                 }
-            }           
+            }
+            DefaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", DefaultDocument).Replace(@"\", "/");
             isTextAnnotation = valuesGetter.GetBooleanPropertyValue("textAnnotation", isTextAnnotation);
             isAreaAnnotation = valuesGetter.GetBooleanPropertyValue("areaAnnotation", isAreaAnnotation);
             isPointAnnotation = valuesGetter.GetBooleanPropertyValue("pointAnnotation", isPointAnnotation);
@@ -67,7 +68,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
             isDownloadAnnotated = valuesGetter.GetBooleanPropertyValue("downloadAnnotated", isDownloadAnnotated);
             PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
             isZoom = valuesGetter.GetBooleanPropertyValue("zoom", isZoom);
-            isFitWidth = valuesGetter.GetBooleanPropertyValue("zoom", isFitWidth);
+            isFitWidth = valuesGetter.GetBooleanPropertyValue("fitWidth", isFitWidth);
         }
 
         private static bool IsFullPath(string path)
