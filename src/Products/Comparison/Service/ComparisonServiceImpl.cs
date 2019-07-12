@@ -110,9 +110,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         }
 
         public CompareResultResponse Compare(CompareRequest compareRequest)
-        {
-            CompareResultResponse compareResultResponse = new CompareResultResponse();
-            compareResultResponse = CompareTwoDocuments(compareRequest);
+        {            
+            CompareResultResponse compareResultResponse = CompareTwoDocuments(compareRequest);
             return compareResultResponse;
         }
 
