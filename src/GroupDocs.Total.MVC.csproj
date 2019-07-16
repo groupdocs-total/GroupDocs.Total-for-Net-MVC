@@ -488,13 +488,6 @@
     <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
     <Exec WorkingDirectory="$(ClientAppRoot)" Command="npm install" />
   </Target>
-  <Target Name="PublishRunWebpack" BeforeTargets="PrepareForBuild">
-    <Message Importance="high" Text="*** As part of publishing, ensure the JS resources are freshly built in production mode ***" />
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <!-- <Exec WorkingDirectory="$(ClientAppRoot)" Command="npm install" /> -->
-    <Exec WorkingDirectory="$(ClientAppRoot)" Command="npm run build" />
-    <!-- Include the newly-built files in the publish output -->
-  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <Message Importance="high" Text="*** EnsureNuGetPackageBuildImports ***" />
     <PropertyGroup>
@@ -504,10 +497,10 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets'))" />
   </Target>
-  <!-- <Target Name="BeforeBuild">
+  <Target Name="BeforeBuild">
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js update" Condition=" '$(OS)' == 'Windows_NT' " />
-  </Target> -->
+  </Target>
   <Target Name="AfterBuild">
     <ItemGroup>
       <ZipFiles Include="$(OutDir)**\*.*" />
