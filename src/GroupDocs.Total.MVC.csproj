@@ -31,8 +31,8 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
-    <SpaRoot>.\ClientApp\</SpaRoot>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <ClientAppRoot>.\ClientApp\</ClientAppRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(ClientAppRoot)node_modules\**</DefaultItemExcludes>
     <!-- Set this to true if you enable server-side prerendering -->
     <BuildServerSideRenderer>false</BuildServerSideRenderer>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -451,7 +451,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <None Remove="$(SpaRoot)**" />
     <None Include=".\ClientApp\.editorconfig" />
     <None Include=".\ClientApp\.gitignore" />
     <None Include=".\ClientApp\angular.json" />
@@ -479,7 +478,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(ClientAppRoot)node_modules') ">
     <Message Importance="high" Text="Ensure Node.js is installed" />
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
@@ -487,13 +486,13 @@
     </Exec>
     <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
     <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    <Exec WorkingDirectory="$(ClientAppRoot)" Command="npm install" />
   </Target>
   <Target Name="PublishRunWebpack" BeforeTargets="PrepareForBuild">
     <Message Importance="high" Text="*** As part of publishing, ensure the JS resources are freshly built in production mode ***" />
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <!-- <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" /> -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    <!-- <Exec WorkingDirectory="$(ClientAppRoot)" Command="npm install" /> -->
+    <Exec WorkingDirectory="$(ClientAppRoot)" Command="npm run build" />
     <!-- Include the newly-built files in the publish output -->
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
