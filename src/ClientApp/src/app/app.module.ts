@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { ViewerModule } from '@groupdocs.examples.angular/viewer';
+import { ViewerAppComponent } from '@groupdocs.examples.angular/viewer';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,6 @@ import { ViewerModule } from '@groupdocs.examples.angular/viewer';
     ViewerModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [ViewerAppComponent]
 })
 export class AppModule { }
