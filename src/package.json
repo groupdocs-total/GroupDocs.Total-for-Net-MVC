@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/issues"
   },
-  "homepage": "https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC#readme"
+  "homepage": "https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
 }
