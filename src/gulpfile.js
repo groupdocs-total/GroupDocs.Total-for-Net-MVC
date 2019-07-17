@@ -1,12 +1,16 @@
 var gulp = require('gulp')
-gulp.task('build', function () {
+gulp.task('copy', function () {
     return gulp
         .src('./node_modules/@groupdocs.examples.jquery/**')
         .pipe(gulp.dest('./Resources/'))   
 })
 
-gulp.task('copy', function () {
-    return gulp
-        .src('./node_modules/@groupdocs.examples.angular/**')     
-        .pipe(gulp.dest('./Resources/angular'))
+var exec = require('child_process').exec;
+
+gulp.task('build', function () {
+    return exec('npm run build-client', function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+        cb(err);
+    });
 })
