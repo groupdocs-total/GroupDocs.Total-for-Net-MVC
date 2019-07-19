@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": ".\\node_modules\\@angular\\cli\\bin\\ng build",
+    "build": "..\\..\\packages\\Node-Kit.11.1.0.1\\node\\win\\node.exe .\\node_modules\\@angular\\cli\\bin\\ng build",
     "test": "ng test",
     "lint": "nx lint && ng lint",
     "e2e": "ng e2e",
