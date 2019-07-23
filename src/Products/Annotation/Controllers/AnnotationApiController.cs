@@ -50,7 +50,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             {
                 // set storage path
                 StoragePath = DirectoryUtils.FilesDirectory.GetPath()
-            };           
+            };
             // initialize Annotation instance for the Image mode
             AnnotationImageHandler = new AnnotationImageHandler(config);
         }
@@ -139,14 +139,14 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 }
                 if (GlobalConfiguration.GetAnnotationConfiguration().GetPreloadPageCount() == 0)
                 {
-                    Stream document = File.Open(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    Stream document = File.Open(documentPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     pageImages = AnnotationImageHandler.GetPages(document, imageOptions);
                     document.Dispose();
                     document.Close();
                 }
                 documentDescription = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 string documentType = documentDescription.DocumentType;
-                string fileExtension = Path.GetExtension(documentGuid);
+                string fileExtension = Path.GetExtension(documentPath);
                 // check if document type is image
                 if (SupportedImageFormats.Contains(fileExtension))
                 {
@@ -157,7 +157,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     documentType = "diagram";
                 }
                 // check if document contains annotations
-                AnnotationInfo[] annotations = GetAnnotations(documentGuid, documentType, password);
+                AnnotationInfo[] annotations = GetAnnotations(documentPath, documentType, password);
                 // initiate pages description list
                 // initiate custom Document description object
                 AnnotatedDocumentEntity description = new AnnotatedDocumentEntity();
@@ -202,7 +202,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
             }
-        }      
+        }
 
         /// <summary>
         /// Get document page
@@ -227,7 +227,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     CountPagesToConvert = 1,
                     Password = password
                 };
-                string documentPath = GetDocumentPath(documentGuid);               
+                string documentPath = GetDocumentPath(documentGuid);
                 // get page image
                 byte[] bytes;
                 using (MemoryStream memoryStream = new MemoryStream())
@@ -236,7 +236,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     {
                         List<PageImage> images = AnnotationImageHandler.GetPages(document, imageOptions);
                         Stream imageStream = images[0].Stream;
-                        
+
                         imageStream.Position = 0;
                         imageStream.CopyTo(memoryStream);
                         bytes = memoryStream.ToArray();
@@ -250,7 +250,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 loadedPage.SetData(encodedImage);
                 DocumentInfoContainer documentDescription = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 loadedPage.height = documentDescription.Pages[pageNumber - 1].Height;
-                loadedPage.width = documentDescription.Pages[pageNumber - 1].Width;                
+                loadedPage.width = documentDescription.Pages[pageNumber - 1].Width;
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, loadedPage);
             }
@@ -272,12 +272,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         public HttpResponseMessage DownloadDocument(string path)
         {
             // prepare response message
-            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);          
-           
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
             // add file into the response
             if (File.Exists(path))
             {
-                
+
                 var fileStream = GetCleanDocumentStream(path);
                 response.Content = new StreamContent(fileStream);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
@@ -325,7 +325,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);
                 return response;
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
@@ -407,7 +407,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 else
                 {
                     throw new InvalidDataException("Annotations data are empty");
-                }               
+                }
             }
             catch (System.Exception ex)
             {
@@ -499,17 +499,13 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             try
             {
                 // get/set parameters
-                string documentGuid = annotateDocumentRequest.guid;
+                string documentGuid = GetDocumentPath(annotateDocumentRequest.guid);
                 string password = annotateDocumentRequest.password;
                 string documentType = annotateDocumentRequest.documentType;
                 AnnotationDataEntity[] annotationsData = annotateDocumentRequest.annotationsData;
                 // initiate AnnotatedDocument object
                 // initiate list of annotations to add
                 List<AnnotationInfo> annotations = new List<AnnotationInfo>();
-                // get document info - required to get document page height and calculate annotation top position
-                string fileName = System.IO.Path.GetFileName(documentGuid);
-                FileInfo fi = new FileInfo(documentGuid);
-                DirectoryInfo parentDir = fi.Directory;
 
                 string documentPath = "";
                 string parentDirName = parentDir.Name;
@@ -554,8 +550,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 }
 
                 // Add annotation to the document
-                DocumentType type = DocumentTypesConverter.GetDocumentType(documentType);              
-                RemoveAnnotations(documentGuid);              
+                DocumentType type = DocumentTypesConverter.GetDocumentType(documentType);
+                RemoveAnnotations(documentGuid);
                 // check if annotations array contains at least one annotation to add
                 if (annotations.Count != 0)
                 {
@@ -691,11 +687,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             try
             {
                 Stream resultStream = null;
-               
+
                 using (Stream inputStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                 {
                     resultStream = AnnotationImageHandler.RemoveAnnotationStream(inputStream);
-                    resultStream.Position = 0;                   
+                    resultStream.Position = 0;
                 }
                 return resultStream;
             }
@@ -707,19 +703,35 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
         private string GetDocumentPath(string documentGuid)
         {
-            string fileName = System.IO.Path.GetFileName(documentGuid);
-            FileInfo fi = new FileInfo(documentGuid);
-            DirectoryInfo parentDir = fi.Directory;
-
             string documentPath = "";
             string parentDirName = parentDir.Name;
             if (parentDir.FullName == GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory().Replace("/", "\\"))
             {
-                documentPath = fileName;
+                return documentGuid;
             }
             else
             {
-                documentPath = Path.Combine(parentDirName, fileName);
+                string fileName = System.IO.Path.GetFileName(documentGuid);
+                if (String.IsNullOrEmpty(Path.GetDirectoryName(documentGuid)))
+                {
+                    documentPath = Path.Combine(GlobalConfiguration.Annotation.GetFilesDirectory(), documentGuid);
+                }
+                else
+                {
+                    FileInfo fi = new FileInfo(documentGuid);
+                    DirectoryInfo parentDir = fi.Directory;
+
+                    string parentDirName = parentDir.Name;
+
+                    if (parentDir.FullName == GlobalConfiguration.Annotation.GetFilesDirectory().Replace("/", "\\"))
+                    {
+                        documentPath = documentGuid;
+                    }
+                    else
+                    {
+                        documentPath = Path.Combine(parentDirName, fileName);
+                    }
+                }
             }
             return documentPath;
         }
