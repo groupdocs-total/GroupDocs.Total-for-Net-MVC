@@ -120,10 +120,22 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             SetLicense(obj);
         }
 
+        /// <summary>
+        /// Set GroupDocs.Editor license
+        /// </summary>
+        /// <param name="type">Type</param>
+        public void SetEditorLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Editor.License)Activator.CreateInstance(CurrentType);
+            // Set license
+            SetLicense(obj);
+        }
+
         private void SetLicense(dynamic obj) {
-            if (!String.IsNullOrEmpty(globalConfiguration.Application.LicensePath))
+            if (!String.IsNullOrEmpty(globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
             {
-                obj.SetLicense(globalConfiguration.Application.LicensePath);
+                obj.SetLicense(globalConfiguration.GetApplicationConfiguration().GetLicensePath());
             }
         }
     }

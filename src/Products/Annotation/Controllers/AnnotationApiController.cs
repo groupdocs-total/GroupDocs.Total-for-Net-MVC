@@ -43,7 +43,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         {
             GlobalConfiguration = new Common.Config.GlobalConfiguration();
             // create annotation directories
-            DirectoryUtils = new DirectoryUtils(GlobalConfiguration.Annotation);
+            DirectoryUtils = new DirectoryUtils(GlobalConfiguration.GetAnnotationConfiguration());
 
             // create annotation application configuration
             AnnotationConfig config = new AnnotationConfig
@@ -137,7 +137,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     imageOptions.Password = password;
                 }
-                if (GlobalConfiguration.Annotation.GetPreloadPageCount() == 0)
+                if (GlobalConfiguration.GetAnnotationConfiguration().GetPreloadPageCount() == 0)
                 {
                     Stream document = File.Open(documentPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                     pageImages = AnnotationImageHandler.GetPages(document, imageOptions);
@@ -351,7 +351,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 string documentPath = "";
                 string parentDirName = parentDir.Name;
-                if (parentDir.FullName == GlobalConfiguration.Annotation.GetFilesDirectory().Replace("/", "\\"))
+                if (parentDir.FullName == GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory().Replace("/", "\\"))
                 {
                     documentPath = fileName;
                 }
@@ -428,7 +428,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = GlobalConfiguration.Annotation.GetFilesDirectory();
+                string documentStoragePath = GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))
@@ -506,8 +506,21 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // initiate AnnotatedDocument object
                 // initiate list of annotations to add
                 List<AnnotationInfo> annotations = new List<AnnotationInfo>();
-
-                DocumentInfoContainer documentInfo = AnnotationImageHandler.GetDocumentInfo(documentGuid, password);
+                // get document info - required to get document page height and calculate annotation top position
+                string fileName = System.IO.Path.GetFileName(documentGuid);
+                FileInfo fi = new FileInfo(documentGuid);
+                DirectoryInfo parentDir = fi.Directory;
+                string documentPath = "";
+                string parentDirName = parentDir.Name;
+                if (parentDir.FullName == GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory().Replace("/", "\\"))
+                {
+                    documentPath = fileName;
+                }
+                else
+                {
+                    documentPath = Path.Combine(parentDirName, fileName);
+                }
+                DocumentInfoContainer documentInfo = AnnotationImageHandler.GetDocumentInfo(documentPath, password);
                 // check if document type is image
                 if (SupportedImageFormats.Contains(Path.GetExtension(documentGuid)))
                 {
@@ -654,7 +667,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     resultStream = AnnotationImageHandler.RemoveAnnotationStream(inputStream);
                     resultStream.Position = 0;
-                    tempFilePath = Resources.GetFreeFileName(GlobalConfiguration.Annotation.GetFilesDirectory(), Path.GetFileName(path));
+                    tempFilePath = Resources.GetFreeFileName(GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory(), Path.GetFileName(path));
                     using (Stream tempFile = File.Create(tempFilePath))
                     {
                         resultStream.Seek(0, SeekOrigin.Begin);
@@ -693,8 +706,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
         private string GetDocumentPath(string documentGuid)
         {
+            // get document info - required to get document page height and calculate annotation top position
+            FileInfo fi = new FileInfo(documentGuid);
+            DirectoryInfo parentDir = fi.Directory;
             string documentPath = "";
-            if (Path.IsPathRooted(documentGuid))
+            string parentDirName = parentDir.Name;
+            if (parentDir.FullName == GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory().Replace("/", "\\"))
             {
                 return documentGuid;
             }
@@ -703,16 +720,13 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 string fileName = System.IO.Path.GetFileName(documentGuid);
                 if (String.IsNullOrEmpty(Path.GetDirectoryName(documentGuid)))
                 {
-                    documentPath = Path.Combine(GlobalConfiguration.Annotation.GetFilesDirectory(), documentGuid);
+                    documentPath = Path.Combine(GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory(), documentGuid);
                 }
                 else
                 {
-                    FileInfo fi = new FileInfo(documentGuid);
-                    DirectoryInfo parentDir = fi.Directory;
+                  
 
-                    string parentDirName = parentDir.Name;
-
-                    if (parentDir.FullName == GlobalConfiguration.Annotation.GetFilesDirectory().Replace("/", "\\"))
+                    if (parentDir.FullName == GlobalConfiguration.GetAnnotationConfiguration().GetFilesDirectory().Replace("/", "\\"))
                     {
                         documentPath = documentGuid;
                     }

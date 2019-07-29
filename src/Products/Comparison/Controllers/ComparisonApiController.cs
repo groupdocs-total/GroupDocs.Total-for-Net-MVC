@@ -114,7 +114,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = globalConfiguration.Comparison.GetFilesDirectory();
+                string documentStoragePath = globalConfiguration.GetComparisonConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))

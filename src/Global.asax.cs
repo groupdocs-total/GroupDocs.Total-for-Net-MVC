@@ -16,6 +16,7 @@ namespace GroupDocs.Total.MVC
             string annotationAssemblyName = "GroupDocs.Annotation.dll";
             string comparisonAssemblyName = "GroupDocs.Comparison.dll";
             string conversionAssemblyName = "GroupDocs.Conversion.dll";
+            string editorAssemblyName = "GroupDocs.Editor.dll";
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
             viewerDomainGenerator.SetViewerLicense();
@@ -31,6 +32,9 @@ namespace GroupDocs.Total.MVC
             // set GroupDocs.Conversion license
             DomainGenerator conversionDomainGenerator = new DomainGenerator(conversionAssemblyName, "GroupDocs.Conversion.License");
             conversionDomainGenerator.SetConversionLicense();
+            // set GroupDocs.Editor license
+            DomainGenerator editorDomainGenerator = new DomainGenerator(editorAssemblyName, "GroupDocs.Editor.License");
+            editorDomainGenerator.SetEditorLicense();
 
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);

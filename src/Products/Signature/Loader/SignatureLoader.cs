@@ -45,7 +45,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
-                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || file.Equals(globalConfiguration.Signature.DataDirectory))
+                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || file.Equals(globalConfiguration.GetSignatureConfiguration().DataDirectory))
                     {
                         // ignore current file and skip to next one
                         continue;
@@ -93,7 +93,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
-                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.Signature.DataDirectory)))
+                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || 
+                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSignatureConfiguration().DataDirectory)))
                     {
                         // ignore current file and skip to next one
                         continue;
@@ -158,7 +159,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                     {
                         FileInfo fileInfo = new FileInfo(file);
                         // check if current file/folder is hidden
-                        if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || file.Equals(globalConfiguration.Signature.DataDirectory))
+                        if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || file.Equals(globalConfiguration.GetSignatureConfiguration().DataDirectory))
                         {
                             // ignore current file and skip to next one
                             continue;
