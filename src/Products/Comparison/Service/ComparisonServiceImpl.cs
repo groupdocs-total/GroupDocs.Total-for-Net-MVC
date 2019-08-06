@@ -9,7 +9,6 @@ using GroupDocs.Total.MVC.Products.Comparison.Model.Request;
 using GroupDocs.Comparison;
 using GroupDocs.Comparison.Options;
 using GroupDocs.Comparison.Changes;
-using System.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Comparison.Service
 {
