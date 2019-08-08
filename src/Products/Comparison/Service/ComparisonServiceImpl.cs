@@ -42,11 +42,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 // get all the files from a directory
                 if (string.IsNullOrEmpty(relDirPath))
                 {
-                    relDirPath = globalConfiguration.Comparison.GetFilesDirectory();
+                    relDirPath = globalConfiguration.GetComparisonConfiguration().GetFilesDirectory();
                 }
                 else
                 {
-                    relDirPath = Path.Combine(globalConfiguration.Comparison.GetFilesDirectory(), relDirPath);
+                    relDirPath = Path.Combine(globalConfiguration.GetComparisonConfiguration().GetFilesDirectory(), relDirPath);
                 }
 
                 List<string> allFiles = new List<string>(Directory.GetFiles(relDirPath));
@@ -61,7 +61,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
                     if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.Comparison.GetFilesDirectory())))
+                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetComparisonConfiguration().GetFilesDirectory())))
                     {
                         // ignore current file and skip to next one
                         continue;
@@ -271,7 +271,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
 
         private string SaveFile(string guid, Stream inputStream, string ext)
         {
-            string fileName = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), guid + ext);
+            string fileName = Path.Combine(globalConfiguration.GetComparisonConfiguration().GetResultDirectory(), guid + ext);
             try
             {
                 using (var fileStream = File.Create(fileName))

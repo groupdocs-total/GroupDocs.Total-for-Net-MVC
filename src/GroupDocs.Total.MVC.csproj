@@ -57,8 +57,12 @@
     <Reference Include="GroupDocs.Conversion, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Conversion.19.6.0\lib\GroupDocs.Conversion.dll</HintPath>
     </Reference>
+    <Reference Include="GroupDocs.Editor, Version=19.5.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Editor.19.5.0\lib\GroupDocs.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Signature, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.19.6.0\lib\GroupDocs.Signature.dll</HintPath>
+
     </Reference>
     <Reference Include="GroupDocs.Viewer, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Viewer.19.6.0\lib\GroupDocs.Viewer.dll</HintPath>
@@ -215,6 +219,7 @@
     <Compile Include="Controllers\TotalController.cs" />
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ConversionController.cs" />
+    <Compile Include="Controllers\EditorController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
     <Compile Include="Products\Annotation\Annotator\AbstractBoxAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\AbstractSvgAnnotator.cs" />
@@ -275,6 +280,8 @@
     <Compile Include="Products\Conversion\Entity\Web\Response\ConversionTypesEntity.cs" />
     <Compile Include="Products\Conversion\Filter\DestinationTypesFilter.cs" />
     <Compile Include="Products\Conversion\Manager\ConversionManager.cs" />
+    <Compile Include="Products\Editor\Entity\Web\EditableDocumentType.cs" />
+    <Compile Include="Products\Editor\Entity\Web\Request\EditDocumentRequest.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
@@ -315,6 +322,8 @@
     <Compile Include="Products\Signature\Util\Directory\TempDirectoryUtils.cs" />
     <Compile Include="Products\Conversion\Config\ConversionConfiguration.cs" />
     <Compile Include="Products\Conversion\Controllers\ConversionApiController.cs" />
+    <Compile Include="Products\Editor\Config\EditorConfiguration.cs" />
+    <Compile Include="Products\Editor\Controllers\EditorApiController.cs" />
     <Compile Include="Products\Viewer\Config\ViewerConfiguration.cs" />
     <Compile Include="Products\Viewer\Controllers\ViewerApiController.cs" />
     <Compile Include="Products\Common\Entity\Web\PostedDataEntity.cs" />
@@ -371,6 +380,9 @@
   <ItemGroup>
     <Content Include="Views\Conversion\Index.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Editor\Index.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -410,7 +422,8 @@
   <Target Name="BeforeBuild">
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js update" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe .\node_modules\gulp\bin\gulp.js build" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js run build  --scripts-prepend-node-path" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe .\node_modules\gulp\bin\gulp.js copy" Condition=" '$(OS)' == 'Windows_NT' " />
   </Target>
   <Target Name="AfterBuild">
