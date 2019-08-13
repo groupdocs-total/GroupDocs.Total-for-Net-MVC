@@ -27,12 +27,12 @@
     <div id="element"></div>
     <script type="text/javascript">
         $('#element').conversion({
-            applicationPath: 'http://@config.Server.HostAddress:@config.Server.HttpPort/conversion',           
-            download: @config.Common.download.ToString().ToLowerInvariant(),
-            upload: @config.Common.upload.ToString().ToLowerInvariant(),           
-            browse: @config.Common.browse.ToString().ToLowerInvariant(),
-            rewrite: @config.Common.rewrite.ToString().ToLowerInvariant(),            
-            enableRightClick: @config.Common.enableRightClick.ToString().ToLowerInvariant()
+            applicationPath: 'http://@config.GetServerConfiguration().HostAddress:@config.GetServerConfiguration().HttpPort/conversion',           
+            download: @config.GetCommonConfiguration().download.ToString().ToLowerInvariant(),
+            upload: @config.GetCommonConfiguration().upload.ToString().ToLowerInvariant(),           
+            browse: @config.GetCommonConfiguration().browse.ToString().ToLowerInvariant(),
+            rewrite: @config.GetCommonConfiguration().rewrite.ToString().ToLowerInvariant(),            
+            enableRightClick: @config.GetCommonConfiguration().enableRightClick.ToString().ToLowerInvariant()
         });
     </script>
 </body>

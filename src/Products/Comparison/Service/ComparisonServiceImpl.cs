@@ -9,7 +9,6 @@ using GroupDocs.Total.MVC.Products.Comparison.Model.Request;
 using GroupDocs.Comparison;
 using GroupDocs.Comparison.Options;
 using GroupDocs.Comparison.Changes;
-using System.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Comparison.Service
 {
@@ -43,11 +42,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 // get all the files from a directory
                 if (string.IsNullOrEmpty(relDirPath))
                 {
-                    relDirPath = globalConfiguration.Comparison.GetFilesDirectory();
+                    relDirPath = globalConfiguration.GetComparisonConfiguration().GetFilesDirectory();
                 }
                 else
                 {
-                    relDirPath = Path.Combine(globalConfiguration.Comparison.GetFilesDirectory(), relDirPath);
+                    relDirPath = Path.Combine(globalConfiguration.GetComparisonConfiguration().GetFilesDirectory(), relDirPath);
                 }
 
                 List<string> allFiles = new List<string>(Directory.GetFiles(relDirPath));
@@ -62,7 +61,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
                     if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.Comparison.GetFilesDirectory())))
+                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetComparisonConfiguration().GetFilesDirectory())))
                     {
                         // ignore current file and skip to next one
                         continue;
@@ -110,7 +109,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         }
 
         public CompareResultResponse Compare(CompareRequest compareRequest)
-        {            
+        {
             CompareResultResponse compareResultResponse = CompareTwoDocuments(compareRequest);
             return compareResultResponse;
         }
@@ -216,40 +215,15 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         {
             // to get correct coordinates we will compare document twice
             // this is a first comparing to get correct coordinates of the insertions and style changes
-            ICompareResult compareResult = CompareFiles(compareRequest, false);
+            ICompareResult compareResult = CompareFiles(compareRequest);
             string extension = Path.GetExtension(compareRequest.guids[0].GetGuid());
             ChangeInfo[] changes = compareResult.GetChanges();
-            // We need to remove fake deleting changies
-            List<ChangeInfo> listOFChangies = changes.ToList<ChangeInfo>();
-            foreach (ChangeInfo info in changes)
-            {
-                if (info.Type == TypeChanged.Deleted)
-                {
-                    listOFChangies.Remove(info);
-                }
-            }
-            changes = listOFChangies.ToArray<ChangeInfo>();
-            // revers compared files and re-compare - this workaroud is required to get correct coordinates for the text deletions
-            // this comparing will return deleted text as insertions - we will change their type later
-            compareResult = CompareFiles(compareRequest, true);
-            ChangeInfo[] deletingChanges = compareResult.GetChanges();
-            // filter changes array and add deletions
-            foreach (ChangeInfo change in deletingChanges)
-            {
-                if (change.Type == TypeChanged.Inserted)
-                {
-                    // change change type to deleted
-                    change.Type = TypeChanged.Deleted;
-                    changes = changes.Concat(new [] { change }).ToArray();
-                }
-            }
-
             CompareResultResponse compareResultResponse = GetCompareResultResponse(compareResult, changes, extension);
             compareResultResponse.SetExtension(extension);
             return compareResultResponse;
         }
 
-        private ICompareResult CompareFiles(CompareRequest compareRequest, bool detectDeletions)
+        private ICompareResult CompareFiles(CompareRequest compareRequest)
         {
             string firstPath = compareRequest.guids[0].GetGuid();
             ICompareResult compareResult;
@@ -257,27 +231,15 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
             Comparer comparer = new Comparer();
             // create setting for comparing
             ComparisonSettings settings = new ComparisonSettings();
-            settings.ShowDeletedContent = false;
             settings.StyleChangeDetection = true;
             settings.CalculateComponentCoordinates = true;
-            // compare two documents            
-            // if we need to detect deletions we should revers compared files to get correct coordinates
-            if (detectDeletions)
-            {
-                compareResult = comparer.Compare(compareRequest.guids[1].GetGuid(),
-                   compareRequest.guids[1].GetPassword(),
-                   firstPath,
-                   compareRequest.guids[0].GetPassword(),
-                   settings);
-            }
-            else
-            {
-                compareResult = comparer.Compare(firstPath,
-                    compareRequest.guids[0].GetPassword(),
-                    compareRequest.guids[1].GetGuid(),
-                    compareRequest.guids[1].GetPassword(),
-                    settings);
-            }
+
+            compareResult = comparer.Compare(firstPath,
+                compareRequest.guids[0].GetPassword(),
+                compareRequest.guids[1].GetGuid(),
+                compareRequest.guids[1].GetPassword(),
+                settings);
+
             if (compareResult == null)
             {
                 throw new Exception("Something went wrong. We've got null result.");
@@ -309,7 +271,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
 
         private string SaveFile(string guid, Stream inputStream, string ext)
         {
-            string fileName = Path.Combine(globalConfiguration.Comparison.GetResultDirectory(), guid + ext);
+            string fileName = Path.Combine(globalConfiguration.GetComparisonConfiguration().GetResultDirectory(), guid + ext);
             try
             {
                 using (var fileStream = File.Create(fileName))

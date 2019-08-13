@@ -39,19 +39,19 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             // Check if filesDirectory is relative or absolute path           
             globalConfiguration = new Common.Config.GlobalConfiguration();
             GroupDocs.Viewer.License lic = new GroupDocs.Viewer.License();
-            lic.SetLicense(globalConfiguration.Application.LicensePath);
+            lic.SetLicense(globalConfiguration.GetApplicationConfiguration().GetLicensePath());
             // create viewer application configuration
             ViewerConfig config = new ViewerConfig();
-            config.StoragePath = globalConfiguration.Viewer.GetFilesDirectory();
-            config.EnableCaching = globalConfiguration.Viewer.GetCache();
+            config.StoragePath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
+            config.EnableCaching = globalConfiguration.GetViewerConfiguration().GetCache();
             config.ForcePasswordValidation = true;
             List<string> fontsDirectory = new List<string>();
-            if (!String.IsNullOrEmpty(globalConfiguration.Viewer.GetFontsDirectory()))
+            if (!String.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetFontsDirectory()))
             {
-                fontsDirectory.Add(globalConfiguration.Viewer.GetFontsDirectory());
+                fontsDirectory.Add(globalConfiguration.GetViewerConfiguration().GetFontsDirectory());
             }
             config.FontDirectories = fontsDirectory;
-            if (globalConfiguration.Viewer.GetIsHtmlMode())
+            if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
             {
                 // initialize Viewer instance for the HTML mode
                 viewerHtmlHandler = new ViewerHtmlHandler(config);
@@ -71,7 +71,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         [Route("viewer/loadConfig")]
         public ViewerConfiguration LoadConfig()
         {            
-            return globalConfiguration.Viewer;
+            return globalConfiguration.GetViewerConfiguration();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             try
             {
                 List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
-                if (!String.IsNullOrEmpty(globalConfiguration.Viewer.GetFilesDirectory()))
+                if (!String.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetFilesDirectory()))
                 {
                     FileListContainer fileListContainer = this.GetHandler().GetFileList(fileListOptions);
                     // parse files/folders list
@@ -145,7 +145,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             string password = "";
             try
             {
-                LoadDocumentEntity loadDocumentEntity = LoadDocument(postedData, globalConfiguration.Viewer.GetPreloadPageCount() == 0);
+                LoadDocumentEntity loadDocumentEntity = LoadDocument(postedData, globalConfiguration.GetViewerConfiguration().GetPreloadPageCount() == 0);
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
@@ -283,7 +283,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 string url = HttpContext.Current.Request.Form["url"];
                 // get documents storage path
-                string documentStoragePath = globalConfiguration.Viewer.GetFilesDirectory();
+                string documentStoragePath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
                 if (string.IsNullOrEmpty(url))
@@ -399,7 +399,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             // check if documentGuid contains path or only file name
             if (!Path.IsPathRooted(documentGuid))
             {
-                documentGuid = globalConfiguration.Viewer.GetFilesDirectory() + "/" + documentGuid;
+                documentGuid = globalConfiguration.GetViewerConfiguration().GetFilesDirectory() + "/" + documentGuid;
             }
             dynamic documentInfoContainer;
             // get document info options
@@ -407,7 +407,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             // set password for protected document                
             documentInfoOptions.Password = password;
             // get document info container              
-            if (Path.GetExtension(documentGuid) == ".pdf" && globalConfiguration.Viewer.GetPrintAllowed())
+            if (Path.GetExtension(documentGuid) == ".pdf" && globalConfiguration.GetViewerConfiguration().GetPrintAllowed())
             {
                 documentInfoContainer = this.GetHandler().GetDocumentInfo(documentGuid, documentInfoOptions) as PdfDocumentInfoContainer;
                 loadDocumentEntity.SetPrintAllowed(documentInfoContainer.PrintingAllowed);
@@ -460,7 +460,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
 
         private string GetPageContent(PageData page, string password, string documentGuid)
         {
-            if (globalConfiguration.Viewer.GetIsHtmlMode())
+            if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
                 SetOptions(htmlOptions, password, page.Number);               
@@ -486,7 +486,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         private List<string> GetAllPagesContent(string password, string documentGuid)
         {
             List<string> allPages = new List<string>();
-            if (globalConfiguration.Viewer.GetIsHtmlMode())
+            if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
             {
                 HtmlOptions htmlOptions = new HtmlOptions();
                 SetOptions(htmlOptions, password, 0);
@@ -520,10 +520,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         private void SetOptions(HtmlOptions options, string password, int pageNumber)
         {
             Watermark watermark = null;
-            if (!String.IsNullOrEmpty(globalConfiguration.Viewer.GetWatermarkText()))
+            if (!String.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetWatermarkText()))
             {
                 // Set watermark properties
-                watermark = new Watermark(globalConfiguration.Viewer.GetWatermarkText());
+                watermark = new Watermark(globalConfiguration.GetViewerConfiguration().GetWatermarkText());
                 watermark.Color = System.Drawing.Color.Blue;
                 watermark.Position = WatermarkPosition.Diagonal;
                 watermark.Width = 100;
@@ -549,10 +549,10 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         private void SetOptions(ImageOptions options, string password, int pageNumber)
         {
             Watermark watermark = null;
-            if (!String.IsNullOrEmpty(globalConfiguration.Viewer.GetWatermarkText()))
+            if (!String.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetWatermarkText()))
             {
                 // Set watermark properties
-                watermark = new Watermark(globalConfiguration.Viewer.GetWatermarkText());
+                watermark = new Watermark(globalConfiguration.GetViewerConfiguration().GetWatermarkText());
                 watermark.Color = System.Drawing.Color.Blue;
                 watermark.Position = WatermarkPosition.Diagonal;
                 watermark.Width = 100;
