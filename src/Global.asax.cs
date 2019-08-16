@@ -27,7 +27,7 @@ namespace GroupDocs.Total.MVC
             DomainGenerator annotationDomainGenerator = new DomainGenerator(annotationAssemblyName, "GroupDocs.Annotation.Common.License.License");
             annotationDomainGenerator.SetAnnotationLicense();
             // set GroupDocs.Comparison license
-            DomainGenerator comparisonDomainGenerator = new DomainGenerator(comparisonAssemblyName, "GroupDocs.Comparison.Common.License.License");
+            DomainGenerator comparisonDomainGenerator = new DomainGenerator(comparisonAssemblyName, "GroupDocs.Comparison.License");
             comparisonDomainGenerator.SetComparisonLicense();
             // set GroupDocs.Conversion license
             DomainGenerator conversionDomainGenerator = new DomainGenerator(conversionAssemblyName, "GroupDocs.Conversion.License");
