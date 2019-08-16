@@ -43,9 +43,9 @@
     "rxjs": "~6.4.0",
     "zone.js": "^0.9.1",
     "@nrwl/angular": "^8.2.0",
-    "@groupdocs.examples.angular/viewer": "^0.3.1",
-    "@groupdocs.examples.angular/editor": "^0.3.1",
-    "@groupdocs.examples.angular/comparison": "^0.3.1"
+    "@groupdocs.examples.angular/viewer": "^0.3.2",
+    "@groupdocs.examples.angular/editor": "^0.3.2",
+    "@groupdocs.examples.angular/comparison": "^0.3.2"
   },
   "devDependencies": {
     "jest-preset-angular": "7.0.0",
