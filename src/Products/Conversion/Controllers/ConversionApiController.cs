@@ -3,6 +3,7 @@ using GroupDocs.Conversion.Handler;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
+using GroupDocs.Total.MVC.Products.Conversion.Config;
 using GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Conversion.Entity.Web.Response;
 using GroupDocs.Total.MVC.Products.Conversion.Filter;
@@ -47,6 +48,17 @@ namespace GroupDocs.Total.MVC.Products.Conversion.Controllers
 
             ConversionHandler ConversionHandler = new ConversionHandler(conversionConfig);
             Manager = new ConversionManager(ConversionHandler);
+        }
+
+        /// <summary>
+        /// Load Conversion configuration
+        /// </summary>
+        /// <returns>Conversion configuration</returns>
+        [HttpGet]
+        [Route("conversion/loadConfig")]
+        public ConversionConfiguration LoadConfig()
+        {
+            return GlobalConfiguration.GetConversionConfiguration();
         }
 
         /// <summary>
