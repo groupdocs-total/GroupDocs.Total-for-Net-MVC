@@ -8,7 +8,8 @@
     "build-viewer": "..\\..\\packages\\Node-Kit.11.1.0.1\\node\\win\\node.exe .\\node_modules\\@angular\\cli\\bin\\ng build viewer",
     "build-editor": "..\\..\\packages\\Node-Kit.11.1.0.1\\node\\win\\node.exe .\\node_modules\\@angular\\cli\\bin\\ng build editor",
     "build-comparison": "..\\..\\packages\\Node-Kit.11.1.0.1\\node\\win\\node.exe .\\node_modules\\@angular\\cli\\bin\\ng build comparison",
-    "build": "npm run build-viewer && npm run build-editor && npm run build-comparison",
+    "build-conversion": "..\\..\\packages\\Node-Kit.11.1.0.1\\node\\win\\node.exe .\\node_modules\\@angular\\cli\\bin\\ng build conversion",
+    "build": "npm run build-viewer && npm run build-editor && npm run build-comparison && npm run build-conversion",
     "test": "ng test",
     "lint": "nx lint && ng lint",
     "e2e": "ng e2e",
@@ -45,7 +46,8 @@
     "@nrwl/angular": "^8.2.0",
     "@groupdocs.examples.angular/viewer": "^0.3.2",
     "@groupdocs.examples.angular/editor": "^0.3.2",
-    "@groupdocs.examples.angular/comparison": "^0.3.2"
+    "@groupdocs.examples.angular/comparison": "^0.3.2",
+    "@groupdocs.examples.angular/conversion": "^0.3.2"
   },
   "devDependencies": {
     "jest-preset-angular": "7.0.0",
