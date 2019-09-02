@@ -16,3 +16,9 @@ src/package-lock.json
 /GroupDocs.Total.MVC.Test/bin
 /GroupDocs.Total.MVC.Test/obj
 /src/GroupDocs.Total.MVC.zip
+src/Licenses
+!src/Licenses/.gitkeep
+src/DocumentSamples
+!src/DocumentSamples/.gitkeep
+!.gitkeep
+.DS_Store
