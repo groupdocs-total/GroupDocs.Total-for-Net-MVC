@@ -28,3 +28,6 @@ src/DocumentSamples
 
 # Git
 !.gitkeep
+
+# Finder in OSX
+.DS_Store
