@@ -586,7 +586,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 if (annotateDocumentRequest.print)
                 {
                     annotatedDocument.pages = GetAnnotatedPagesForPrint(documentGuid);
-                    File.Delete(documentGuid);
+                    File.Move(documentGuid, annotateDocumentRequest.guid);
                 }
             }
             catch (System.Exception ex)
