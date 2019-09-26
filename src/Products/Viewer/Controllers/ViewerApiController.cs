@@ -7,6 +7,7 @@ using GroupDocs.Viewer.Converter.Options;
 using GroupDocs.Viewer.Domain;
 using GroupDocs.Viewer.Domain.Containers;
 using GroupDocs.Viewer.Domain.Options;
+using GroupDocs.Viewer.Exception;
 using GroupDocs.Viewer.Handler;
 using System;
 using System.Collections.Generic;
@@ -149,10 +150,18 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (System.Exception ex)
+            catch (PasswordProtectedFileException ex)
             {
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+            }
+            catch (CorruptedOrDamagedFileException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
             }
         }
 
