@@ -155,10 +155,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
             }
-            catch (CorruptedOrDamagedFileException ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
-            }
+            // here we will catch all other exceptions like CorruptedOrDamagedFileException and similar that lead to InternalServerError
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
