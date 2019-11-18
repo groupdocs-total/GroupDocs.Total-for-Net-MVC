@@ -4,6 +4,7 @@ using GroupDocs.Signature.Handler;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Directory;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
@@ -58,6 +59,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             SignatureHandler = new SignatureHandler(config);
         }
 
+        /// <summary>
+        /// Load Signature configuration
+        /// </summary>
+        /// <returns>Signature configuration</returns>
+        [HttpGet]
+        [Route("loadConfig")]
+        public SignatureConfiguration LoadConfig()
+        {
+            return GlobalConfiguration.GetSignatureConfiguration();
+        }
 
         /// <summary>
         /// Get all files and directories from storage
