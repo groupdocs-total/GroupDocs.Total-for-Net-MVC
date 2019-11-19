@@ -64,7 +64,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
         /// </summary>
         /// <returns>Signature configuration</returns>
         [HttpGet]
-        [Route("loadConfig")]
+        [Route("signature/loadConfig")]
         public SignatureConfiguration LoadConfig()
         {
             return GlobalConfiguration.GetSignatureConfiguration();
