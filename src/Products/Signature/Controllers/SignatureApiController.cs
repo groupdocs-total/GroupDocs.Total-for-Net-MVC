@@ -4,6 +4,7 @@ using GroupDocs.Signature.Handler;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Directory;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
@@ -58,6 +59,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             SignatureHandler = new SignatureHandler(config);
         }
 
+        /// <summary>
+        /// Load Signature configuration
+        /// </summary>
+        /// <returns>Signature configuration</returns>
+        [HttpGet]
+        [Route("signature/loadConfig")]
+        public SignatureConfiguration LoadConfig()
+        {
+            return GlobalConfiguration.GetSignatureConfiguration();
+        }
 
         /// <summary>
         /// Get all files and directories from storage
@@ -143,7 +154,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -198,8 +209,13 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             }
             catch (System.Exception ex)
             {
+                // TODO: this should be changed on special catch for PasswordProtectedException when it will be added in the library
+                if (ex.Message == "Invalid password")
+                {
+                    return Request.CreateResponse(HttpStatusCode.Forbidden, new Common.Resources.Resources().GenerateException(ex, password));
+                }
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -235,7 +251,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -296,7 +312,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -446,7 +462,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -489,7 +505,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -542,7 +558,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -591,7 +607,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -718,7 +734,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -772,7 +788,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -798,7 +814,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -841,7 +857,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -902,7 +918,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
