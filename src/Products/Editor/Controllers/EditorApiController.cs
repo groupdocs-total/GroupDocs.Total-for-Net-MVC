@@ -130,10 +130,15 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (System.Exception ex)
+            catch (PasswordNotSpecifiedException ex)
             {
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, postedData.password));
+            }
+            // here we will catch all other exceptions like CorruptedOrDamagedFileException and similar that lead to InternalServerError
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, postedData.password));
             }
         }
 
@@ -186,6 +191,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                         var httpPostedFile = HttpContext.Current.Request.Files["file"];
                         if (httpPostedFile != null)
                         {
+                            var options = EditorHandler.DetectOptionsFromExtension(httpPostedFile.FileName);
+                            if (options == null)
+                            {
+                                throw new Exception("Unsupported format.");
+                            }
+
                             if (rewrite)
                             {
                                 // Get the complete file path
@@ -203,6 +214,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 }
                 else
                 {
+                    var options = EditorHandler.DetectOptionsFromExtension(url);
+                    if (options == null)
+                    {
+                        throw new Exception("Unsupported format.");
+                    }
+
                     using (WebClient client = new WebClient())
                     {
                         // get file name from the URL
@@ -228,7 +245,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
