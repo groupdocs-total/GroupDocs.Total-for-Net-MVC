@@ -5,6 +5,7 @@ using GroupDocs.Annotation.Domain.Image;
 using GroupDocs.Annotation.Domain.Options;
 using GroupDocs.Annotation.Handler;
 using GroupDocs.Total.MVC.Products.Annotation.Annotator;
+using GroupDocs.Total.MVC.Products.Annotation.Config;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Request;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
 using GroupDocs.Total.MVC.Products.Annotation.Importer;
@@ -55,6 +56,16 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             AnnotationImageHandler = new AnnotationImageHandler(config);
         }
 
+        /// <summary>
+        /// Load Annotation configuration
+        /// </summary>
+        /// <returns>Annotation configuration</returns>
+        [HttpGet]
+        [Route("annotation/loadConfig")]
+        public AnnotationConfiguration LoadConfig()
+        {
+            return GlobalConfiguration.GetAnnotationConfiguration();
+        }
 
         /// <summary>
         /// Get all files and directories from storage
@@ -577,10 +588,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                         fileStream.Close();
                     }
                 }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(new NotSupportedException(notSupportedMessage)));
-                }
+
                 annotatedDocument = new AnnotatedDocumentEntity();
                 annotatedDocument.guid = documentGuid;
                 if (annotateDocumentRequest.print)
