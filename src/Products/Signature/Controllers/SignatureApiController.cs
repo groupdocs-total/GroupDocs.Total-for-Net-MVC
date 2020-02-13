@@ -4,6 +4,7 @@ using GroupDocs.Signature.Handler;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Directory;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
@@ -58,6 +59,16 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             SignatureHandler = new SignatureHandler(config);
         }
 
+        /// <summary>
+        /// Load Signature configuration
+        /// </summary>
+        /// <returns>Signature configuration</returns>
+        [HttpGet]
+        [Route("signature/loadConfig")]
+        public SignatureConfiguration LoadConfig()
+        {
+            return GlobalConfiguration.GetSignatureConfiguration();
+        }
 
         /// <summary>
         /// Get all files and directories from storage
@@ -143,7 +154,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -159,47 +170,54 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             string password = "";
             try
             {
-
                 // get/set parameters
                 string documentGuid = postedData.guid;
                 password = postedData.password;
-                DocumentDescription documentDescription;
-                // get document info container
-                documentDescription = SignatureHandler.GetDocumentDescription(documentGuid, password);
-                List<SignatureLoadedPageEntity> pagesDescription = new List<SignatureLoadedPageEntity>();
-                for (int i = 1; i <= documentDescription.PageCount; i++)
-                {
-                    //initiate custom Document description object
-                    SignatureLoadedPageEntity description = new SignatureLoadedPageEntity();
-                    // get current page size
-                    Size pageSize = SignatureHandler.GetDocumentPageSize(documentGuid, i, password, (double)0, (double)0, null);
-                    // set current page info for result
-                    description.height = pageSize.Height;
-                    description.width = pageSize.Width;
-                    description.number = i;
-                    if (GlobalConfiguration.GetSignatureConfiguration().PreloadPageCount == 0)
-                    {
-                        byte[] pageBytes = SignatureHandler.GetPageImage(documentGuid, i, password, null, 100);
-                        string encodedImage = Convert.ToBase64String(pageBytes);
-                        pageBytes = null;
-                        description.SetData(encodedImage);
-                    }
-                    pagesDescription.Add(description);
-                }
-
                 LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-                loadDocumentEntity.SetGuid(documentGuid);
-                foreach (SignatureLoadedPageEntity pageDescription in pagesDescription)
+                DocumentDescription documentDescription;
+                using (FileStream stream = File.Open(documentGuid, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                 {
-                    loadDocumentEntity.SetPages(pageDescription);
+                    // get document info container
+                    documentDescription = SignatureHandler.GetDocumentDescription(stream, password);
+                    List<SignatureLoadedPageEntity> pagesDescription = new List<SignatureLoadedPageEntity>();
+                    for (int i = 1; i <= documentDescription.PageCount; i++)
+                    {
+                        //initiate custom Document description object
+                        SignatureLoadedPageEntity description = new SignatureLoadedPageEntity();
+                        // get current page size
+                        Size pageSize = SignatureHandler.GetDocumentPageSize(stream, i, password, (double)0, (double)0, null);
+                        // set current page info for result
+                        description.height = pageSize.Height;
+                        description.width = pageSize.Width;
+                        description.number = i;
+                        if (GlobalConfiguration.GetSignatureConfiguration().PreloadPageCount == 0)
+                        {
+                            byte[] pageBytes = SignatureHandler.GetPageImage(stream, i, password, null, 100);
+                            string encodedImage = Convert.ToBase64String(pageBytes);
+                            pageBytes = null;
+                            description.SetData(encodedImage);
+                        }
+                        pagesDescription.Add(description);
+                    }
+                    loadDocumentEntity.SetGuid(documentGuid);
+                    foreach (SignatureLoadedPageEntity pageDescription in pagesDescription)
+                    {
+                        loadDocumentEntity.SetPages(pageDescription);
+                    }
                 }
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
             catch (System.Exception ex)
             {
+                // TODO: this should be changed on special catch for PasswordProtectedException when it will be added in the library
+                if (ex.Message == "Invalid password")
+                {
+                    return Request.CreateResponse(HttpStatusCode.Forbidden, new Common.Resources.Resources().GenerateException(ex, password));
+                }
+
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Common.Resources.Resources().GenerateException(ex, password));
             }
         }
 
@@ -235,7 +253,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -296,7 +314,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -433,7 +451,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 SignatureFileDescriptionEntity uploadedDocument = new SignatureFileDescriptionEntity();
                 uploadedDocument.guid = fileSavePath;
                 MemoryStream ms = new MemoryStream();
-                using (FileStream file = new FileStream(fileSavePath, FileMode.Open, FileAccess.Read))
+                using (FileStream file = new FileStream(fileSavePath, FileMode.Open, FileAccess.ReadWrite))
                 {
                     file.CopyTo(ms);
                     byte[] imageBytes = ms.ToArray();
@@ -446,7 +464,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -466,7 +484,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 string documentGuid = postedData.guid;
                 SignatureLoadedPageEntity loadedPage = new SignatureLoadedPageEntity();
                 MemoryStream ms = new MemoryStream();
-                using (FileStream file = new FileStream(documentGuid, FileMode.Open, FileAccess.Read))
+                using (FileStream file = new FileStream(documentGuid, FileMode.Open, FileAccess.ReadWrite))
                 {
                     file.CopyTo(ms);
                     byte[] imageBytes = ms.ToArray();
@@ -489,7 +507,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -542,7 +560,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -591,7 +609,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -701,8 +719,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 SignatureHandler.SignatureConfig.OutputPath = DirectoryUtils.FilesDirectory.GetPath();
                 // set data for response
                 opticalCodeData.imageGuid = filePath;
-                opticalCodeData.height = signaturesData.ImageHeight;
-                opticalCodeData.width = signaturesData.ImageWidth;
+                opticalCodeData.height = Convert.ToInt32(signaturesData.ImageHeight);
+                opticalCodeData.width = Convert.ToInt32(signaturesData.ImageWidth);
                 // get signature preview as Base64 string
                 byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
                 string base64ImageRepresentation = Convert.ToBase64String(imageArray);
@@ -718,7 +736,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -772,7 +790,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -798,7 +816,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -841,7 +859,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -902,7 +920,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             catch (System.Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
