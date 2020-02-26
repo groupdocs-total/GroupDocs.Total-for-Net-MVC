@@ -15,6 +15,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using GroupDocs.Total.MVC.Products.Editor.Entity.Web.Request;
 using GroupDocs.Editor;
+using GroupDocs.Editor.Formats;
 
 namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 {
@@ -98,9 +99,9 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, fileList);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
         }
 
@@ -130,10 +131,15 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (System.Exception ex)
+            catch (PasswordRequiredException ex)
             {
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, postedData.password));
+            }
+            catch (System.Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, postedData.password));
             }
         }
 
@@ -225,10 +231,10 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 uploadedDocument.guid = fileSavePath;
                 return Request.CreateResponse(HttpStatusCode.OK, uploadedDocument);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
         }
 
@@ -244,34 +250,45 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             try
             {
                 string htmlContent = postedData.getContent(); // Initialize with HTML markup of the edited document
-
                 string saveFilePath = Path.Combine(globalConfiguration.GetEditorConfiguration().GetFilesDirectory(), postedData.GetGuid());
+
+                string tempFilename = Path.GetFileNameWithoutExtension(saveFilePath) + ".tmp";
+                string tempPath = Path.Combine(Path.GetDirectoryName(saveFilePath), tempFilename);
+
+                using (GroupDocs.Editor.Editor editor = new GroupDocs.Editor.Editor(postedData.GetGuid()))
+                {
+                    WordProcessingEditOptions editOptions = new WordProcessingEditOptions();
+                    editOptions.FontExtraction = FontExtractionOptions.ExtractEmbeddedWithoutSystem;
+                    editOptions.EnableLanguageInformation = true;
+                    editOptions.EnablePagination = true;
+                    using (EditableDocument beforeEdit = editor.Edit(editOptions))
+                    {
+                        EditableDocument htmlContentDoc = EditableDocument.FromMarkup(htmlContent, null);
+                        WordProcessingSaveOptions saveOptions = new WordProcessingSaveOptions(WordProcessingFormats.Docm);
+                        saveOptions.EnablePagination = true;
+
+                        using (FileStream outputStream = File.Create(tempPath))
+                        {
+                            editor.Save(htmlContentDoc, outputStream, saveOptions);
+                        }
+                    }
+                }
+
                 if (File.Exists(saveFilePath))
                 {
                     File.Delete(saveFilePath);
                 }
-                using (OutputHtmlDocument editedHtmlDoc = new OutputHtmlDocument(htmlContent, null))
-                {
-                    dynamic options = GetSaveOptions(saveFilePath);
-                    if (options.GetType().Equals(typeof(WordProcessingSaveOptions)))
-                    {
-                        options.EnablePagination = true;
-                    }
-                    options.Password = postedData.getPassword();
-                    options.OutputFormat = GetSaveFormat(saveFilePath);
-                    using (System.IO.FileStream outputStream = System.IO.File.Create(saveFilePath))
-                    {
-                        EditorHandler.ToDocument(editedHtmlDoc, outputStream, options);
-                    }
-                }
+
+                File.Move(tempPath, saveFilePath);
+
                 LoadDocumentEntity loadDocumentEntity = LoadDocument(saveFilePath, postedData.getPassword());
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, postedData.getPassword()));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, postedData.getPassword()));
             }
         }
 
@@ -310,29 +327,14 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 case "Ott":
                     format = WordProcessingFormats.Ott;
                     break;
-                case "txt":
-                    format = WordProcessingFormats.Text;
-                    break;
-                case "Html":
-                    format = WordProcessingFormats.Html;
-                    break;
-                case "Mhtml":
-                    format = WordProcessingFormats.Mhtml;
-                    break;
                 case "WordML":
                     format = WordProcessingFormats.WordML;
-                    break;
-                case "Csv":
-                    format = SpreadsheetFormats.Csv;
                     break;
                 case "Ods":
                     format = SpreadsheetFormats.Ods;
                     break;
                 case "SpreadsheetML":
                     format = SpreadsheetFormats.SpreadsheetML;
-                    break;
-                case "TabDelimited":
-                    format = SpreadsheetFormats.TabDelimited;
                     break;
                 case "Xls":
                     format = SpreadsheetFormats.Xls;
@@ -355,36 +357,77 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 default:
                     format = WordProcessingFormats.Docx;
                     break;
-
             }
+
             return format;
         }
 
-        private dynamic GetSaveOptions(string saveFilePath)
+        private ISaveOptions GetSaveOptions(string saveFilePath)
         {
             string extension = Path.GetExtension(saveFilePath).Replace(".", "");
             extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
+
             if (extension.Equals("Txt"))
             {
                 extension = "Text";
             }
-            dynamic options = null;
-            foreach (var item in Enum.GetNames(typeof(WordProcessingFormats)))
+
+            ISaveOptions options = null;
+
+            foreach (var item in typeof(WordProcessingFormats).GetFields())
             {
-                if (item.Equals("Auto"))
+                if (item.Name.Equals("Auto"))
                 {
                     continue;
                 }
-                if (item.Equals(extension))
+
+                if (item.Name.Equals(extension))
                 {
-                    options = new WordProcessingSaveOptions();
+                    options = new WordProcessingSaveOptions(WordProcessingFormats.Docm);
+                    ((WordProcessingSaveOptions)options).EnablePagination = true;
                     break;
                 }
             }
+
             if (options == null)
             {
-                options = new SpreadsheetSaveOptions();
+                options = new SpreadsheetSaveOptions(SpreadsheetFormats.Xlsb);
             }
+
+            return options;
+        }
+
+        private ILoadOptions GetLoadOptions(string guid)
+        {
+            string extension = Path.GetExtension(guid).Replace(".", "");
+            extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
+
+            if (extension.Equals("Txt"))
+            {
+                extension = "Text";
+            }
+
+            ILoadOptions options = null;
+
+            foreach (var item in typeof(WordProcessingFormats).GetFields())
+            {
+                if (item.Name.Equals("Auto"))
+                {
+                    continue;
+                }
+
+                if (item.Name.Equals(extension))
+                {
+                    options = new WordProcessingLoadOptions();
+                    break;
+                }
+            }
+
+            if (options == null)
+            {
+                options = new SpreadsheetLoadOptions();
+            }
+
             return options;
         }
 
@@ -392,30 +435,32 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
         {
             List<string> outputListItems = new List<string>();
 
-            foreach (var item in Enum.GetNames(typeof(WordProcessingFormats)))
+            foreach (var item in typeof(WordProcessingFormats).GetFields())
             {
-                if (item.Equals("Auto"))
+                if (item.Name.Equals("Auto"))
                 {
                     continue;
                 }
-                if (item.Equals("Text"))
+
+                if (item.Name.Equals("Text"))
                 {
                     outputListItems.Add("Txt");
                 }
+
                 else
                 {
-                    outputListItems.Add(item);
+                    outputListItems.Add(item.Name);
                 }
-
             }
 
-            foreach (var item in Enum.GetNames(typeof(SpreadsheetFormats)))
+            foreach (var item in typeof(SpreadsheetFormats).GetFields())
             {
-                if (item.Equals("Auto"))
+                if (item.Name.Equals("Auto"))
                 {
                     continue;
                 }
-                outputListItems.Add(item);
+
+                outputListItems.Add(item.Name);
             }
 
             return outputListItems;
@@ -423,38 +468,31 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
         private LoadDocumentEntity LoadDocument(string guid, string password)
         {
-            dynamic options = null;
-            //GroupDocs.Editor cannot detect text-based Cells documents formats (like CSV) automatically
-            if (guid.EndsWith("csv", StringComparison.OrdinalIgnoreCase))
-            {
-                options = new SpreadsheetToHtmlOptions();
-            }
-            else
-            {
-                options = EditorHandler.DetectOptionsFromExtension(guid);
-            }
-
-            if (options is SpreadsheetToHtmlOptions)
-            {
-                options.TextOptions = new SpreadsheetToHtmlOptions.TextLoadOptions(",");
-            }
-            else
-            {
-                options.Password = password;
-            }
-            string bodyContent;
-
-            using (System.IO.FileStream inputDoc = System.IO.File.OpenRead(guid))
-
-            using (InputHtmlDocument htmlDoc = EditorHandler.ToHtml(inputDoc, options))
-            {
-                bodyContent = htmlDoc.GetEmbeddedHtml();
-            }
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-            loadDocumentEntity.SetGuid(System.IO.Path.GetFileName(guid));
-            PageDescriptionEntity page = new PageDescriptionEntity();
-            page.SetData(bodyContent);
-            loadDocumentEntity.SetPages(page);
+            ILoadOptions loadOptions = GetLoadOptions(guid);
+            loadOptions.Password = password;
+
+            // Instantiate Editor object by loading the input file
+            using (GroupDocs.Editor.Editor editor = new GroupDocs.Editor.Editor(guid, delegate { return loadOptions; }))
+            {
+                WordProcessingEditOptions editOptions = new WordProcessingEditOptions();
+                editOptions.EnablePagination = true;
+
+                // Open input document for edit — obtain an intermediate document, that can be edited
+                EditableDocument beforeEdit = editor.Edit(editOptions);
+
+                // Get document as a single base64-encoded string, where all resources (images, fonts, etc) 
+                // are embedded inside this string along with main textual content
+                string allEmbeddedInsideString = beforeEdit.GetEmbeddedHtml();
+
+                loadDocumentEntity.SetGuid(guid);
+                PageDescriptionEntity page = new PageDescriptionEntity();
+                page.SetData(allEmbeddedInsideString);
+                loadDocumentEntity.SetPages(page);
+
+                beforeEdit.Dispose();
+            }
+
             return loadDocumentEntity;
         }
     }
