@@ -60,8 +60,8 @@
     <Reference Include="GroupDocs.Editor, Version=19.5.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Editor.19.5.0\lib\GroupDocs.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Signature, Version=19.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Signature.19.1.0\lib\GroupDocs.Signature.dll</HintPath>
+    <Reference Include="GroupDocs.Metadata, Version=20.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Metadata.20.1.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Signature, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.19.6.0\lib\GroupDocs.Signature.dll</HintPath>
@@ -221,6 +221,7 @@
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ConversionController.cs" />
     <Compile Include="Controllers\EditorController.cs" />
+    <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
     <Compile Include="Products\Annotation\Annotator\AbstractBoxAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\AbstractSvgAnnotator.cs" />
@@ -261,12 +262,14 @@
     <Compile Include="Products\Common\Config\GlobalConfiguration.cs" />
     <Compile Include="Products\Common\Config\ServerConfiguration.cs" />
     <Compile Include="Products\Common\Config\CommonConfiguration.cs" />
+    <Compile Include="Products\Common\Entity\Web\FilePropertyEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\LoadDocumentEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\PageDescriptionEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\ExceptionEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\FileDescriptionEntity.cs" />
     <Compile Include="Products\Common\Entity\Web\UploadedDocumentEntity.cs" />
     <Compile Include="Products\Common\Resources\Resources.cs" />
+    <Compile Include="Products\Common\Util\Comparator\CaseInsensitiveComparer.cs" />
     <Compile Include="Products\Common\Util\Comparator\FileDateComparator.cs" />
     <Compile Include="Products\Common\Util\LowercaseContractResolver\LowercaseContractResolver.cs" />
     <Compile Include="Products\Common\Util\Parser\YamlParser.cs" />
@@ -283,6 +286,10 @@
     <Compile Include="Products\Conversion\Manager\ConversionManager.cs" />
     <Compile Include="Products\Editor\Entity\Web\EditableDocumentType.cs" />
     <Compile Include="Products\Editor\Entity\Web\Request\EditDocumentRequest.cs" />
+    <Compile Include="Products\Metadata\Config\MetadataConfiguration.cs" />
+    <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
+    <Compile Include="Products\Metadata\Entity\FilePropertyName.cs" />
+    <Compile Include="Products\Metadata\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
@@ -383,6 +390,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Editor\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Metadata\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

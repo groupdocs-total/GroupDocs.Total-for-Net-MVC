@@ -43,6 +43,12 @@
     },
     "annotation": {
       "tags": []
+    },
+    "metadata-e2e": {
+      "tags": []
+    },
+    "metadata": {
+      "tags": []
     }
   }
 }
