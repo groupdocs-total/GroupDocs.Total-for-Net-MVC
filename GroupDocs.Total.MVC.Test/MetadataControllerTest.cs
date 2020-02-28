@@ -88,9 +88,7 @@ namespace GroupDocs.Total.MVC.Test
                 };
 
                 var result = server.DirectCall(request);
-                var resultString = Encoding.UTF8.GetString(result.Content);
-                dynamic data = JsonConvert.DeserializeObject(resultString);
-                Assert.IsTrue(data.Count > 0);
+                Assert.That(result.StatusCode, Is.EqualTo(200));
             }
         }
     }
