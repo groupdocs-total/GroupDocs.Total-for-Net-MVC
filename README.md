@@ -1,8 +1,7 @@
 # GroupDocs.Total for .NET MVC Example
-###### version 0.4.20
 
-[![Build status](https://ci.appveyor.com/api/projects/status/kvkv1oswg5xfd6uq/branch/master?svg=true)](https://ci.appveyor.com/project/egorovpavel/groupdocs-total-for-net-mvc/branch/master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b5cf669acf9043888c8fc4a8d46abdc3)](https://www.codacy.com/app/GroupDocs/GroupDocs.Total-for-NET-MVC?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=groupdocs-total/GroupDocs.Total-for-NET-MVC&amp;utm_campaign=Badge_Grade)
+[![Build status](https://ci.appveyor.com/api/projects/status/x65wugr7jm688vrt/branch/master?svg=true)](https://ci.appveyor.com/project/bobkovalex/groupdocs-total-for-net-mvc/branch/master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9f84daaeb4f143568d6b8e17faec0880)](https://www.codacy.com/gh/groupdocs-total/GroupDocs.Total-for-NET-MVC?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=groupdocs-total/GroupDocs.Total-for-NET-MVC&amp;utm_campaign=Badge_Grade)
 [![GitHub license](https://img.shields.io/github/license/groupdocs-total/GroupDocs.Total-for-NET-MVC.svg)](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/blob/master/LICENSE)
 
 ## System Requirements
@@ -19,9 +18,10 @@ This web application demonstrates the following document manipulation capabiliti
 - Document viewer
 - Annotate & write on documents 
 - Digitally sign documents
-- Compare documents 
-- Edit documents
+- Compare documents
 - Convert documents
+- Edit documents
+- Add, edit or remove metadata
 
 **Note:** without a license application will run in trial mode, purchase [GroupDocs.Total for .NET license](https://purchase.groupdocs.com/order-online-step-1-of-8.aspx) or request [GroupDocs.Total for .NET temporary license](https://purchase.groupdocs.com/temporary-license).
 
@@ -54,7 +54,7 @@ Coming soon
 
 
 ## Features
-#### [View documents](https://github.com/groupdocs-viewer/GroupDocs.Viewer-for-.NET-MVC) with GroupDocs.Viewer
+#### [Document Viewer](https://github.com/groupdocs-viewer/GroupDocs.Viewer-for-.NET-MVC) with GroupDocs.Viewer
 - Clean, modern and intuitive design
 - Easily switchable colour theme (create your own colour theme in 5 minutes)
 - Responsive design
@@ -181,6 +181,24 @@ Coming soon
 - Download documents
 - Upload documents
 - Print document
+#### [Add, edit or remove metadata](https://github.com/groupdocs-metadata/GroupDocs.Metadata-for-.NET-MVC) with GroupDocs.Metadata
+- Add Metadata to Office Documents
+- Edit or update Metadata in Office Documents
+- Remove Metadata from Office Documents
+- Clean, modern and intuitive design
+- Easily switchable colour theme (create your own colour theme in 5 minutes)
+- Responsive design
+- Mobile support (open application on any mobile device)
+- Support over 50 documents and image formats
+- Fully customizable navigation panel
+- Open password protected documents
+- Download documents
+- Upload documents
+- Print document
+- Smooth document scrolling
+- Multi-language support for displaying errors
+- Cross-browser support (Safari, Chrome, Opera, Firefox)
+- Cross-platform support (Windows, Linux, MacOS)
 
 ## How to run
 
