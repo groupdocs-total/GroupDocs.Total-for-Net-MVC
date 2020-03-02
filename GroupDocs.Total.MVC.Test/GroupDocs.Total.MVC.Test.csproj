@@ -47,9 +47,6 @@
     <Reference Include="GroupDocs.Editor, Version=19.5.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Editor.19.5.0\lib\GroupDocs.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Editor, Version=19.5.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Editor.19.5.0\lib\GroupDocs.Editor.dll</HintPath>
-    </Reference>
     <Reference Include="Huygens, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Huygens.1.4.5\lib\net46\Huygens.dll</HintPath>
     </Reference>
@@ -202,6 +199,7 @@
     <Compile Include="AnnotationControllerTest.cs" />
     <Compile Include="ComparisonControllerTest.cs" />
     <Compile Include="SignatureControllerTest.cs" />
+    <Compile Include="MetadataControllerTest.cs" />
     <Compile Include="ViewerControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
