@@ -249,18 +249,19 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             try
             {
                 string htmlContent = postedData.getContent(); // Initialize with HTML markup of the edited document
-                string saveFilePath = Path.Combine(globalConfiguration.GetEditorConfiguration().GetFilesDirectory(), postedData.GetGuid());
-
+                string guid = postedData.GetGuid();
+                string password = postedData.getPassword();
+                string saveFilePath = Path.Combine(globalConfiguration.GetEditorConfiguration().GetFilesDirectory(), guid);
                 string tempFilename = Path.GetFileNameWithoutExtension(saveFilePath) + "_tmp";
                 string tempPath = Path.Combine(Path.GetDirectoryName(saveFilePath), tempFilename + Path.GetExtension(saveFilePath));
 
-                ILoadOptions loadOptions = GetLoadOptions(postedData.GetGuid());
-                loadOptions.Password = postedData.getPassword();
+                ILoadOptions loadOptions = GetLoadOptions(guid);
+                loadOptions.Password = password;
 
                 // Instantiate Editor object by loading the input file
-                using (GroupDocs.Editor.Editor editor = new GroupDocs.Editor.Editor(postedData.GetGuid(), delegate { return loadOptions; }))
+                using (GroupDocs.Editor.Editor editor = new GroupDocs.Editor.Editor(guid, delegate { return loadOptions; }))
                 {
-                    dynamic editOptions = GetEditOptions(postedData.GetGuid());
+                    dynamic editOptions = GetEditOptions(guid);
 
                     if (editOptions is WordProcessingEditOptions)
                     {
@@ -272,8 +273,8 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                     using (EditableDocument beforeEdit = editor.Edit(editOptions))
                     {
                         EditableDocument htmlContentDoc = EditableDocument.FromMarkup(htmlContent, null);
-                        dynamic saveOptions = GetSaveOptions(postedData.GetGuid());
-                        saveOptions.password = postedData.getPassword();
+                        dynamic saveOptions = GetSaveOptions(guid);
+                        saveOptions.Password = password;
 
                         if (saveOptions is WordProcessingSaveOptions)
                         {
@@ -294,7 +295,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
                 File.Move(tempPath, saveFilePath);
 
-                LoadDocumentEntity loadDocumentEntity = LoadDocument(saveFilePath, postedData.getPassword());
+                LoadDocumentEntity loadDocumentEntity = LoadDocument(saveFilePath, password);
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
