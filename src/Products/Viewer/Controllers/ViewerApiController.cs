@@ -39,8 +39,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         {
             // Check if filesDirectory is relative or absolute path           
             globalConfiguration = new Common.Config.GlobalConfiguration();
-            GroupDocs.Viewer.License lic = new GroupDocs.Viewer.License();
-            lic.SetLicense(globalConfiguration.GetApplicationConfiguration().GetLicensePath());
+
             // create viewer application configuration
             ViewerConfig config = new ViewerConfig();
             config.StoragePath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
