@@ -54,8 +54,8 @@
     <Reference Include="GroupDocs.Comparison, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Comparison.19.6.0\lib\GroupDocs.Comparison.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Conversion, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Conversion.19.6.0\lib\GroupDocs.Conversion.dll</HintPath>
+    <Reference Include="GroupDocs.Conversion, Version=20.3.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Conversion.20.3.0\lib\net20\GroupDocs.Conversion.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Editor, Version=20.2.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Editor.20.2.0\lib\net20\GroupDocs.Editor.dll</HintPath>
@@ -282,7 +282,6 @@
     <Compile Include="Products\Comparison\Service\IComparisonService.cs" />
     <Compile Include="Products\Conversion\Entity\Web\Request\ConversionPostedData.cs" />
     <Compile Include="Products\Conversion\Entity\Web\Response\ConversionTypesEntity.cs" />
-    <Compile Include="Products\Conversion\Filter\DestinationTypesFilter.cs" />
     <Compile Include="Products\Conversion\Manager\ConversionManager.cs" />
     <Compile Include="Products\Editor\Entity\Web\EditableDocumentType.cs" />
     <Compile Include="Products\Editor\Entity\Web\Request\EditDocumentRequest.cs" />
