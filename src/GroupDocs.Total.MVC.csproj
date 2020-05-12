@@ -63,6 +63,9 @@
     <Reference Include="GroupDocs.Metadata, Version=20.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Metadata.20.1.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
+    <Reference Include="GroupDocs.Search, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Search.20.4.0\lib\net20\GroupDocs.Search.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Signature, Version=20.3.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.3.0\lib\net20\GroupDocs.Signature.dll</HintPath>
     </Reference>
@@ -289,6 +292,14 @@
     <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
     <Compile Include="Products\Metadata\Entity\FilePropertyName.cs" />
     <Compile Include="Products\Metadata\Util\Directory\DirectoryUtils.cs" />
+    <Compile Include="Products\Search\Config\SearchConfiguration.cs" />
+    <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
+    <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
+    <Compile Include="Products\Search\Service\SearchService.cs" />
+    <Compile Include="Products\Search\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
