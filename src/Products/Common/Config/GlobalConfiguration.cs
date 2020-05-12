@@ -3,6 +3,7 @@ using GroupDocs.Total.MVC.Products.Comparison.Config;
 using GroupDocs.Total.MVC.Products.Conversion.Config;
 using GroupDocs.Total.MVC.Products.Editor.Config;
 using GroupDocs.Total.MVC.Products.Metadata.Config;
+using GroupDocs.Total.MVC.Products.Search.Config;
 using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Viewer.Config;
 
@@ -23,6 +24,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         private readonly ConversionConfiguration Conversion;
         private readonly EditorConfiguration Editor;
         private readonly MetadataConfiguration Metadata;
+        private readonly SearchConfiguration Search;
 
         /// <summary>
         /// Get all configurations
@@ -39,6 +41,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             Conversion = new ConversionConfiguration();
             Editor = new EditorConfiguration();
             Metadata = new MetadataConfiguration();
+            Search = new SearchConfiguration();
         }
 
 
@@ -90,6 +93,11 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         public MetadataConfiguration GetMetadataConfiguration()
         {
             return Metadata;
+        }
+
+        public SearchConfiguration GetSearchConfiguration()
+        {
+            return Search;
         }
     }
 }

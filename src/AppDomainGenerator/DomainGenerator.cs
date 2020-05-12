@@ -144,6 +144,18 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             SetLicense(obj);
         }
 
+        /// <summary>
+        /// Set GroupDocs.Search license
+        /// </summary>
+        /// <param name="type">Type</param>
+        public void SetSearchLicense()
+        {
+            // Initiate license class
+            var obj = (Search.License)Activator.CreateInstance(CurrentType);
+            // Set license
+            SetLicense(obj);
+        }
+
         private void SetLicense(dynamic obj) {
             if (!String.IsNullOrEmpty(globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
             {

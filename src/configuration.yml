@@ -241,3 +241,17 @@ metadata:
   # Using cache
   # Set true to enable cache
   cache: true
+
+  ################################################
+# GroupDocs.Search configurations
+################################################
+search:
+  # Files directory path
+  # Absolute path to files directory
+  filesDirectory: 'DocumentSamples/Search'
+  # Files directory path
+  # Absolute path to files directory
+  indexDirectory: 'DocumentSamples/Search/Index'
+  # Default document
+  # Absolute path to default document
+  defaultDocument: ''
