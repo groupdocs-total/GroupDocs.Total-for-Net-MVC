@@ -16,6 +16,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
         private string filesDirectory = "DocumentSamples/Search";
 
         [JsonProperty]
+        private string indexedFilesDirectory = "DocumentSamples/Search/Indexed";
+
+        [JsonProperty]
         private string defaultDocument = "";
 
         /// <summary>
@@ -38,6 +41,16 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
                 }
             }
 
+            indexedFilesDirectory = valuesGetter.GetStringPropertyValue("indexedFilesDirectory", indexedFilesDirectory);
+            if (!DirectoryUtils.IsFullPath(indexedFilesDirectory))
+            {
+                indexedFilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, indexedFilesDirectory);
+                if (!Directory.Exists(indexedFilesDirectory))
+                {
+                    Directory.CreateDirectory(indexedFilesDirectory);
+                }
+            }
+
             defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
         }
 
@@ -49,6 +62,16 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
         public string GetFilesDirectory()
         {
             return filesDirectory;
+        }
+
+        public void SetIndexedFilesDirectory(string indexedFilesDirectory)
+        {
+            this.indexedFilesDirectory = indexedFilesDirectory;
+        }
+
+        public string GetIndexedFilesDirectory()
+        {
+            return indexedFilesDirectory;
         }
 
         public void SetDefaultDocument(string defaultDocument)

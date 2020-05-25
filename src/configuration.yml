@@ -249,6 +249,9 @@ search:
   # Files directory path
   # Absolute path to files directory
   filesDirectory: 'DocumentSamples/Search'
+  # Indexed files directory path
+  # Absolute path to indexed files directory
+  indexedFilesDirectory: 'DocumentSamples/Search/Indexed'
   # Default document
   # Absolute path to default document
   defaultDocument: ''

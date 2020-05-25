@@ -10,8 +10,6 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using GroupDocs.Total.MVC.Products.Search.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
-using GroupDocs.Search;
-using GroupDocs.Search.Options;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Search.Service;
 using GroupDocs.Search.Common;
@@ -26,8 +24,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
     public class SearchApiController : ApiController
     {
         private readonly Common.Config.GlobalConfiguration globalConfiguration;
-        private readonly Index index;
-        private readonly Dictionary<string, DocumentStatus> filesIndexStatuses = new Dictionary<string, DocumentStatus>();
 
         /// <summary>
         /// Constructor
@@ -35,15 +31,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         public SearchApiController()
         {
             globalConfiguration = new Common.Config.GlobalConfiguration();
-
-            index = new Index();
-
-            index.Events.OperationProgressChanged += (sender, args) =>
-            {
-                filesIndexStatuses.Add(args.LastDocumentPath, args.LastDocumentStatus);
-            };
-
-            index.Add(globalConfiguration.GetSearchConfiguration().GetFilesDirectory());
         }
 
         /// <summary>
@@ -54,6 +41,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         [Route("search/loadConfig")]
         public SearchConfiguration LoadConfig()
         {
+            SearchService.InitIndex(globalConfiguration);
+
             return globalConfiguration.GetSearchConfiguration();
         }
 
@@ -63,14 +52,19 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <returns>List of files and directories</returns>
         [HttpPost]
         [Route("search/loadFileTree")]
-        public HttpResponseMessage LoadFileTree()
+        public HttpResponseMessage LoadFileTree(PostedDataEntity fileTreeRequest)
         {
             try
             {
                 List<IndexedFileDescriptionEntity> filesList = new List<IndexedFileDescriptionEntity>();
+
+                string filesDirectory = string.IsNullOrEmpty(fileTreeRequest.path) ? 
+                                        globalConfiguration.GetSearchConfiguration().GetFilesDirectory() :
+                                        fileTreeRequest.path;
+
                 if (!string.IsNullOrEmpty(globalConfiguration.GetSearchConfiguration().GetFilesDirectory()))
                 {
-                    filesList = LoadFiles();
+                    filesList = LoadFiles(filesDirectory);
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, filesList);
             }
@@ -84,12 +78,10 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// Load documents
         /// </summary>
         /// <returns>List[FileDescriptionEntity]</returns>
-        public List<IndexedFileDescriptionEntity> LoadFiles()
+        public List<IndexedFileDescriptionEntity> LoadFiles(string filesDirectory)
         {
-            var currentPath = globalConfiguration.GetSearchConfiguration().GetFilesDirectory();
-
-            List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
-            allFiles.AddRange(Directory.GetDirectories(currentPath));
+            List<string> allFiles = new List<string>(Directory.GetFiles(filesDirectory));
+            allFiles.AddRange(Directory.GetDirectories(filesDirectory));
             List<IndexedFileDescriptionEntity> fileList = new List<IndexedFileDescriptionEntity>();
 
             allFiles.Sort(new FileNameComparator());
@@ -101,7 +93,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
 
                 if (!(Path.GetFileName(file).StartsWith(".") ||
                       fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                      Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSearchConfiguration().GetFilesDirectory()))))
+                      Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSearchConfiguration().GetFilesDirectory())) ||
+                      Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))))
                 {
                     IndexedFileDescriptionEntity fileDescription = new IndexedFileDescriptionEntity
                     {
@@ -117,7 +110,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                     }
 
                     DocumentStatus value;
-                    if (filesIndexStatuses.TryGetValue(fileDescription.guid, out value))
+                    if (SearchService.filesIndexStatuses.TryGetValue(fileDescription.guid, out value))
                     {
                         fileDescription.documentStatus = value;
                     }
@@ -193,14 +186,27 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                     guid = fileSavePath
                 };
 
-                UpdateOptions options = new UpdateOptions
-                {
-                    Threads = 2
-                };
-
-                index.Update(options);
-
                 return Request.CreateResponse(HttpStatusCode.OK, uploadedDocument);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Adds files to index
+        /// </summary>
+        /// <param name="postedData">PostedData</param>
+        /// <returns>Search results</returns>
+        [HttpPost]
+        [Route("search/addFilesToIndex")]
+        public HttpResponseMessage AddFilesToIndex(PostedDataEntity[] postedData)
+        {
+            try
+            {
+                SearchService.AddFilesToIndex(postedData, globalConfiguration);
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
@@ -219,7 +225,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         {
             try
             {
-                var result = SearchService.Search(index, postedData, globalConfiguration);
+                var result = SearchService.Search(postedData, globalConfiguration);
                 return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             catch (Exception ex)
@@ -234,15 +240,12 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <param name="postedData">PostedDataEntity</param>
         /// <returns>HttpResponseMessage</returns>
         [HttpPost]
-        [Route("search/deleteFile")]
-        public HttpResponseMessage DeleteFile(PostedDataEntity postedData)
+        [Route("search/removeFromIndex")]
+        public HttpResponseMessage RemoveFromIndex(PostedDataEntity postedData)
         {
             try
             {
-                if (File.Exists(postedData.guid))
-                {
-                    File.Delete(postedData.guid);
-                }
+                SearchService.RemoveFileFromIndex(postedData.guid);
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
