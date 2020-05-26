@@ -110,7 +110,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                     }
 
                     DocumentStatus value;
-                    if (SearchService.filesIndexStatuses.TryGetValue(fileDescription.guid, out value))
+                    if (SearchService.FilesIndexStatuses.TryGetValue(fileDescription.guid, out value))
                     {
                         fileDescription.documentStatus = value;
                     }

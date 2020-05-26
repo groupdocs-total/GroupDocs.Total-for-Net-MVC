@@ -9,18 +9,21 @@ using GroupDocs.Search.Common;
 using System.IO;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Config;
-using System;
 
 namespace GroupDocs.Total.MVC.Products.Search.Service
 {
     public static class SearchService
     {
         private static Index index;
-        internal static Dictionary<string, DocumentStatus> filesIndexStatuses = new Dictionary<string, DocumentStatus>();
+
+        public static Dictionary<string, DocumentStatus> FilesIndexStatuses { get; } = new Dictionary<string, DocumentStatus>();
 
         public static SummarySearchResult Search(SearchPostedData searchRequest, Common.Config.GlobalConfiguration globalConfiguration)
         {
-            if (index == null) return new SummarySearchResult();
+            if (index == null)
+            {
+                return new SummarySearchResult();
+            }
 
             SearchResult result = index.Search(searchRequest.GetQuery());
 
@@ -86,9 +89,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
                 index.Events.OperationProgressChanged += (sender, args) =>
                 {
-                    if (!filesIndexStatuses.ContainsKey(args.LastDocumentPath))
+                    if (!FilesIndexStatuses.ContainsKey(args.LastDocumentPath))
                     {
-                        filesIndexStatuses.Add(args.LastDocumentPath, args.LastDocumentStatus);
+                        FilesIndexStatuses.Add(args.LastDocumentPath, args.LastDocumentStatus);
                     }
                 };
 
