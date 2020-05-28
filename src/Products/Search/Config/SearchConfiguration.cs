@@ -16,10 +16,10 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
         private string filesDirectory = "DocumentSamples/Search";
 
         [JsonProperty]
-        private string indexedFilesDirectory = "DocumentSamples/Search/Indexed";
+        private string indexDirectory = "DocumentSamples/Search/Index";
 
         [JsonProperty]
-        private string defaultDocument = "";
+        private string indexedFilesDirectory = "DocumentSamples/Search/Indexed";
 
         /// <summary>
         /// Constructor
@@ -41,6 +41,16 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
                 }
             }
 
+            indexDirectory = valuesGetter.GetStringPropertyValue("indexDirectory", indexDirectory);
+            if (!DirectoryUtils.IsFullPath(indexDirectory))
+            {
+                indexDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, indexDirectory);
+                if (!Directory.Exists(indexDirectory))
+                {
+                    Directory.CreateDirectory(indexDirectory);
+                }
+            }
+
             indexedFilesDirectory = valuesGetter.GetStringPropertyValue("indexedFilesDirectory", indexedFilesDirectory);
             if (!DirectoryUtils.IsFullPath(indexedFilesDirectory))
             {
@@ -50,8 +60,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
                     Directory.CreateDirectory(indexedFilesDirectory);
                 }
             }
-
-            defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
         }
 
         public void SetFilesDirectory(string filesDirectory)
@@ -64,6 +72,16 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
             return filesDirectory;
         }
 
+        public void SetIndexDirectory(string indexDirectory)
+        {
+            this.indexDirectory = indexDirectory;
+        }
+
+        public string GetIndexDirectory()
+        {
+            return indexDirectory;
+        }
+
         public void SetIndexedFilesDirectory(string indexedFilesDirectory)
         {
             this.indexedFilesDirectory = indexedFilesDirectory;
@@ -72,16 +90,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
         public string GetIndexedFilesDirectory()
         {
             return indexedFilesDirectory;
-        }
-
-        public void SetDefaultDocument(string defaultDocument)
-        {
-            this.defaultDocument = defaultDocument;
-        }
-
-        public string GetDefaultDocument()
-        {
-            return defaultDocument;
         }
     }
 }

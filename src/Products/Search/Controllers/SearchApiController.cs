@@ -47,8 +47,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
-        /// Get all files and directories from storage
+        /// Gets all files and directories from storage
         /// </summary>
+        /// <param name="fileTreeRequest">Posted data with path</param>
         /// <returns>List of files and directories</returns>
         [HttpPost]
         [Route("search/loadFileTree")]
@@ -58,7 +59,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             {
                 List<IndexedFileDescriptionEntity> filesList = new List<IndexedFileDescriptionEntity>();
 
-                string filesDirectory = string.IsNullOrEmpty(fileTreeRequest.path) ? 
+                string filesDirectory = string.IsNullOrEmpty(fileTreeRequest.path) ?
                                         globalConfiguration.GetSearchConfiguration().GetFilesDirectory() :
                                         fileTreeRequest.path;
 
@@ -66,6 +67,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                 {
                     filesList = LoadFiles(filesDirectory);
                 }
+
                 return Request.CreateResponse(HttpStatusCode.OK, filesList);
             }
             catch (Exception ex)
@@ -75,9 +77,10 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
-        /// Load documents
+        /// Loads documents
         /// </summary>
-        /// <returns>List[FileDescriptionEntity]</returns>
+        /// <param name="filesDirectory">Files directory</param>
+        /// <returns>List of documents</returns>
         public List<IndexedFileDescriptionEntity> LoadFiles(string filesDirectory)
         {
             List<string> allFiles = new List<string>(Directory.GetFiles(filesDirectory));
@@ -94,6 +97,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                 if (!(Path.GetFileName(file).StartsWith(".") ||
                       fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
                       Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSearchConfiguration().GetFilesDirectory())) ||
+                      Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSearchConfiguration().GetIndexDirectory())) ||
                       Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))))
                 {
                     IndexedFileDescriptionEntity fileDescription = new IndexedFileDescriptionEntity
@@ -109,10 +113,17 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                         fileDescription.size = fileInfo.Length;
                     }
 
-                    DocumentStatus value;
-                    if (SearchService.FilesIndexStatuses.TryGetValue(fileDescription.guid, out value))
+                    if (filesDirectory.Contains(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))
                     {
-                        fileDescription.documentStatus = value;
+                        DocumentStatus value;
+                        if (SearchService.FilesIndexStatuses.TryGetValue(fileDescription.guid, out value))
+                        {
+                            fileDescription.documentStatus = value.ToString();
+                        }
+                        else
+                        {
+                            fileDescription.documentStatus = "Indexing";
+                        }
                     }
 
                     fileList.Add(fileDescription);
@@ -123,7 +134,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
-        /// Upload document
+        /// Uploads document
         /// </summary>
         /// <returns>Uploaded document object</returns>
         [HttpPost]
@@ -197,8 +208,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <summary>
         /// Adds files to index
         /// </summary>
-        /// <param name="postedData">PostedData</param>
-        /// <returns>Search results</returns>
+        /// <param name="postedData">Files array</param>
+        /// <returns>HttpResponseMessage</returns>
         [HttpPost]
         [Route("search/addFilesToIndex")]
         public HttpResponseMessage AddFilesToIndex(PostedDataEntity[] postedData)
@@ -217,7 +228,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <summary>
         /// Performs search
         /// </summary>
-        /// <param name="postedData">SearchPostedData</param>
+        /// <param name="postedData">Search query</param>
         /// <returns>Search results</returns>
         [HttpPost]
         [Route("search/search")]
@@ -237,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <summary>
         /// Delete file
         /// </summary>
-        /// <param name="postedData">PostedDataEntity</param>
+        /// <param name="postedData">File info</param>
         /// <returns>HttpResponseMessage</returns>
         [HttpPost]
         [Route("search/removeFromIndex")]
@@ -253,6 +264,39 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
+        }
+
+        /// <summary>
+        /// Gets documents status
+        /// </summary>
+        /// <param name="postedData">Files array</param>
+        /// <returns>Indexed files list with current status</returns>
+        [HttpPost]
+        [Route("search/getFileStatus")]
+        public HttpResponseMessage GetFileStatus(PostedDataEntity[] postedData)
+        {
+            var indexingFilesList = new List<IndexedFileDescriptionEntity>();
+
+            foreach (var file in postedData)
+            {
+                var indexingFile = new IndexedFileDescriptionEntity();
+
+                DocumentStatus value;
+                if (SearchService.FilesIndexStatuses.TryGetValue(file.guid, out value))
+                {
+                    indexingFile.documentStatus = value.ToString();
+                }
+                else
+                {
+                    indexingFile.documentStatus = "Indexing";
+                }
+
+                indexingFile.guid = file.guid;
+
+                indexingFilesList.Add(indexingFile);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, indexingFilesList);
         }
     }
 }

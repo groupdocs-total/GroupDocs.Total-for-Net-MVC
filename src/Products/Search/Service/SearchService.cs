@@ -18,7 +18,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         public static Dictionary<string, DocumentStatus> FilesIndexStatuses { get; } = new Dictionary<string, DocumentStatus>();
 
-        public static SummarySearchResult Search(SearchPostedData searchRequest, Common.Config.GlobalConfiguration globalConfiguration)
+        public static SummarySearchResult Search(SearchPostedData searchRequest, GlobalConfiguration globalConfiguration)
         {
             if (index == null)
             {
@@ -85,11 +85,15 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             if (index == null)
             {
                 string indexedFilesDirectory = globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory();
-                index = new Index();
+                index = new Index(globalConfiguration.GetSearchConfiguration().GetIndexDirectory(), true);
 
                 index.Events.OperationProgressChanged += (sender, args) =>
                 {
-                    if (!FilesIndexStatuses.ContainsKey(args.LastDocumentPath))
+                    if (FilesIndexStatuses.ContainsKey(args.LastDocumentPath))
+                    {
+                        FilesIndexStatuses[args.LastDocumentPath] = args.LastDocumentStatus;
+                    }
+                    else 
                     {
                         FilesIndexStatuses.Add(args.LastDocumentPath, args.LastDocumentStatus);
                     }
@@ -115,6 +119,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
 
             index.Update(GetUpdateOptions());
+            index.Optimize();
         }
 
         internal static void RemoveFileFromIndex(string guid)
@@ -125,13 +130,15 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
 
             index.Update(GetUpdateOptions());
+            index.Optimize();
         }
 
         private static UpdateOptions GetUpdateOptions()
         {
             return new UpdateOptions
             {
-                Threads = 2
+                Threads = 2,
+                IsAsync = true
             };
         }
     }
