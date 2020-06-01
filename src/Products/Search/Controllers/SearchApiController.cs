@@ -12,7 +12,6 @@ using GroupDocs.Total.MVC.Products.Search.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Search.Service;
-using GroupDocs.Search.Common;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web;
 
 namespace GroupDocs.Total.MVC.Products.Search.Controllers

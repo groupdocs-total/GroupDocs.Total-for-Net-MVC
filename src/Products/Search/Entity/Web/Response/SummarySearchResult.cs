@@ -19,19 +19,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
         [JsonProperty]
         private string searchDuration { get; set; }
 
-        public int GetTotalOccurences()
-        {
-            return this.totalOccurences;
-        }
-
         public void SetTotalOccurences(int totalOccurences)
         {
             this.totalOccurences = totalOccurences;
-        }
-
-        public int GetTotalFiles()
-        {
-            return this.totalFiles;
         }
 
         public void SetTotalFiles(int totalFiles)
@@ -39,29 +29,14 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
             this.totalFiles = totalFiles;
         }
 
-        public int GetIndexedFiles()
-        {
-            return this.indexedFiles;
-        }
-
         public void SetIndexedFiles(int indexedFiles)
         {
             this.indexedFiles = indexedFiles;
         }
 
-        public SearchDocumentResult[] GetFoundFiles()
-        {
-            return this.foundFiles;
-        }
-
         public void SetFoundFiles(SearchDocumentResult[] foundFiles)
         {
             this.foundFiles = foundFiles;
-        }
-
-        public string GetSearchDuration()
-        {
-            return this.searchDuration;
         }
 
         public void SetSearchDuration(string searchDuration)

@@ -23,19 +23,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
         [JsonProperty]
         private string[] foundPhrases { get; set; }
 
-        public FoundDocumentField[] GetFoundFields()
-        {
-            return this.foundFields;
-        }
-
         public void SetFoundFields(FoundDocumentField[] foundFields)
         {
             this.foundFields = foundFields;
-        }
-
-        public string GetGuid()
-        {
-            return this.guid;
         }
 
         public void SetGuid(string guid)
@@ -43,19 +33,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
             this.guid = guid;
         }
 
-        public string GetName()
-        {
-            return this.name;
-        }
-
         public void SetName(string name)
         {
             this.name = name;
-        }
-
-        public long GetSize()
-        {
-            return this.size;
         }
 
         public void SetSize(long size)
@@ -63,19 +43,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
             this.size = size;
         }
 
-        public int GetOccurrences()
-        {
-            return this.occurrences;
-        }
-
         public void SetOccurrences(int occurences)
         {
             this.occurrences = occurences;
-        }
-
-        public string[] GetFoundPhrases()
-        {
-            return this.foundPhrases;
         }
 
         public void SetFoundPhrases(string[] foundPhrases)
