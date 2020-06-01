@@ -115,10 +115,10 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
 
                     if (filesDirectory.Contains(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))
                     {
-                        DocumentStatus value;
-                        if (SearchService.FilesIndexStatuses.TryGetValue(fileDescription.guid, out value))
+                        string value;
+                        if (SearchService.FileIndexStatusDict.TryGetValue(fileDescription.guid, out value))
                         {
-                            fileDescription.documentStatus = value.ToString();
+                            fileDescription.documentStatus = value;
                         }
                         else
                         {
@@ -281,10 +281,15 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             {
                 var indexingFile = new IndexedFileDescriptionEntity();
 
-                DocumentStatus value;
-                if (SearchService.FilesIndexStatuses.TryGetValue(file.guid, out value))
+                string value;
+                if (SearchService.FileIndexStatusDict.TryGetValue(file.guid, out value))
                 {
-                    indexingFile.documentStatus = value.ToString();
+                    if (value.Equals("PasswordRequired"))
+                    {
+                        return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(new Exception("Password required.")));
+                    }
+
+                    indexingFile.documentStatus = value;
                 }
                 else
                 {

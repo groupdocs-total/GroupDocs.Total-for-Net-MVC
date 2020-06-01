@@ -16,7 +16,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
     {
         private static Index index;
 
-        public static Dictionary<string, DocumentStatus> FilesIndexStatuses { get; } = new Dictionary<string, DocumentStatus>();
+        public static Dictionary<string, string> FileIndexStatusDict { get; } = new Dictionary<string, string>();
 
         public static SummarySearchResult Search(SearchPostedData searchRequest, GlobalConfiguration globalConfiguration)
         {
@@ -89,13 +89,29 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
                 index.Events.OperationProgressChanged += (sender, args) =>
                 {
-                    if (FilesIndexStatuses.ContainsKey(args.LastDocumentPath))
+                    if (FileIndexStatusDict.ContainsKey(args.LastDocumentPath))
                     {
-                        FilesIndexStatuses[args.LastDocumentPath] = args.LastDocumentStatus;
+                        if (!(args.LastDocumentStatus == DocumentStatus.ProcessedWithError && 
+                              FileIndexStatusDict[args.LastDocumentPath] == "PasswordRequired"))
+                        {
+                            FileIndexStatusDict[args.LastDocumentPath] = args.LastDocumentStatus.ToString();
+                        }
                     }
                     else 
                     {
-                        FilesIndexStatuses.Add(args.LastDocumentPath, args.LastDocumentStatus);
+                        FileIndexStatusDict.Add(args.LastDocumentPath, args.LastDocumentStatus.ToString());
+                    }
+                };
+
+                index.Events.PasswordRequired += (sender, args) =>
+                {
+                    if (FileIndexStatusDict.ContainsKey(args.DocumentFullPath))
+                    {
+                        FileIndexStatusDict[args.DocumentFullPath] = "PasswordRequired";
+                    }
+                    else
+                    {
+                        FileIndexStatusDict.Add(args.DocumentFullPath, "PasswordRequired");
                     }
                 };
 
@@ -107,14 +123,27 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
         {
             string indexedFilesDirectory = globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory();
 
-            foreach (var entity in postedData) 
+            foreach (var entity in postedData)
             {
                 string fileName = Path.GetFileName(entity.guid);
                 string destFileName = Path.Combine(indexedFilesDirectory, fileName);
-                
+
                 if (!File.Exists(destFileName))
                 {
                     File.Copy(entity.guid, destFileName);
+                }
+
+                if (!string.IsNullOrEmpty(entity.password))
+                {
+                    if (!index.Dictionaries.DocumentPasswords.Contains(entity.guid))
+                    {
+                        index.Dictionaries.DocumentPasswords.Add(entity.guid, entity.password);
+                    }
+                    else 
+                    {
+                        index.Dictionaries.DocumentPasswords.Remove(entity.guid);
+                        index.Dictionaries.DocumentPasswords.Add(entity.guid, entity.password);
+                    }
                 }
             }
 
@@ -127,6 +156,10 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             if (File.Exists(guid))
             {
                 File.Delete(guid);
+
+                if (FileIndexStatusDict.ContainsKey(guid)) {
+                    FileIndexStatusDict.Remove(guid);
+                }
             }
 
             index.Update(GetUpdateOptions());
