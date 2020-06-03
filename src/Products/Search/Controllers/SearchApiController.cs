@@ -115,7 +115,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                     if (filesDirectory.Contains(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))
                     {
                         string value;
-                        if (SearchService.FileIndexStatusDict.TryGetValue(fileDescription.guid, out value))
+                        if (SearchService.FileIndexingStatusDict.TryGetValue(fileDescription.guid, out value))
                         {
                             fileDescription.documentStatus = value;
                         }
@@ -281,7 +281,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
                 var indexingFile = new IndexedFileDescriptionEntity();
 
                 string value;
-                if (SearchService.FileIndexStatusDict.TryGetValue(file.guid, out value))
+                if (SearchService.FileIndexingStatusDict.TryGetValue(file.guid, out value))
                 {
                     if (value.Equals("PasswordRequired"))
                     {

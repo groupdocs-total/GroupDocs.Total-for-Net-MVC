@@ -9,6 +9,7 @@ using GroupDocs.Search.Common;
 using System.IO;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Config;
+using System.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Search.Service
 {
@@ -16,7 +17,10 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
     {
         private static Index index;
 
-        public static Dictionary<string, string> FileIndexStatusDict { get; } = new Dictionary<string, string>();
+        public static Dictionary<string, string> FileIndexingStatusDict { get; } = new Dictionary<string, string>();
+        public static Dictionary<string, string> PassRequiredStatusDict { get; } = new Dictionary<string, string>();
+        public static List<char> specialCharsList = new List<char>();
+        public static List<char> foundSpecialChars = new List<char>();
 
         public static SummarySearchResult Search(SearchPostedData searchRequest, GlobalConfiguration globalConfiguration)
         {
@@ -25,7 +29,44 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 return new SummarySearchResult();
             }
 
-            SearchResult result = index.Search(searchRequest.GetQuery());
+            SearchOptions searchOptions = new SearchOptions();
+            // Turn on fuzzy search on
+            searchOptions.UseCaseSensitiveSearch = false;
+
+            var searchQuery = searchRequest.GetQuery();
+            SearchResult result;
+
+            foreach (char specialChar in specialCharsList)
+            {
+                if (searchQuery.Contains(specialChar))
+                {
+                    foundSpecialChars.Add(specialChar);
+                }
+            }
+
+            if (searchQuery.Contains(" "))
+            {
+                result = index.Search("\"" + searchQuery + "\"", searchOptions);
+            }
+            else if (foundSpecialChars.Count > 0)
+            {
+                foreach(char specialChar in foundSpecialChars)
+                {
+                    searchQuery = searchQuery.Replace(specialChar, ' ');
+                }
+
+                foundSpecialChars.Clear();
+                result = index.Search("\"" + searchQuery + "\"", searchOptions);
+            }
+            else if (Path.HasExtension(searchQuery))
+            {
+                searchQuery = searchQuery.Replace(".", " ");
+                result = index.Search("\"" + searchQuery + "\"", searchOptions);
+            }
+            else
+            {
+                result = index.Search(searchQuery, searchOptions);
+            }
 
             SummarySearchResult summaryResult = new SummarySearchResult();
             List<SearchDocumentResult> foundFiles = new List<SearchDocumentResult>();
@@ -55,12 +96,11 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                     {
                         for (int k = 0; k < fragments.Length; k++)
                         {
-                            foundPhrases.Add(fragments[k]);
+                            foundPhrases.Add(fragments[k].Replace("<br>", ""));
                         }
                     }
                 }
 
-                searchDocumentResult.SetFoundFields(document.FoundFields);
                 searchDocumentResult.SetGuid(document.DocumentInfo.FilePath);
                 searchDocumentResult.SetName(Path.GetFileName(document.DocumentInfo.FilePath));
                 searchDocumentResult.SetSize(new FileInfo(document.DocumentInfo.FilePath).Length);
@@ -75,7 +115,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             summaryResult.SetTotalFiles(result.DocumentCount);
             string searchDurationString = result.SearchDuration.ToString(@"ss\.ff");
             summaryResult.SetSearchDuration(searchDurationString.Equals("00.00") ? "< 1" : searchDurationString);
-            summaryResult.SetIndexedFiles(Directory.GetFiles(globalConfiguration.GetSearchConfiguration().GetFilesDirectory(), "*", SearchOption.TopDirectoryOnly).Length);
+            summaryResult.SetIndexedFiles(Directory.GetFiles(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory(), "*", SearchOption.TopDirectoryOnly).Length);
 
             return summaryResult;
         }
@@ -89,33 +129,63 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
                 index.Events.OperationProgressChanged += (sender, args) =>
                 {
-                    if (FileIndexStatusDict.ContainsKey(args.LastDocumentPath))
+                    if (PassRequiredStatusDict.ContainsKey(args.LastDocumentPath) &&
+                        args.LastDocumentStatus.ToString() == DocumentStatus.SuccessfullyProcessed.ToString())
                     {
-                        if (!(args.LastDocumentStatus == DocumentStatus.ProcessedWithError && 
-                              FileIndexStatusDict[args.LastDocumentPath] == "PasswordRequired"))
+                        PassRequiredStatusDict.Remove(args.LastDocumentPath);
+                    }
+
+                    if (FileIndexingStatusDict.ContainsKey(args.LastDocumentPath))
+                    {
+                        if (args.LastDocumentStatus.ToString() == DocumentStatus.ProcessedWithError.ToString() &&
+                            PassRequiredStatusDict.ContainsKey(args.LastDocumentPath))
                         {
-                            FileIndexStatusDict[args.LastDocumentPath] = args.LastDocumentStatus.ToString();
+                            FileIndexingStatusDict[args.LastDocumentPath] = "PasswordRequired";
+                        }
+                        else
+                        {
+                            FileIndexingStatusDict[args.LastDocumentPath] = args.LastDocumentStatus.ToString();
                         }
                     }
-                    else 
+                    else
                     {
-                        FileIndexStatusDict.Add(args.LastDocumentPath, args.LastDocumentStatus.ToString());
+                        if (args.LastDocumentStatus.ToString() == DocumentStatus.ProcessedWithError.ToString() &&
+                            PassRequiredStatusDict.ContainsKey(args.LastDocumentPath))
+                        {
+                            FileIndexingStatusDict.Add(args.LastDocumentPath, "PasswordRequired");
+                        }
+                        else
+                        {
+                            FileIndexingStatusDict.Add(args.LastDocumentPath, args.LastDocumentStatus.ToString());
+                        }
                     }
                 };
 
                 index.Events.PasswordRequired += (sender, args) =>
                 {
-                    if (FileIndexStatusDict.ContainsKey(args.DocumentFullPath))
+                    if (PassRequiredStatusDict.ContainsKey(args.DocumentFullPath))
                     {
-                        FileIndexStatusDict[args.DocumentFullPath] = "PasswordRequired";
+                        PassRequiredStatusDict[args.DocumentFullPath] = "PasswordRequired";
                     }
                     else
                     {
-                        FileIndexStatusDict.Add(args.DocumentFullPath, "PasswordRequired");
+                        PassRequiredStatusDict.Add(args.DocumentFullPath, "PasswordRequired");
                     }
                 };
 
                 index.Add(indexedFilesDirectory);
+
+                InitSpecailCharsList();
+            }
+        }
+
+        private static void InitSpecailCharsList()
+        {
+            IEnumerator<char> ie = index.Dictionaries.Alphabet.GetEnumerator();
+            while (ie.MoveNext())
+            {
+                char item = ie.Current;
+                specialCharsList.Add(item);
             }
         }
 
@@ -157,8 +227,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             {
                 File.Delete(guid);
 
-                if (FileIndexStatusDict.ContainsKey(guid)) {
-                    FileIndexStatusDict.Remove(guid);
+                if (FileIndexingStatusDict.ContainsKey(guid)) {
+                    FileIndexingStatusDict.Remove(guid);
                 }
             }
 

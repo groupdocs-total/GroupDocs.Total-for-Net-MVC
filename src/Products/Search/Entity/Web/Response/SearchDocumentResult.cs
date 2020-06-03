@@ -6,9 +6,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
     public class SearchDocumentResult
     {
         [JsonProperty]
-        private FoundDocumentField[] foundFields { get; set; }
-
-        [JsonProperty]
         private string guid { get; set; }
 
         [JsonProperty]
@@ -22,11 +19,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 
         [JsonProperty]
         private string[] foundPhrases { get; set; }
-
-        public void SetFoundFields(FoundDocumentField[] foundFields)
-        {
-            this.foundFields = foundFields;
-        }
 
         public void SetGuid(string guid)
         {
