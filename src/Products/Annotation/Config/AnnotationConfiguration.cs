@@ -13,80 +13,81 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
     public class AnnotationConfiguration : CommonConfiguration
     {
         [JsonProperty]
-        private string FilesDirectory = "DocumentSamples/Annotation";
+        private readonly string filesDirectory = "DocumentSamples/Annotation";
 
         [JsonProperty]
-        private string defaultDocument = "";
+        private readonly string defaultDocument = "";
 
         [JsonProperty]
-        private int preloadPageCount;
+        private readonly int preloadPageCount;
 
         [JsonProperty]
-        private bool textAnnotation = true;
+        private readonly bool textAnnotation = true;
 
         [JsonProperty]
-        private bool areaAnnotation = true;
+        private readonly bool areaAnnotation = true;
 
         [JsonProperty]
-        private bool pointAnnotation = true;
+        private readonly bool pointAnnotation = true;
 
         [JsonProperty]
-        private bool textStrikeoutAnnotation = true;
+        private readonly bool textStrikeoutAnnotation = true;
 
         [JsonProperty]
-        private bool polylineAnnotation = true;
+        private readonly bool polylineAnnotation = true;
 
         [JsonProperty]
-        private bool textFieldAnnotation = true;
+        private readonly bool textFieldAnnotation = true;
 
         [JsonProperty]
-        private bool watermarkAnnotation = true;
+        private readonly bool watermarkAnnotation = true;
 
         [JsonProperty]
-        private bool textReplacementAnnotation = true;
+        private readonly bool textReplacementAnnotation = true;
 
         [JsonProperty]
-        private bool arrowAnnotation = true;
+        private readonly bool arrowAnnotation = true;
 
         [JsonProperty]
-        private bool textRedactionAnnotation = true;
+        private readonly bool textRedactionAnnotation = true;
 
         [JsonProperty]
-        private bool resourcesRedactionAnnotation = true;
+        private readonly bool resourcesRedactionAnnotation = true;
 
         [JsonProperty]
-        private bool textUnderlineAnnotation = true;
+        private readonly bool textUnderlineAnnotation = true;
 
         [JsonProperty]
-        private bool distanceAnnotation = true;
+        private readonly bool distanceAnnotation = true;
 
         [JsonProperty]
-        private bool downloadOriginal = true;
+        private readonly bool downloadOriginal = true;
 
         [JsonProperty]
-        private bool downloadAnnotated = true;
+        private readonly bool downloadAnnotated = true;
 
         [JsonProperty]
-        private bool zoom = true;
+        private readonly bool zoom = true;
 
         /// <summary>
-        /// Get annotation configuration section from the Web.config
+        /// Get Annotation configuration section from the Web.config
         /// </summary>
         public AnnotationConfiguration()
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("annotation");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
-            // get Viewer configuration section from the web.config
-            FilesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", FilesDirectory);
-            if (!IsFullPath(FilesDirectory))
+
+            filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
+            if (!IsFullPath(filesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
-                if (!Directory.Exists(FilesDirectory))
-                {                   
-                    Directory.CreateDirectory(FilesDirectory);
+                filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filesDirectory);
+                if (!Directory.Exists(filesDirectory))
+                {
+                    Directory.CreateDirectory(filesDirectory);
                 }
             }
+
             defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument).Replace(@"\", "/");
             textAnnotation = valuesGetter.GetBooleanPropertyValue("textAnnotation", textAnnotation);
             areaAnnotation = valuesGetter.GetBooleanPropertyValue("areaAnnotation", areaAnnotation);
@@ -109,199 +110,20 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
 
         private static bool IsFullPath(string path)
         {
-            return !String.IsNullOrWhiteSpace(path)
-                && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+            return !string.IsNullOrWhiteSpace(path)
+                && path.IndexOfAny(Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
         }
 
-        public void SetFilesDirectory(string filesDirectory) {
-            this.FilesDirectory = filesDirectory;
-        }
-
         public string GetFilesDirectory()
         {
-            return FilesDirectory;
-        }       
-
-        public void SetDefaultDocument(string defaultDocument)
-        {
-            this.defaultDocument = defaultDocument;
-        }
-
-        public string GetDefaultDocument()
-        {
-            return defaultDocument;
-        }
-
-        public void SetPreloadPageCount(int preloadPageCount)
-        {
-            this.preloadPageCount = preloadPageCount;
+            return filesDirectory;
         }
 
         public int GetPreloadPageCount()
         {
             return preloadPageCount;
-        }
-
-        public void SetIsTextAnnotation(bool isTextAnnotation)
-        {
-            this.textAnnotation = isTextAnnotation;
-        }
-
-        public bool GetIsTextAnnotation()
-        {
-            return textAnnotation;
-        }
-
-        public void SetIsAreaAnnotation(bool isAreaAnnotation)
-        {
-            this.areaAnnotation = isAreaAnnotation;
-        }
-
-        public bool GetIsAreaAnnotation()
-        {
-            return areaAnnotation;
-        }
-
-        public void SetIsPointAnnotation(bool isPointAnnotation)
-        {
-            this.pointAnnotation = isPointAnnotation;
-        }
-
-        public bool GetIsPointAnnotation()
-        {
-            return pointAnnotation;
-        }
-
-        public void SetIsTextStrikeoutAnnotation(bool isTextStrikeoutAnnotation)
-        {
-            this.textStrikeoutAnnotation = isTextStrikeoutAnnotation;
-        }
-
-        public bool GetIsTextStrikeoutAnnotation()
-        {
-            return textStrikeoutAnnotation;
-        }
-
-        public void SetIsPolylineAnnotation(bool isPolylineAnnotation)
-        {
-            this.polylineAnnotation = isPolylineAnnotation;
-        }
-
-        public bool GetIsPolylineAnnotation()
-        {
-            return polylineAnnotation;
-        }
-
-        public void SetIsTextFieldAnnotation(bool isTextFieldAnnotation)
-        {
-            this.textFieldAnnotation = isTextFieldAnnotation;
-        }
-
-        public bool GetIsTextFieldAnnotation()
-        {
-            return textFieldAnnotation;
-        }
-
-        public void SetIsWatermarkAnnotation(bool isWatermarkAnnotation)
-        {
-            this.watermarkAnnotation = isWatermarkAnnotation;
-        }
-
-        public bool GetIsWatermarkAnnotation()
-        {
-            return watermarkAnnotation;
-        }
-
-        public void SetIsTextReplacementAnnotation(bool isTextReplacementAnnotation)
-        {
-            this.textReplacementAnnotation = isTextReplacementAnnotation;
-        }
-
-        public bool GetIsTextReplacementAnnotation()
-        {
-            return textReplacementAnnotation;
-        }
-
-        public void SetIsArrowAnnotation(bool isArrowAnnotation)
-        {
-            this.arrowAnnotation = isArrowAnnotation;
-        }
-
-        public bool GetIsArrowAnnotation()
-        {
-            return arrowAnnotation;
-        }
-
-        public void SetIsTextRedactionAnnotation(bool isTextRedactionAnnotation)
-        {
-            this.textRedactionAnnotation = isTextRedactionAnnotation;
-        }
-
-        public bool GetIsTextRedactionAnnotation()
-        {
-            return textRedactionAnnotation;
-        }
-
-        public void SetIsResourcesRedactionAnnotation(bool isResourcesRedactionAnnotation)
-        {
-            this.resourcesRedactionAnnotation = isResourcesRedactionAnnotation;
-        }
-
-        public bool GetIsResourcesRedactionAnnotation()
-        {
-            return resourcesRedactionAnnotation;
-        }
-
-        public void SetIsTextUnderlineAnnotation(bool isTextUnderlineAnnotation)
-        {
-            this.textUnderlineAnnotation = isTextUnderlineAnnotation;
-        }
-
-        public bool GetIsTextUnderlineAnnotation()
-        {
-            return textUnderlineAnnotation;
-        }
-
-        public void SetIsDistanceAnnotation(bool isDistanceAnnotation)
-        {
-            this.distanceAnnotation = isDistanceAnnotation;
-        }
-
-        public bool GetIsDistanceAnnotation()
-        {
-            return distanceAnnotation;
-        }
-
-        public void SetIsDownloadOriginal(bool isDownloadOriginal)
-        {
-            this.downloadOriginal = isDownloadOriginal;
-        }
-
-        public bool GetIsDownloadOriginal()
-        {
-            return downloadOriginal;
-        }
-
-        public void SetIsDownloadAnnotated(bool isDownloadAnnotated)
-        {
-            this.downloadAnnotated = isDownloadAnnotated;
-        }
-
-        public bool GetIsDownloadAnnotated()
-        {
-            return downloadAnnotated;
-        }
-
-        public void SetIsZoom(bool isZoom)
-        {
-            this.zoom = isZoom;
-        }
-
-        public bool GetIsZoom()
-        {
-            return zoom;
         }
     }
 }

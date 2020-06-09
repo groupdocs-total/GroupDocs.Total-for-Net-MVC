@@ -16,56 +16,56 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
         private string filesDirectory = "DocumentSamples/Signature";
 
         [JsonProperty]
-        private string defaultDocument = "";
+        private readonly string defaultDocument = "";
 
         [JsonProperty]
         private string dataDirectory = "";
 
         [JsonProperty]
-        private int preloadPageCount;
+        private readonly int preloadPageCount;
 
         [JsonProperty]
-        private bool textSignature = true;
+        private readonly bool textSignature = true;
 
         [JsonProperty]
-        private bool imageSignature = true;
+        private readonly bool imageSignature = true;
 
         [JsonProperty]
-        private bool digitalSignature = true;
+        private readonly bool digitalSignature = true;
 
         [JsonProperty]
-        private bool qrCodeSignature = true;
+        private readonly bool qrCodeSignature = true;
 
         [JsonProperty]
-        private bool barCodeSignature = true;
+        private readonly bool barCodeSignature = true;
 
         [JsonProperty]
-        private bool stampSignature = true;
+        private readonly bool stampSignature = true;
 
         [JsonProperty]
-        private bool handSignature = true;
+        private readonly bool handSignature = true;
 
         [JsonProperty]
-        private bool downloadOriginal = true;
+        private readonly bool downloadOriginal = true;
 
         [JsonProperty]
-        private bool downloadSigned = true;
+        private readonly bool downloadSigned = true;
 
         [JsonProperty]
         private string tempFilesDirectory = "";
 
         [JsonProperty]
-        private bool zoom = true;
+        private readonly bool zoom = true;
         
         /// <summary>
-        /// Get signature configuration section from the Web.config
+        /// Get Signature configuration section from the Web.config
         /// </summary>
         public SignatureConfiguration()
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("signature");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
-            // get Comparison configuration section from the web.config            
+
             filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
             if (!IsFullPath(filesDirectory))
             {
@@ -74,7 +74,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
                 {
                     Directory.CreateDirectory(filesDirectory);
                 }
-            }           
+            }
+
             dataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", dataDirectory);
             defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
             textSignature = valuesGetter.GetBooleanPropertyValue("textSignature", textSignature);
@@ -92,7 +93,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
 
         private static bool IsFullPath(string path)
         {
-            return !String.IsNullOrWhiteSpace(path)
+            return !string.IsNullOrWhiteSpace(path)
                 && path.IndexOfAny(Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
@@ -116,11 +117,6 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
         public string GetDataDirectory()
         {
             return dataDirectory;
-        }
-
-        public void SetPreloadPageCount(int preloadPageCount)
-        {
-            this.preloadPageCount = preloadPageCount;
         }
 
         public int GetPreloadPageCount()
