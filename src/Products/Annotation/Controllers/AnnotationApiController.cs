@@ -31,10 +31,9 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
     public class AnnotationApiController : ApiController
     {
         private static Common.Config.GlobalConfiguration GlobalConfiguration;
-        private readonly List<string> SupportedImageFormats = new List<string>() { ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".djvu" };
-        private readonly List<string> SupportedDiagrammFormats = new List<string>() { ".vsd", ".vdx", ".vss", ".vsx", ".vst", ".vtx", ".vsdx", ".vdw", ".vstx", ".vssx" };
+        private readonly List<string> SupportedImageFormats = new List<string> { ".bmp", ".jpeg", ".jpg", ".tiff", ".tif", ".png", ".gif", ".emf", ".wmf", ".dwg", ".dicom", ".djvu" };
+        private readonly List<string> SupportedDiagrammFormats = new List<string> { ".vsd", ".vdx", ".vss", ".vsx", ".vst", ".vtx", ".vsdx", ".vdw", ".vstx", ".vssx" };
         private static AnnotationImageHandler AnnotationImageHandler;
-        private readonly DirectoryUtils DirectoryUtils;
 
         /// <summary>
         /// Constructor
@@ -43,7 +42,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         {
             GlobalConfiguration = new Common.Config.GlobalConfiguration();
             // create annotation directories
-            DirectoryUtils = new DirectoryUtils(GlobalConfiguration.GetAnnotationConfiguration());
+            DirectoryUtils DirectoryUtils = new DirectoryUtils(GlobalConfiguration.GetAnnotationConfiguration());
 
             // create annotation application configuration
             AnnotationConfig config = new AnnotationConfig
@@ -641,7 +640,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 for (int i = 0; i < pageImages.Count; i++)
                 {
                     PageDataDescriptionEntity page = new PageDataDescriptionEntity();
-                    if (pageImages != null)
+                    if (pageImages[i] != null)
                     {
                         byte[] bytes;
                         using (MemoryStream memoryStream = new MemoryStream())

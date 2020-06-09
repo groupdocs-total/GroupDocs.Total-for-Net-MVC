@@ -19,7 +19,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
         private string defaultDocument = "";
 
         [JsonProperty]
-        private int preloadPageCount = 0;
+        private int preloadPageCount;
 
         [JsonProperty]
         private bool textAnnotation = true;
