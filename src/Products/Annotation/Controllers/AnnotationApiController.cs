@@ -89,7 +89,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 {
                     FileInfo fileInfo = new FileInfo(fd.Guid);
                     // check if current file/folder is temp directory or is hidden
-                    if (!(tempDirectoryName.ToLower().Equals(Path.GetFileName(fd.Guid).ToLower()) ||
+                    if (!(tempDirectoryName.Equals(Path.GetFileName(fd.Guid), StringComparison.OrdinalIgnoreCase) ||
                           Path.GetFileName(fd.Name).StartsWith(".") ||
                           fileInfo.Attributes.HasFlag(FileAttributes.Hidden)))
                     {
