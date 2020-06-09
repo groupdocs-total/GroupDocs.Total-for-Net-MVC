@@ -17,10 +17,11 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
     {
         private static Index index;
 
-        public static Dictionary<string, string> FileIndexingStatusDict { get; } = new Dictionary<string, string>();
-        public static Dictionary<string, string> PassRequiredStatusDict { get; } = new Dictionary<string, string>();
-        public static List<char> specialCharsList = new List<char>();
-        public static List<char> foundSpecialChars = new List<char>();
+        internal static Dictionary<string, string> FileIndexingStatusDict { get; } = new Dictionary<string, string>();
+        internal static Dictionary<string, string> PassRequiredStatusDict { get; } = new Dictionary<string, string>();
+
+        private static readonly List<char> specialCharsList = new List<char>();
+        private static readonly List<char> foundSpecialChars = new List<char>();
 
         public static SummarySearchResult Search(SearchPostedData searchRequest, GlobalConfiguration globalConfiguration)
         {
