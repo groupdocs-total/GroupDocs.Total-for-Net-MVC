@@ -13,50 +13,50 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
     public class SignatureConfiguration : CommonConfiguration
     {
         [JsonProperty]
-        public string FilesDirectory = "DocumentSamples/Signature";
+        private string filesDirectory = "DocumentSamples/Signature";
 
         [JsonProperty]
-        public string DefaultDocument = "";
+        private string defaultDocument = "";
 
         [JsonProperty]
-        public string DataDirectory = "";
+        private string dataDirectory = "";
 
         [JsonProperty]
-        public int PreloadPageCount;
+        private int preloadPageCount;
 
         [JsonProperty]
-        public bool textSignature = true;
+        private bool textSignature = true;
 
         [JsonProperty]
-        public bool imageSignature = true;
+        private bool imageSignature = true;
 
         [JsonProperty]
-        public bool digitalSignature = true;
+        private bool digitalSignature = true;
 
         [JsonProperty]
-        public bool qrCodeSignature = true;
+        private bool qrCodeSignature = true;
 
         [JsonProperty]
-        public bool barCodeSignature = true;
+        private bool barCodeSignature = true;
 
         [JsonProperty]
-        public bool stampSignature = true;
+        private bool stampSignature = true;
 
         [JsonProperty]
-        public bool handSignature = true;
+        private bool handSignature = true;
 
         [JsonProperty]
-        public bool downloadOriginal = true;
+        private bool downloadOriginal = true;
 
         [JsonProperty]
-        public bool downloadSigned = true;
+        private bool downloadSigned = true;
 
         [JsonProperty]
-        private string TempFilesDirectory = "";
+        private string tempFilesDirectory = "";
 
         [JsonProperty]
         private bool zoom = true;
-
+        
         /// <summary>
         /// Get signature configuration section from the Web.config
         /// </summary>
@@ -66,17 +66,17 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
             dynamic configuration = parser.GetConfiguration("signature");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
             // get Comparison configuration section from the web.config            
-            FilesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", FilesDirectory);
-            if (!IsFullPath(FilesDirectory))
+            filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
+            if (!IsFullPath(filesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
-                if (!Directory.Exists(FilesDirectory))
+                filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filesDirectory);
+                if (!Directory.Exists(filesDirectory))
                 {
-                    Directory.CreateDirectory(FilesDirectory);
+                    Directory.CreateDirectory(filesDirectory);
                 }
             }           
-            DataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", DataDirectory);
-            DefaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", DefaultDocument);
+            dataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", dataDirectory);
+            defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
             textSignature = valuesGetter.GetBooleanPropertyValue("textSignature", textSignature);
             imageSignature = valuesGetter.GetBooleanPropertyValue("imageSignature", imageSignature);
             digitalSignature = valuesGetter.GetBooleanPropertyValue("digitalSignature", digitalSignature);
@@ -86,7 +86,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
             handSignature = valuesGetter.GetBooleanPropertyValue("handSignature", handSignature);
             downloadOriginal = valuesGetter.GetBooleanPropertyValue("downloadOriginal", downloadOriginal);
             downloadSigned = valuesGetter.GetBooleanPropertyValue("downloadSigned", downloadSigned);
-            PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
+            preloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", preloadPageCount);
             zoom = valuesGetter.GetBooleanPropertyValue("zoom", zoom);
         }
 
@@ -98,14 +98,44 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
         }
 
+        public void SetFilesDirectory(string filesDirectory)
+        {
+            this.filesDirectory = filesDirectory;
+        }
+
+        public string GetFilesDirectory()
+        {
+            return filesDirectory;
+        }
+
+        public void SetDataDirectory(string dataDirectory)
+        {
+            this.dataDirectory = dataDirectory;
+        }
+
+        public string GetDataDirectory()
+        {
+            return dataDirectory;
+        }
+
+        public void SetPreloadPageCount(int preloadPageCount)
+        {
+            this.preloadPageCount = preloadPageCount;
+        }
+
+        public int GetPreloadPageCount()
+        {
+            return preloadPageCount;
+        }
+
         public void SetTempFilesDirectory(string tempFilesDirectory)
         {
-            this.TempFilesDirectory = tempFilesDirectory;
+            this.tempFilesDirectory = tempFilesDirectory;
         }
 
         public string GetTempFilesDirectory()
         {
-            return this.TempFilesDirectory;
+            return tempFilesDirectory;
         }
     }
 }

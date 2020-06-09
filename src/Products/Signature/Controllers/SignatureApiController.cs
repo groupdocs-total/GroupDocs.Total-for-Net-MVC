@@ -116,7 +116,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         fileList = signatureLoader.LoadImageSignatures();
                         break;
                     case "text":
-                        fileList = signatureLoader.loadTextSignatures(DataDirectoryEntity.DATA_XML_FOLDER);
+                        fileList = signatureLoader.LoadTextSignatures(DataDirectoryEntity.DATA_XML_FOLDER);
                         break;
                     case "qrCode":
                     case "barCode":
@@ -169,7 +169,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                                 width = documentInfo.Pages[i].Width,
                                 number = i + 1
                             };
-                            if (GlobalConfiguration.GetSignatureConfiguration().PreloadPageCount == 0)
+                            if (GlobalConfiguration.GetSignatureConfiguration().GetPreloadPageCount() == 0)
                             {
                                 byte[] pageBytes = RenderPageToMemoryStream(signature, i).ToArray();
                                 string encodedImage = Convert.ToBase64String(pageBytes);

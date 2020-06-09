@@ -23,7 +23,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             // create output directories
             if (string.IsNullOrEmpty(signatureConfiguration.GetTempFilesDirectory()))
             {
-                signatureConfiguration.SetTempFilesDirectory(signatureConfiguration.FilesDirectory + OUTPUT_FOLDER);
+                signatureConfiguration.SetTempFilesDirectory(signatureConfiguration.GetFilesDirectory() + OUTPUT_FOLDER);
             }
         }
 
