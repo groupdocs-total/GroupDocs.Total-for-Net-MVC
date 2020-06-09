@@ -69,9 +69,6 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
         [JsonProperty]
         private bool zoom = true;
 
-        [JsonProperty]
-        private bool fitWidth = true;
-
         /// <summary>
         /// Get annotation configuration section from the Web.config
         /// </summary>
@@ -108,7 +105,6 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
             downloadAnnotated = valuesGetter.GetBooleanPropertyValue("downloadAnnotated", downloadAnnotated);
             preloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", preloadPageCount);
             zoom = valuesGetter.GetBooleanPropertyValue("zoom", zoom);
-            fitWidth = valuesGetter.GetBooleanPropertyValue("fitWidth", fitWidth);
         }
 
         private static bool IsFullPath(string path)
@@ -306,16 +302,6 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Config
         public bool GetIsZoom()
         {
             return zoom;
-        }
-
-        public void SetIsFitWidth(bool isFitWidth)
-        {
-            this.fitWidth = isFitWidth;
-        }
-
-        public bool GetIsFitWidth()
-        {
-            return fitWidth;
         }
     }
 }

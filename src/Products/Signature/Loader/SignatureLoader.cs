@@ -1,6 +1,7 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
+using GroupDocs.Total.MVC.Products.Signature.Util.Directory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,16 +16,18 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
     {
         public string CurrentPath;
         public Common.Config.GlobalConfiguration globalConfiguration;
+        private DirectoryUtils DirectoryUtils;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="path">string</param>
         /// <param name="globalConfiguration">Common.Config.GlobalConfiguration</param>
-        public SignatureLoader(string path, Common.Config.GlobalConfiguration globalConfiguration)
+        public SignatureLoader(string path, Common.Config.GlobalConfiguration globalConfiguration, DirectoryUtils directoryUtils)
         {
             CurrentPath = path;
             this.globalConfiguration = globalConfiguration;
+            this.DirectoryUtils = directoryUtils;
         }
 
         /// <summary>
@@ -84,6 +87,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
             List<string> allFiles = new List<string>(Directory.GetFiles(CurrentPath));
             allFiles.AddRange(Directory.GetDirectories(CurrentPath));
             List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
+            string dataDirectory = globalConfiguration.GetSignatureConfiguration().DataDirectory;
+            string outputDirectory = globalConfiguration.GetSignatureConfiguration().FilesDirectory + DirectoryUtils.GetTempFolder().OUTPUT_FOLDER;
+
             try
             {
                 allFiles.Sort(new FileNameComparator());
@@ -93,13 +99,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
-                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || 
-                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSignatureConfiguration().DataDirectory)))
-                    {
-                        // ignore current file and skip to next one
-                        continue;
-                    }
-                    else
+                    if (!fileInfo.Attributes.HasFlag(FileAttributes.Hidden) &&
+                        !Path.GetFileName(file).StartsWith(".") &&
+                        !Path.GetFileName(file).Equals(Path.GetFileName(dataDirectory), StringComparison.OrdinalIgnoreCase) &&
+                        !Path.GetFileName(file).Equals(Path.GetFileName(outputDirectory), StringComparison.OrdinalIgnoreCase))
                     {
                         SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
                         fileDescription.guid = Path.GetFullPath(file);

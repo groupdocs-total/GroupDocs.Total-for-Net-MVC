@@ -79,6 +79,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             FileTreeOptions fileListOptions = new FileTreeOptions(relDirPath);
             // get temp directory name
             string tempDirectoryName = new AnnotationConfig().TempFolderName;
+
             try
             {
                 FileTreeContainer fileListContainer = AnnotationImageHandler.LoadFileTree(fileListOptions);
