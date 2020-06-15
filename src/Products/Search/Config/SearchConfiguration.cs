@@ -1,14 +1,14 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Config;
+﻿using System;
+using System.IO;
+using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Parser;
 using GroupDocs.Total.MVC.Products.Search.Util.Directory;
 using Newtonsoft.Json;
-using System;
-using System.IO;
 
 namespace GroupDocs.Total.MVC.Products.Search.Config
 {
     /// <summary>
-    /// SearchConfiguration
+    /// SearchConfiguration.
     /// </summary>
     public class SearchConfiguration : CommonConfiguration
     {
@@ -22,42 +22,44 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
         private string indexedFilesDirectory = "DocumentSamples/Search/Indexed";
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="SearchConfiguration"/> class.
+        /// Constructor.
         /// </summary>
         public SearchConfiguration()
         {
             YamlParser parser = new YamlParser();
+
             // get Search configuration section from the web.config
             dynamic configuration = parser.GetConfiguration("search");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
 
-            filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
-            if (!DirectoryUtils.IsFullPath(filesDirectory))
+            this.filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", this.filesDirectory);
+            if (!DirectoryUtils.IsFullPath(this.filesDirectory))
             {
-                filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filesDirectory);
-                if (!Directory.Exists(filesDirectory))
+                this.filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.filesDirectory);
+                if (!Directory.Exists(this.filesDirectory))
                 {
-                    Directory.CreateDirectory(filesDirectory);
+                    Directory.CreateDirectory(this.filesDirectory);
                 }
             }
 
-            indexDirectory = valuesGetter.GetStringPropertyValue("indexDirectory", indexDirectory);
-            if (!DirectoryUtils.IsFullPath(indexDirectory))
+            this.indexDirectory = valuesGetter.GetStringPropertyValue("indexDirectory", this.indexDirectory);
+            if (!DirectoryUtils.IsFullPath(this.indexDirectory))
             {
-                indexDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, indexDirectory);
-                if (!Directory.Exists(indexDirectory))
+                this.indexDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.indexDirectory);
+                if (!Directory.Exists(this.indexDirectory))
                 {
-                    Directory.CreateDirectory(indexDirectory);
+                    Directory.CreateDirectory(this.indexDirectory);
                 }
             }
 
-            indexedFilesDirectory = valuesGetter.GetStringPropertyValue("indexedFilesDirectory", indexedFilesDirectory);
-            if (!DirectoryUtils.IsFullPath(indexedFilesDirectory))
+            this.indexedFilesDirectory = valuesGetter.GetStringPropertyValue("indexedFilesDirectory", this.indexedFilesDirectory);
+            if (!DirectoryUtils.IsFullPath(this.indexedFilesDirectory))
             {
-                indexedFilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, indexedFilesDirectory);
-                if (!Directory.Exists(indexedFilesDirectory))
+                this.indexedFilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.indexedFilesDirectory);
+                if (!Directory.Exists(this.indexedFilesDirectory))
                 {
-                    Directory.CreateDirectory(indexedFilesDirectory);
+                    Directory.CreateDirectory(this.indexedFilesDirectory);
                 }
             }
         }
@@ -69,7 +71,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
 
         public string GetFilesDirectory()
         {
-            return filesDirectory;
+            return this.filesDirectory;
         }
 
         public void SetIndexDirectory(string indexDirectory)
@@ -79,7 +81,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
 
         public string GetIndexDirectory()
         {
-            return indexDirectory;
+            return this.indexDirectory;
         }
 
         public void SetIndexedFilesDirectory(string indexedFilesDirectory)
@@ -89,7 +91,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Config
 
         public string GetIndexedFilesDirectory()
         {
-            return indexedFilesDirectory;
+            return this.indexedFilesDirectory;
         }
     }
 }

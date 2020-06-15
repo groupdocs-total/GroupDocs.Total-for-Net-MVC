@@ -1,15 +1,15 @@
-﻿using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
-using GroupDocs.Search;
-using GroupDocs.Search.Results;
-using GroupDocs.Total.MVC.Products.Search.Entity.Web.Response;
-using System.Collections.Generic;
-using GroupDocs.Search.Options;
-using GroupDocs.Search.Highlighters;
-using GroupDocs.Search.Common;
+﻿using System.Collections.Generic;
 using System.IO;
-using GroupDocs.Total.MVC.Products.Common.Entity.Web;
-using GroupDocs.Total.MVC.Products.Common.Config;
 using System.Linq;
+using GroupDocs.Search;
+using GroupDocs.Search.Common;
+using GroupDocs.Search.Highlighters;
+using GroupDocs.Search.Options;
+using GroupDocs.Search.Results;
+using GroupDocs.Total.MVC.Products.Common.Config;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
+using GroupDocs.Total.MVC.Products.Search.Entity.Web.Response;
 
 namespace GroupDocs.Total.MVC.Products.Search.Service
 {
@@ -31,6 +31,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
 
             SearchOptions searchOptions = new SearchOptions();
+
             // Turn on fuzzy search on
             searchOptions.UseCaseSensitiveSearch = false;
 
@@ -51,7 +52,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
             else if (foundSpecialChars.Count > 0)
             {
-                foreach(char specialChar in foundSpecialChars)
+                foreach (char specialChar in foundSpecialChars)
                 {
                     searchQuery = searchQuery.Replace(specialChar, ' ');
                 }
@@ -76,7 +77,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             {
                 TermsBefore = 5,
                 TermsAfter = 5,
-                TermsTotal = 10
+                TermsTotal = 10,
             };
 
             for (int i = 0; i < result.DocumentCount; i++)
@@ -97,7 +98,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                     {
                         for (int k = 0; k < fragments.Length; k++)
                         {
-                            foundPhrases.Add(fragments[k].Replace("<br>", ""));
+                            foundPhrases.Add(fragments[k].Replace("<br>", string.Empty));
                         }
                     }
                 }
@@ -210,7 +211,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                     {
                         index.Dictionaries.DocumentPasswords.Add(entity.guid, entity.password);
                     }
-                    else 
+                    else
                     {
                         index.Dictionaries.DocumentPasswords.Remove(entity.guid);
                         index.Dictionaries.DocumentPasswords.Add(entity.guid, entity.password);
@@ -228,7 +229,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             {
                 File.Delete(guid);
 
-                if (FileIndexingStatusDict.ContainsKey(guid)) {
+                if (FileIndexingStatusDict.ContainsKey(guid))
+                {
                     FileIndexingStatusDict.Remove(guid);
                 }
             }
@@ -242,7 +244,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             return new UpdateOptions
             {
                 Threads = 2,
-                IsAsync = true
+                IsAsync = true,
             };
         }
     }

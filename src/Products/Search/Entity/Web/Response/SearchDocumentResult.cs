@@ -1,5 +1,4 @@
-﻿using GroupDocs.Search.Results;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 {
