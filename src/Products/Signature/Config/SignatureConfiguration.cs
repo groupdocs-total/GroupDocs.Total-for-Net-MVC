@@ -1,5 +1,6 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,41 +12,72 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
     /// </summary>
     public class SignatureConfiguration : CommonConfiguration
     {
-        public string FilesDirectory = "DocumentSamples/Signature";       
-        public string DefaultDocument = "";
-        public string DataDirectory = "";
-        public int PreloadPageCount = 0;
-        public bool textSignature = true;
-        public bool imageSignature = true;
-        public bool digitalSignature = true;
-        public bool qrCodeSignature = true;
-        public bool barCodeSignature = true;
-        public bool stampSignature = true;
-        public bool handSignature = true;
-        public bool downloadOriginal = true;
-        public bool downloadSigned = true;
-        private string TempFilesDirectory = "";
+        [JsonProperty]
+        private string filesDirectory = "DocumentSamples/Signature";
 
+        [JsonProperty]
+        private readonly string defaultDocument = "";
+
+        [JsonProperty]
+        private string dataDirectory = "";
+
+        [JsonProperty]
+        private readonly int preloadPageCount;
+
+        [JsonProperty]
+        private readonly bool textSignature = true;
+
+        [JsonProperty]
+        private readonly bool imageSignature = true;
+
+        [JsonProperty]
+        private readonly bool digitalSignature = true;
+
+        [JsonProperty]
+        private readonly bool qrCodeSignature = true;
+
+        [JsonProperty]
+        private readonly bool barCodeSignature = true;
+
+        [JsonProperty]
+        private readonly bool stampSignature = true;
+
+        [JsonProperty]
+        private readonly bool handSignature = true;
+
+        [JsonProperty]
+        private readonly bool downloadOriginal = true;
+
+        [JsonProperty]
+        private readonly bool downloadSigned = true;
+
+        [JsonProperty]
+        private string tempFilesDirectory = "";
+
+        [JsonProperty]
+        private readonly bool zoom = true;
+        
         /// <summary>
-        /// Get signature configuration section from the Web.config
+        /// Get Signature configuration section from the Web.config
         /// </summary>
         public SignatureConfiguration()
         {
             YamlParser parser = new YamlParser();
             dynamic configuration = parser.GetConfiguration("signature");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
-            // get Comparison configuration section from the web.config            
-            FilesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", FilesDirectory);
-            if (!IsFullPath(FilesDirectory))
+
+            filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
+            if (!IsFullPath(filesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
-                if (!Directory.Exists(FilesDirectory))
+                filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filesDirectory);
+                if (!Directory.Exists(filesDirectory))
                 {
-                    Directory.CreateDirectory(FilesDirectory);
+                    Directory.CreateDirectory(filesDirectory);
                 }
-            }           
-            DataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", DataDirectory);
-            DefaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", DefaultDocument);
+            }
+
+            dataDirectory = valuesGetter.GetStringPropertyValue("dataDirectory", dataDirectory);
+            defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
             textSignature = valuesGetter.GetBooleanPropertyValue("textSignature", textSignature);
             imageSignature = valuesGetter.GetBooleanPropertyValue("imageSignature", imageSignature);
             digitalSignature = valuesGetter.GetBooleanPropertyValue("digitalSignature", digitalSignature);
@@ -55,25 +87,51 @@ namespace GroupDocs.Total.MVC.Products.Signature.Config
             handSignature = valuesGetter.GetBooleanPropertyValue("handSignature", handSignature);
             downloadOriginal = valuesGetter.GetBooleanPropertyValue("downloadOriginal", downloadOriginal);
             downloadSigned = valuesGetter.GetBooleanPropertyValue("downloadSigned", downloadSigned);
-            PreloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", PreloadPageCount);
+            preloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", preloadPageCount);
+            zoom = valuesGetter.GetBooleanPropertyValue("zoom", zoom);
         }
 
         private static bool IsFullPath(string path)
         {
-            return !String.IsNullOrWhiteSpace(path)
-                && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+            return !string.IsNullOrWhiteSpace(path)
+                && path.IndexOfAny(Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
         }
 
+        public void SetFilesDirectory(string filesDirectory)
+        {
+            this.filesDirectory = filesDirectory;
+        }
+
+        public string GetFilesDirectory()
+        {
+            return filesDirectory;
+        }
+
+        public void SetDataDirectory(string dataDirectory)
+        {
+            this.dataDirectory = dataDirectory;
+        }
+
+        public string GetDataDirectory()
+        {
+            return dataDirectory;
+        }
+
+        public int GetPreloadPageCount()
+        {
+            return preloadPageCount;
+        }
+
         public void SetTempFilesDirectory(string tempFilesDirectory)
         {
-            this.TempFilesDirectory = tempFilesDirectory;
+            this.tempFilesDirectory = tempFilesDirectory;
         }
 
         public string GetTempFilesDirectory()
         {
-            return this.TempFilesDirectory;
+            return tempFilesDirectory;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Xml;
+using GroupDocs.Total.MVC.Products.Signature.Util.Directory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,16 +16,18 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
     {
         public string CurrentPath;
         public Common.Config.GlobalConfiguration globalConfiguration;
+        private readonly DirectoryUtils DirectoryUtils;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="path">string</param>
         /// <param name="globalConfiguration">Common.Config.GlobalConfiguration</param>
-        public SignatureLoader(string path, Common.Config.GlobalConfiguration globalConfiguration)
+        public SignatureLoader(string path, Common.Config.GlobalConfiguration globalConfiguration, DirectoryUtils directoryUtils)
         {
             CurrentPath = path;
             this.globalConfiguration = globalConfiguration;
+            DirectoryUtils = directoryUtils;
         }
 
         /// <summary>
@@ -45,20 +48,23 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
-                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || file.Equals(globalConfiguration.GetSignatureConfiguration().DataDirectory))
+                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || 
+                        file.Equals(globalConfiguration.GetSignatureConfiguration().GetDataDirectory()))
                     {
                         // ignore current file and skip to next one
                         continue;
                     }
                     else
                     {
-                        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                        fileDescription.guid = Path.GetFullPath(file);
-                        fileDescription.name = Path.GetFileName(file);
-                        // set is directory true/false
-                        fileDescription.isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory);
-                        // set file size
-                        fileDescription.size = fileInfo.Length;
+                        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity
+                        {
+                            guid = Path.GetFullPath(file),
+                            name = Path.GetFileName(file),
+                            // set is directory true/false
+                            isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory),
+                            // set file size
+                            size = fileInfo.Length
+                        };
                         // get image Base64 incoded string
                         byte[] imageArray = File.ReadAllBytes(file);
                         string base64ImageRepresentation = Convert.ToBase64String(imageArray);
@@ -84,6 +90,10 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
             List<string> allFiles = new List<string>(Directory.GetFiles(CurrentPath));
             allFiles.AddRange(Directory.GetDirectories(CurrentPath));
             List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
+            string dataDirectory = globalConfiguration.GetSignatureConfiguration().GetDataDirectory();
+            string outputDirectory = globalConfiguration.GetSignatureConfiguration().GetFilesDirectory() +
+                DirectoryUtils.GetTempFolder().OUTPUT_FOLDER;
+
             try
             {
                 allFiles.Sort(new FileNameComparator());
@@ -93,19 +103,18 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 {
                     FileInfo fileInfo = new FileInfo(file);
                     // check if current file/folder is hidden
-                    if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || 
-                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetSignatureConfiguration().DataDirectory)))
+                    if (!fileInfo.Attributes.HasFlag(FileAttributes.Hidden) &&
+                        !Path.GetFileName(file).StartsWith(".") &&
+                        !Path.GetFileName(file).Equals(Path.GetFileName(dataDirectory), StringComparison.OrdinalIgnoreCase) &&
+                        !Path.GetFileName(file).Equals(Path.GetFileName(outputDirectory), StringComparison.OrdinalIgnoreCase))
                     {
-                        // ignore current file and skip to next one
-                        continue;
-                    }
-                    else
-                    {
-                        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                        fileDescription.guid = Path.GetFullPath(file);
-                        fileDescription.name = Path.GetFileName(file);
-                        // set is directory true/false
-                        fileDescription.isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory);
+                        SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity
+                        {
+                            guid = Path.GetFullPath(file),
+                            name = Path.GetFileName(file),
+                            // set is directory true/false
+                            isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory)
+                        };
                         // set file size
                         if (!fileDescription.isDirectory)
                         {
@@ -141,7 +150,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 if (imageFiles != null && imageFiles.Length > 0)
                 {
                     string[] xmlFiles = Directory.GetFiles(xmlPath);
-                    List<String> filesList = new List<string>();
+                    List<string> filesList = new List<string>();
                     foreach (string imageFile in imageFiles)
                     {
                         foreach (string xmlFile in xmlFiles)
@@ -159,20 +168,23 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                     {
                         FileInfo fileInfo = new FileInfo(file);
                         // check if current file/folder is hidden
-                        if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || file.Equals(globalConfiguration.GetSignatureConfiguration().DataDirectory))
+                        if (fileInfo.Attributes.HasFlag(FileAttributes.Hidden) || 
+                            file.Equals(globalConfiguration.GetSignatureConfiguration().GetDataDirectory()))
                         {
                             // ignore current file and skip to next one
                             continue;
                         }
                         else
                         {
-                            SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                            fileDescription.guid = Path.GetFullPath(file);
-                            fileDescription.name = Path.GetFileName(file);
-                            // set is directory true/false
-                            fileDescription.isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory);
-                            // set file size
-                            fileDescription.size = fileInfo.Length;
+                            SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity
+                            {
+                                guid = Path.GetFullPath(file),
+                                name = Path.GetFileName(file),
+                                // set is directory true/false
+                                isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory),
+                                // set file size
+                                size = fileInfo.Length
+                            };
                             // get image Base64 incoded string
                             byte[] imageArray = File.ReadAllBytes(file);
                             string base64ImageRepresentation = Convert.ToBase64String(imageArray);
@@ -203,7 +215,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
             }
         }
 
-        public List<SignatureFileDescriptionEntity> loadTextSignatures(string xmlFolder)
+        public List<SignatureFileDescriptionEntity> LoadTextSignatures(string xmlFolder)
         {
             try
             {
@@ -213,9 +225,11 @@ namespace GroupDocs.Total.MVC.Products.Signature.Loader
                 List<SignatureFileDescriptionEntity> fileList = new List<SignatureFileDescriptionEntity>();
                 foreach (string xmlFile in xmlFiles)
                 {
-                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity();
-                    fileDescription.guid = xmlFile;
-                    fileDescription.name = Path.GetFileName(xmlFile);
+                    SignatureFileDescriptionEntity fileDescription = new SignatureFileDescriptionEntity
+                    {
+                        guid = xmlFile,
+                        name = Path.GetFileName(xmlFile)
+                    };
                     // get stream of the xml file
                     StreamReader xmlStream = new StreamReader(xmlFile);
                     // initiate serializer
