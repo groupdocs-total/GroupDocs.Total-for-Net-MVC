@@ -151,7 +151,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         public void SetSearchLicense()
         {
             // Initiate license class
-            var obj = (Search.License)Activator.CreateInstance(CurrentType);
+            var obj = (GroupDocs.Search.License)Activator.CreateInstance(CurrentType);
             // Set license
             SetLicense(obj);
         }
