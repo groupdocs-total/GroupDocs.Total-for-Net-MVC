@@ -31,9 +31,9 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
             signatureConfiguration = signatureConfig;
 
             // check if data directory was set, if not set new directory
-            if (String.IsNullOrEmpty(signatureConfiguration.DataDirectory))
+            if (String.IsNullOrEmpty(signatureConfiguration.GetDataDirectory()))
             {
-                signatureConfiguration.DataDirectory = signatureConfiguration.FilesDirectory + DATA_FOLDER;
+                signatureConfiguration.SetDataDirectory(signatureConfiguration.GetFilesDirectory() + DATA_FOLDER);
             }
 
             // create directory objects
@@ -71,7 +71,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Util.Directory
         /// <returns>string</returns>
         public string GetPath()
         {
-            return signatureConfiguration.DataDirectory;
+            return signatureConfiguration.GetDataDirectory();
         }
     }
 }

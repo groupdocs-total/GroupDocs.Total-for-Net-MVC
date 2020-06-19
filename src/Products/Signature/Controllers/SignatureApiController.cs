@@ -2,7 +2,6 @@
 using GroupDocs.Signature.Domain;
 using GroupDocs.Signature.Options;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
-using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Signature.Config;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Directory;
 using GroupDocs.Total.MVC.Products.Signature.Entity.Web;
@@ -105,7 +104,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 {
                     relDirPath = Path.Combine(rootDirectory, relDirPath);
                 }
-                SignatureLoader signatureLoader = new SignatureLoader(relDirPath, GlobalConfiguration);
+                SignatureLoader signatureLoader = new SignatureLoader(relDirPath, GlobalConfiguration, DirectoryUtils);
                 List<SignatureFileDescriptionEntity> fileList;
                 switch (signatureType)
                 {
@@ -117,7 +116,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         fileList = signatureLoader.LoadImageSignatures();
                         break;
                     case "text":
-                        fileList = signatureLoader.loadTextSignatures(DataDirectoryEntity.DATA_XML_FOLDER);
+                        fileList = signatureLoader.LoadTextSignatures(DataDirectoryEntity.DATA_XML_FOLDER);
                         break;
                     case "qrCode":
                     case "barCode":
@@ -170,7 +169,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                                 width = documentInfo.Pages[i].Width,
                                 number = i + 1
                             };
-                            if (GlobalConfiguration.GetSignatureConfiguration().PreloadPageCount == 0)
+                            if (GlobalConfiguration.GetSignatureConfiguration().GetPreloadPageCount() == 0)
                             {
                                 byte[] pageBytes = RenderPageToMemoryStream(signature, i).ToArray();
                                 string encodedImage = Convert.ToBase64String(pageBytes);
@@ -278,7 +277,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             if (!string.IsNullOrEmpty(path))
             {
                 // check if file exists
-                if (System.IO.File.Exists(path))
+                if (File.Exists(path))
                 {
                     // prepare response message
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
@@ -559,12 +558,12 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     }
                 }
                 string imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
-                if (System.IO.File.Exists(imagePath))
+                if (File.Exists(imagePath))
                 {
                     imageName = Path.GetFileName(Common.Resources.Resources.GetFreeFileName(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName));
                     imagePath = Path.Combine(DirectoryUtils.DataDirectory.ImageDirectory.Path, imageName);
                 }
-                System.IO.File.WriteAllBytes(imagePath, Convert.FromBase64String(encodedImage));
+                File.WriteAllBytes(imagePath, Convert.FromBase64String(encodedImage));
                 savedImage.guid = imagePath;
                 // return loaded page object
                 return Request.CreateResponse(HttpStatusCode.OK, savedImage);
@@ -602,7 +601,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     int number = i + 1;
                     newFileName = string.Format("{0:000}", number);
                     filePath = previewPath + "/" + newFileName + ".png";
-                    if (System.IO.File.Exists(filePath))
+                    if (File.Exists(filePath))
                     {
                         continue;
                     }
@@ -611,7 +610,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         break;
                     }
                 }
-                System.IO.File.WriteAllBytes(filePath, Convert.FromBase64String(encodedImage));
+                File.WriteAllBytes(filePath, Convert.FromBase64String(encodedImage));
                 savedImage.guid = filePath;
                 // stamp data to xml file saving
                 SaveXmlData(xmlPath, newFileName, stampData);
@@ -696,7 +695,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         fileName = opticalCodeData.text;
                         filePath = Path.Combine(previewPath, fileName + ".png");
                         // check if file with such name already exists
-                        if (System.IO.File.Exists(filePath))
+                        if (File.Exists(filePath))
                         {
                             continue;
                         }
@@ -742,8 +741,8 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                     }
                 }
 
-                System.IO.File.Delete(filePath);
-                System.IO.File.Move(tempFile, filePath);
+                File.Delete(filePath);
+                File.Move(tempFile, filePath);
 
                 // set data for response
                 opticalCodeData.imageGuid = filePath;
@@ -751,7 +750,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                 opticalCodeData.width = Convert.ToInt32(signaturesData.ImageWidth);
 
                 // get signature preview as Base64 string
-                byte[] imageArray = System.IO.File.ReadAllBytes(filePath);
+                byte[] imageArray = File.ReadAllBytes(filePath);
                 string base64ImageRepresentation = Convert.ToBase64String(imageArray);
                 opticalCodeData.encodedImage = base64ImageRepresentation;
 
@@ -801,7 +800,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
                         fileName = string.Format("{0:000}", number);
                         filePath = Path.Combine(xmlPath, fileName + ".xml");
                         // check if file with such name already exists
-                        if (System.IO.File.Exists(filePath))
+                        if (File.Exists(filePath))
                         {
                             continue;
                         }
@@ -838,7 +837,7 @@ namespace GroupDocs.Total.MVC.Products.Signature.Controllers
             {
                 List<string> fonts = new List<string>();
 
-                foreach (FontFamily font in System.Drawing.FontFamily.Families)
+                foreach (FontFamily font in FontFamily.Families)
                 {
                     fonts.Add(font.Name);
                 }
