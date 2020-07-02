@@ -66,6 +66,9 @@
     <Reference Include="GroupDocs.Signature, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.4.0\lib\net20\GroupDocs.Signature.dll</HintPath>
     </Reference>
+    <Reference Include="GroupDocs.Search, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Search.20.4.0\lib\net20\GroupDocs.Search.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Viewer, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Viewer.20.4.0\lib\net20\GroupDocs.Viewer.dll</HintPath>
     </Reference>
@@ -217,6 +220,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ComparisonController.cs" />
     <Compile Include="Controllers\AnnotationController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\TotalController.cs" />
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ConversionController.cs" />
@@ -289,6 +293,14 @@
     <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
     <Compile Include="Products\Metadata\Entity\FilePropertyName.cs" />
     <Compile Include="Products\Metadata\Util\Directory\DirectoryUtils.cs" />
+    <Compile Include="Products\Search\Config\SearchConfiguration.cs" />
+    <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
+    <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
+    <Compile Include="Products\Search\Service\SearchService.cs" />
+    <Compile Include="Products\Search\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
@@ -395,6 +407,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Metadata\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Search\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

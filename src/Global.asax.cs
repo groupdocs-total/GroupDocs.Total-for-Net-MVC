@@ -18,6 +18,7 @@ namespace GroupDocs.Total.MVC
             string conversionAssemblyName = "GroupDocs.Conversion.dll";
             string editorAssemblyName = "GroupDocs.Editor.dll";
             string metadataAssemblyName = "GroupDocs.Metadata.dll";
+            string searchAssemblyName = "GroupDocs.Search.dll";
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
             viewerDomainGenerator.SetViewerLicense();
@@ -39,11 +40,14 @@ namespace GroupDocs.Total.MVC
             // set GroupDocs.Metadata license
             DomainGenerator metadataDomainGenerator = new DomainGenerator(metadataAssemblyName, "GroupDocs.Metadata.License");
             metadataDomainGenerator.SetMetadataLicense();
+            // set GroupDocs.Search license
+            DomainGenerator searchDomainGenerator = new DomainGenerator(searchAssemblyName, "GroupDocs.Search.License");
+            searchDomainGenerator.SetSearchLicense();
 
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-        }       
-    }     
+        }
+    }
 }
