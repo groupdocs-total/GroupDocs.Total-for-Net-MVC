@@ -310,6 +310,62 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             }
         }
 
+        /// <summary>
+        /// Load document description
+        /// </summary>
+        /// <param name="postedData">Post data</param>
+        /// <returns>Document info object</returns>
+        [HttpPost]
+        [Route("editor/createFile")]
+        public HttpResponseMessage CreateFile(EditDocumentRequest postedData)
+        {
+            try
+            {
+                string htmlContent = postedData.getContent();
+                string guid = postedData.GetGuid();
+                string saveFilePath = Path.Combine(globalConfiguration.GetEditorConfiguration().GetFilesDirectory(), guid);
+                string tempFilename = Path.GetFileNameWithoutExtension(saveFilePath) + "_tmp";
+                string tempPath = Path.Combine(Path.GetDirectoryName(saveFilePath), tempFilename + Path.GetExtension(saveFilePath));
+
+                File.Create(saveFilePath).Dispose();
+
+                using (EditableDocument newFile = EditableDocument.FromMarkup(htmlContent, null))
+                {
+                    using (GroupDocs.Editor.Editor editor = new GroupDocs.Editor.Editor(saveFilePath))
+                    {
+                        dynamic saveOptions = this.GetSaveOptions(saveFilePath);
+                        if (saveOptions is WordProcessingSaveOptions)
+                        {
+                            // TODO: leads to exception
+                            //saveOptions.EnablePagination = true;
+                        }
+
+                        using (FileStream outputStream = File.Create(tempPath))
+                        {
+                            editor.Save(newFile, outputStream, saveOptions);
+                        }
+                    }
+                }
+
+                if (File.Exists(saveFilePath))
+                {
+                    File.Delete(saveFilePath);
+                }
+
+                File.Move(tempPath, saveFilePath);
+
+                LoadDocumentEntity loadDocumentEntity = LoadDocument(saveFilePath, "");
+
+                // return document description
+                return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
+            }
+            catch (Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, postedData.getPassword()));
+            }
+        }
+
         private static ILoadOptions GetLoadOptions(string guid)
         {
             string extension = Path.GetExtension(guid).Replace(".", "");
