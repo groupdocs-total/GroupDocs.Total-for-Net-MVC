@@ -51,8 +51,8 @@
     <Reference Include="GroupDocs.Annotation, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Annotation.19.6.0\lib\GroupDocs.Annotation.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Comparison, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Comparison.19.6.0\lib\GroupDocs.Comparison.dll</HintPath>
+    <Reference Include="GroupDocs.Comparison, Version=20.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Comparison.20.6.0\lib\net20\GroupDocs.Comparison.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Conversion, Version=20.3.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Conversion.20.3.0\lib\net20\GroupDocs.Conversion.dll</HintPath>

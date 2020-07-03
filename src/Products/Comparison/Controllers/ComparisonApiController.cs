@@ -1,4 +1,5 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+﻿using GroupDocs.Comparison.Common.Exceptions;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.LowercaseContractResolver;
 using GroupDocs.Total.MVC.Products.Comparison.Config;
@@ -23,8 +24,8 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ComparisonApiController : ApiController
     {
-        private IComparisonService comparisonService;
-        private static Common.Config.GlobalConfiguration globalConfiguration;
+        private readonly IComparisonService comparisonService;
+        private static readonly Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();
 
         /// <summary>
         /// Constructor
@@ -32,7 +33,6 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         /// <param name="globalConfiguration">GlobalConfiguration</param>
         public ComparisonApiController()
         {
-            globalConfiguration = new Common.Config.GlobalConfiguration();
             comparisonService = new ComparisonServiceImpl(globalConfiguration);
         }
 
@@ -57,7 +57,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         public HttpResponseMessage loadFileTree(PostedDataEntity fileTreeRequest)
         {
             return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadFiles(fileTreeRequest));
-        }              
+        }
 
         /// <summary>
         /// Download results
@@ -66,7 +66,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         [HttpGet]
         [Route("comparison/downloadDocument")]
         public HttpResponseMessage DownloadDocument(string guid)
-        {          
+        {
             string filePath = guid;
             if (!string.IsNullOrEmpty(filePath))
             {
@@ -77,7 +77,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                     response.Content = new StreamContent(fileStream);
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    response.Content.Headers.ContentDisposition.FileName = System.IO.Path.GetFileName(filePath);
+                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(filePath);
                     return response;
                 }
             }
@@ -111,7 +111,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                             if (rewrite)
                             {
                                 // Get the complete file path
-                                fileSavePath = System.IO.Path.Combine(documentStoragePath, httpPostedFile.FileName);
+                                fileSavePath = Path.Combine(documentStoragePath, httpPostedFile.FileName);
                             }
                             else
                             {
@@ -129,11 +129,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
                     {
                         // get file name from the URL
                         Uri uri = new Uri(url);
-                        string fileName = System.IO.Path.GetFileName(uri.LocalPath);
+                        string fileName = Path.GetFileName(uri.LocalPath);
                         if (rewrite)
                         {
                             // Get the complete file path
-                            fileSavePath = System.IO.Path.Combine(documentStoragePath, fileName);
+                            fileSavePath = Path.Combine(documentStoragePath, fileName);
                         }
                         else
                         {
@@ -185,7 +185,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
-        }        
+        }
 
         /// <summary>
         /// Get result page
@@ -198,23 +198,21 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         {
             try
             {
-                LoadDocumentEntity document = comparisonService.LoadDocumentPages(loadResultPageRequest.guid, loadResultPageRequest.password);
+                LoadDocumentEntity document = ComparisonServiceImpl.LoadDocumentPages(loadResultPageRequest.guid,
+                                                                                  loadResultPageRequest.password,
+                                                                                  globalConfiguration.GetComparisonConfiguration().GetPreloadResultPageCount() == 0);
                 return Request.CreateResponse(HttpStatusCode.OK, document);
-            } catch (System.Exception ex) {
-                FileLoadException passwordError = null;
-                if (ex.InnerException.ToString().Contains("Password"))
-                {
-                    passwordError = new FileLoadException("Invalid password");
-                }
+            }
+            catch (PasswordProtectedFileException ex)
+            {
                 // set exception message
-                if(passwordError != null)
-                {
-                    return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(passwordError, loadResultPageRequest.password));
-                } else {
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, loadResultPageRequest.password));
-                }
-                
-            }        
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, loadResultPageRequest.password));
+            }
+            catch (Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, loadResultPageRequest.password));
+            }
         }
 
         /// <summary>
@@ -226,19 +224,7 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Controllers
         [Route("comparison/loadDocumentPage")]
         public HttpResponseMessage LoadDocumentPage(PostedDataEntity postedData)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentPage(postedData));            
-        }
-
-        /// <summary>
-        /// Get document info
-        /// </summary>
-        /// <param name="postedData">Post data</param>
-        /// <returns>Document info object</returns>
-        [HttpPost]
-        [Route("comparison/loadDocumentInfo")]
-        public HttpResponseMessage LoadDocumentInfo(PostedDataEntity postedData)
-        {
-            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentInfo(postedData));
+            return Request.CreateResponse(HttpStatusCode.OK, comparisonService.LoadDocumentPage(postedData));
         }
     }
 }
