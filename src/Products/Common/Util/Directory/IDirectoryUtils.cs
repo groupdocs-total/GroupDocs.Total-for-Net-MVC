@@ -1,7 +1,7 @@
 ﻿namespace GroupDocs.Total.MVC.Products.Common.Util.Directory
 {
     /// <summary>
-    /// IDirectoryUtils
+    /// IDirectoryUtils.
     /// </summary>
     public interface IDirectoryUtils
     {

@@ -10,94 +10,94 @@ using GroupDocs.Total.MVC.Products.Viewer.Config;
 namespace GroupDocs.Total.MVC.Products.Common.Config
 {
     /// <summary>
-    /// Global configuration
+    /// Global configuration.
     /// </summary>
     public class GlobalConfiguration
     {
-        private readonly ServerConfiguration Server;
-        private readonly ApplicationConfiguration Application;
-        private readonly CommonConfiguration Common;
-        private readonly SignatureConfiguration Signature;
-        private readonly ViewerConfiguration Viewer;
-        private readonly AnnotationConfiguration Annotation;
-        private readonly ComparisonConfiguration Comparison;
-        private readonly ConversionConfiguration Conversion;
-        private readonly EditorConfiguration Editor;
-        private readonly MetadataConfiguration Metadata;
-        private readonly SearchConfiguration Search;
+        private readonly ServerConfiguration server;
+        private readonly ApplicationConfiguration application;
+        private readonly CommonConfiguration common;
+        private readonly SignatureConfiguration signature;
+        private readonly ViewerConfiguration viewer;
+        private readonly AnnotationConfiguration annotation;
+        private readonly ComparisonConfiguration comparison;
+        private readonly ConversionConfiguration conversion;
+        private readonly EditorConfiguration editor;
+        private readonly MetadataConfiguration metadata;
+        private readonly SearchConfiguration search;
 
         /// <summary>
-        /// Get all configurations
+        /// Initializes a new instance of the <see cref="GlobalConfiguration"/> class.
+        /// Get all configurations.
         /// </summary>
         public GlobalConfiguration()
         {
-            Server = new ServerConfiguration();
-            Application = new ApplicationConfiguration();
-            Signature = new SignatureConfiguration();
-            Viewer = new ViewerConfiguration();
-            Common = new CommonConfiguration();
-            Annotation = new AnnotationConfiguration();
-            Comparison = new ComparisonConfiguration();
-            Conversion = new ConversionConfiguration();
-            Editor = new EditorConfiguration();
-            Metadata = new MetadataConfiguration();
-            Search = new SearchConfiguration();
+            this.server = new ServerConfiguration();
+            this.application = new ApplicationConfiguration();
+            this.signature = new SignatureConfiguration();
+            this.viewer = new ViewerConfiguration();
+            this.common = new CommonConfiguration();
+            this.annotation = new AnnotationConfiguration();
+            this.comparison = new ComparisonConfiguration();
+            this.conversion = new ConversionConfiguration();
+            this.editor = new EditorConfiguration();
+            this.metadata = new MetadataConfiguration();
+            this.search = new SearchConfiguration();
         }
-
 
         public EditorConfiguration GetEditorConfiguration()
         {
-            return Editor;
+            return this.editor;
         }
 
         public ServerConfiguration GetServerConfiguration()
         {
-            return Server;
+            return this.server;
         }
 
         public ApplicationConfiguration GetApplicationConfiguration()
         {
-            return Application;
+            return this.application;
         }
 
         public CommonConfiguration GetCommonConfiguration()
         {
-            return Common;
+            return this.common;
         }
 
         public ViewerConfiguration GetViewerConfiguration()
         {
-            return Viewer;
+            return this.viewer;
         }
 
         public AnnotationConfiguration GetAnnotationConfiguration()
         {
-            return Annotation;
+            return this.annotation;
         }
 
         public SignatureConfiguration GetSignatureConfiguration()
         {
-            return Signature;
+            return this.signature;
         }
 
         public ComparisonConfiguration GetComparisonConfiguration()
         {
-            return Comparison;
+            return this.comparison;
         }
 
         public ConversionConfiguration GetConversionConfiguration()
         {
-            return Conversion;
+            return this.conversion;
         }
 
         public MetadataConfiguration GetMetadataConfiguration()
         {
-            return Metadata;
+            return this.metadata;
         }
 
         public SearchConfiguration GetSearchConfiguration()
         {
-            return Search;
+            return this.search;
         }
     }
 }
