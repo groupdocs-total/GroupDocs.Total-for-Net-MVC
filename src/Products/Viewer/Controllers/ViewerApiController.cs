@@ -37,16 +37,13 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         /// </summary>
         protected static readonly ConcurrentDictionary<string, object> KeyLockerMap = new ConcurrentDictionary<string, object>();
 
-        private static Common.Config.GlobalConfiguration globalConfiguration;
+        private static readonly Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewerApiController"/> class.
         /// </summary>
         public ViewerApiController()
         {
-            // Check if filesDirectory is relative or absolute path
-            globalConfiguration = new Common.Config.GlobalConfiguration();
-
             List<string> fontsDirectory = new List<string>();
             if (!string.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetFontsDirectory()))
             {
