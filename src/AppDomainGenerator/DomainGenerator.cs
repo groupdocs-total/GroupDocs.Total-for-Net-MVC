@@ -5,7 +5,7 @@ using System.Reflection;
 namespace GroupDocs.Total.MVC.AppDomainGenerator
 {
     /// <summary>
-    /// DomainGenerator.
+    /// Generates app domains and sets app licenses.
     /// </summary>
     public class DomainGenerator
     {

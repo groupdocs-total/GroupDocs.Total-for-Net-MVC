@@ -44,8 +44,8 @@ namespace GroupDocs.Total.MVC.Products.Common.Resources
         /// <summary>
         /// Generate exception.
         /// </summary>
-        /// <param name="ex">Exception.</param>
-        /// <returns>ExceptionEntity.</returns>
+        /// <param name="ex">Exception object.</param>
+        /// <returns>Exception entity DTO-object.</returns>
         public ExceptionEntity GenerateException(System.Exception ex)
         {
             // Initiate Exception entity
@@ -60,9 +60,9 @@ namespace GroupDocs.Total.MVC.Products.Common.Resources
         /// <summary>
         /// Generate exception for password error.
         /// </summary>
-        /// <param name="ex">Exception.</param>
-        /// <param name="password">string.</param>
-        /// <returns>ExceptionEntity.</returns>
+        /// <param name="ex">Exception object.</param>
+        /// <param name="password">Document password.</param>
+        /// <returns>Exception entity DTO-object.</returns>
         public ExceptionEntity GenerateException(System.Exception ex, string password)
         {
             // Initiate exception

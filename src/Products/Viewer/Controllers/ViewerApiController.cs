@@ -37,7 +37,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         /// </summary>
         protected static readonly ConcurrentDictionary<string, object> KeyLockerMap = new ConcurrentDictionary<string, object>();
 
-        private static readonly Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();
+        private static readonly Common.Config.GlobalConfiguration GlobalConfiguration = new Common.Config.GlobalConfiguration();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewerApiController"/> class.
@@ -45,9 +45,9 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         public ViewerApiController()
         {
             List<string> fontsDirectory = new List<string>();
-            if (!string.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetFontsDirectory()))
+            if (!string.IsNullOrEmpty(GlobalConfiguration.GetViewerConfiguration().GetFontsDirectory()))
             {
-                fontsDirectory.Add(globalConfiguration.GetViewerConfiguration().GetFontsDirectory());
+                fontsDirectory.Add(GlobalConfiguration.GetViewerConfiguration().GetFontsDirectory());
             }
         }
 
@@ -59,7 +59,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         [Route("viewer/loadConfig")]
         public ViewerConfiguration LoadConfig()
         {
-            return globalConfiguration.GetViewerConfiguration();
+            return GlobalConfiguration.GetViewerConfiguration();
         }
 
         /// <summary>
@@ -75,13 +75,13 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 List<FileDescriptionEntity> filesList = new List<FileDescriptionEntity>();
 
-                if (!string.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetFilesDirectory()))
+                if (!string.IsNullOrEmpty(GlobalConfiguration.GetViewerConfiguration().GetFilesDirectory()))
                 {
-                    var currentPath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
+                    var currentPath = GlobalConfiguration.GetViewerConfiguration().GetFilesDirectory();
                     List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
                     allFiles.AddRange(Directory.GetDirectories(currentPath));
 
-                    string cacheFolderName = globalConfiguration.GetViewerConfiguration().GetCacheFolderName();
+                    string cacheFolderName = GlobalConfiguration.GetViewerConfiguration().GetCacheFolderName();
 
                     allFiles.Sort(new FileNameComparator());
                     allFiles.Sort(new FileDateComparator());
@@ -94,7 +94,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                         if (!(cacheFolderName.Equals(Path.GetFileName(file)) ||
                               Path.GetFileName(file).StartsWith(".") ||
                               fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                              Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetViewerConfiguration().GetFilesDirectory()))))
+                              Path.GetFileName(file).Equals(Path.GetFileName(GlobalConfiguration.GetViewerConfiguration().GetFilesDirectory()))))
                         {
                             FileDescriptionEntity fileDescription = new FileDescriptionEntity
                             {
@@ -136,7 +136,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         {
             try
             {
-                LoadDocumentEntity loadDocumentEntity = GetDocumentPages(postedData, globalConfiguration.GetViewerConfiguration().GetPreloadPageCount() == 0);
+                LoadDocumentEntity loadDocumentEntity = GetDocumentPages(postedData, GlobalConfiguration.GetViewerConfiguration().GetPreloadPageCount() == 0);
 
                 // return document description
                 return this.Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
@@ -278,7 +278,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 string url = HttpContext.Current.Request.Form["url"];
 
                 // get documents storage path
-                string documentStoragePath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
+                string documentStoragePath = GlobalConfiguration.GetViewerConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = string.Empty;
                 if (string.IsNullOrEmpty(url))
@@ -376,37 +376,6 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         }
 
         /// <summary>
-        /// Loads print pdf.
-        /// </summary>
-        /// <param name="loadDocumentRequest">PostedDataEntity.</param>
-        /// <returns>Data of all document pages.</returns>
-        [HttpPost]
-        [Route("viewer/printPdf")]
-        public HttpResponseMessage PrintPdf(PostedDataEntity loadDocumentRequest)
-        {
-            // get document path
-            string documentGuid = loadDocumentRequest.guid;
-            string fileName = Path.GetFileName(documentGuid);
-            try
-            {
-                var fileStream = new FileStream(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                response.Content = new StreamContent(fileStream);
-
-                // add file into the response
-                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                // set exception message
-                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
-            }
-        }
-
-        /// <summary>
         /// Gets page dimensions and rotation angle.
         /// </summary>
         /// <param name="page">Page object.</param>
@@ -445,7 +414,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 MemoryPageStreamFactory pageStreamFactory = new MemoryPageStreamFactory(pages);
 
-                if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
+                if (GlobalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
                 {
                     ViewOptions viewOptions = HtmlViewOptions.ForEmbeddedResources(pageStreamFactory);
                     viewOptions.SpreadsheetOptions.TextOverflowMode = TextOverflowMode.HideText;
@@ -488,15 +457,15 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         /// <summary>
         /// Adds watermark on document if its specified in configuration file.
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="options">View options for rendering in HTML or PNG.</param>
         private static void SetWatermarkOptions(ViewOptions options)
         {
             Watermark watermark = null;
 
-            if (!string.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetWatermarkText()))
+            if (!string.IsNullOrEmpty(GlobalConfiguration.GetViewerConfiguration().GetWatermarkText()))
             {
                 // Set watermark properties
-                watermark = new Watermark(globalConfiguration.GetViewerConfiguration().GetWatermarkText())
+                watermark = new Watermark(GlobalConfiguration.GetViewerConfiguration().GetWatermarkText())
                 {
                     Color = System.Drawing.Color.Blue,
                     Position = Position.Diagonal,
@@ -532,7 +501,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         /// <param name="newAngle">New angle value.</param>
         private static void GenerateViewerCache(GroupDocs.Viewer.Viewer viewer, int pageNumber = -1, int newAngle = 0)
         {
-            if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
+            if (GlobalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
             {
                 HtmlViewOptions htmlViewOptions = HtmlViewOptions.ForEmbeddedResources(_ => new MemoryStream());
                 htmlViewOptions.SpreadsheetOptions.TextOverflowMode = TextOverflowMode.HideText;
@@ -583,7 +552,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         /// <returns>Viewer settings object.</returns>
         private static ViewerSettings GetViewerSettings(string documentGuid, out string cachePath)
         {
-            string outputDirectory = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
+            string outputDirectory = GlobalConfiguration.GetViewerConfiguration().GetFilesDirectory();
             cachePath = Path.Combine(outputDirectory, "cache");
             cachePath = Path.Combine(cachePath, Path.GetFileNameWithoutExtension(documentGuid) + "_" + Path.GetExtension(documentGuid).Replace(".", string.Empty));
 
@@ -718,7 +687,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     List<MemoryStream> pages = new List<MemoryStream>();
                     MemoryPageStreamFactory pageStreamFactory = new MemoryPageStreamFactory(pages);
 
-                    if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
+                    if (GlobalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
                     {
                         ViewOptions viewOptions = HtmlViewOptions.ForEmbeddedResources(pageStreamFactory);
                         viewOptions.SpreadsheetOptions.TextOverflowMode = TextOverflowMode.HideText;
@@ -734,7 +703,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
 
                     foreach (var pageStream in pages)
                     {
-                        if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
+                        if (GlobalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
                         {
                             pagesContent.Add(Encoding.UTF8.GetString(pageStream.ToArray()));
                         }
