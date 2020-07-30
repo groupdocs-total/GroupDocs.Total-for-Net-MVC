@@ -345,11 +345,11 @@
     <Compile Include="Products\Editor\Controllers\EditorApiController.cs" />
     <Compile Include="Products\Viewer\Cache\ConcurrentDictionaryKeyLockerStore.cs" />
     <Compile Include="Products\Viewer\Cache\IKeyLockerStore.cs" />
+    <Compile Include="Products\Viewer\Cache\MemoryPageStreamFactory.cs" />
     <Compile Include="Products\Viewer\Cache\ThreadSafeCache.cs" />
     <Compile Include="Products\Viewer\Config\ViewerConfiguration.cs" />
     <Compile Include="Products\Viewer\Controllers\ViewerApiController.cs" />
     <Compile Include="Products\Common\Entity\Web\PostedDataEntity.cs" />
-    <Compile Include="Products\Viewer\Entity\Web\RotatedPageEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

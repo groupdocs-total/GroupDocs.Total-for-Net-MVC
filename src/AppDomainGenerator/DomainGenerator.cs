@@ -5,161 +5,177 @@ using System.Reflection;
 namespace GroupDocs.Total.MVC.AppDomainGenerator
 {
     /// <summary>
-    /// DomainGenerator
+    /// Generates app domains and sets app licenses.
     /// </summary>
     public class DomainGenerator
     {
         private readonly Products.Common.Config.GlobalConfiguration globalConfiguration;
-        private readonly Type CurrentType;
+        private readonly Type currentType;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="DomainGenerator"/> class.
         /// </summary>
+        /// <param name="assemblyName">Assembly name.</param>
+        /// <param name="className">Class name.</param>
         public DomainGenerator(string assemblyName, string className)
         {
-            globalConfiguration = new Products.Common.Config.GlobalConfiguration();
+            this.globalConfiguration = new Products.Common.Config.GlobalConfiguration();
+
             // Get assembly path
             string assemblyPath = this.GetAssemblyPath(assemblyName);
+
             // Initiate GroupDocs license class
-            CurrentType = this.CreateDomain(assemblyName + "Domain", assemblyPath, className);
+            this.currentType = this.CreateDomain(assemblyName + "Domain", assemblyPath, className);
         }
 
         /// <summary>
-        /// Get assembly full path by its name
+        /// Set GroupDocs.Viewer license.
         /// </summary>
-        /// <param name="assemblyName">string</param>
-        /// <returns></returns>
+        /// <param name="type">Type.</param>
+        public void SetViewerLicense()
+        {
+            // Initiate License class
+            var obj = (GroupDocs.Viewer.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Signature license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetSignatureLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Signature.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Annotation license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetAnnotationLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Comparison license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetComparisonLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Comparison.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Conversion license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetConversionLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Conversion.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Editor license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetEditorLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Editor.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Metadata license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetMetadataLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Metadata.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Set GroupDocs.Search license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetSearchLicense()
+        {
+            // Initiate license class
+            var obj = (GroupDocs.Search.License)Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
+        /// Get assembly full path by its name.
+        /// </summary>
+        /// <param name="assemblyName">string.</param>
+        /// <returns>Assebmly name.</returns>
         private string GetAssemblyPath(string assemblyName)
         {
-            string path = "";
+            string path = string.Empty;
+
             // Get path of the executable
             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
             UriBuilder uri = new UriBuilder(codeBase);
             string uriPath = Uri.UnescapeDataString(uri.Path);
+
             // Get path of the assembly
             path = Path.Combine(Path.GetDirectoryName(uriPath), assemblyName);
             return path;
         }
 
         /// <summary>
-        /// Create AppDomain for the assembly
+        /// Create AppDomain for the assembly.
         /// </summary>
-        /// <param name="domainName">string</param>
-        /// <param name="assemblyPath">string</param>
-        /// <param name="className">string</param>
-        /// <returns></returns>
+        /// <param name="domainName">Domain name.</param>
+        /// <param name="assemblyPath">Assembly path.</param>
+        /// <param name="className">Class name.</param>
+        /// <returns>Assembly type.</returns>
         private Type CreateDomain(string domainName, string assemblyPath, string className)
         {
             // Create domain
             AppDomain dom = AppDomain.CreateDomain(domainName);
             AssemblyName assemblyName = new AssemblyName { CodeBase = assemblyPath };
+
             // Load assembly into the domain
             Assembly assembly = dom.Load(assemblyName);
+
             // Initiate class from the loaded assembly
             Type type = assembly.GetType(className);
             return type;
         }
 
-        /// <summary>
-        /// Set GroupDocs.Viewer license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetViewerLicense()
-        {
-            // Initiate License class
-            var obj = (GroupDocs.Viewer.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Signature license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetSignatureLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Signature.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Annotation license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetAnnotationLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Comparison license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetComparisonLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Comparison.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Conversion license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetConversionLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Conversion.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Editor license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetEditorLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Editor.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Metadata license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetMetadataLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Metadata.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
-        /// <summary>
-        /// Set GroupDocs.Search license
-        /// </summary>
-        /// <param name="type">Type</param>
-        public void SetSearchLicense()
-        {
-            // Initiate license class
-            var obj = (GroupDocs.Search.License)Activator.CreateInstance(CurrentType);
-            // Set license
-            SetLicense(obj);
-        }
-
         private void SetLicense(dynamic obj) {
-            if (!String.IsNullOrEmpty(globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
+            if (!string.IsNullOrEmpty(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
             {
-                obj.SetLicense(globalConfiguration.GetApplicationConfiguration().GetLicensePath());
+                obj.SetLicense(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath());
             }
         }
     }

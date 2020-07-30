@@ -1,11 +1,13 @@
-﻿
-namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
+﻿namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
 {
     /// <summary>
-    /// Uploaded document entity
+    /// DTO-class, represents uploaded document by its absolute path.
     /// </summary>
     public class UploadedDocumentEntity
     {
+        /// <summary>
+        /// Absolute path to the uploaded document.
+        /// </summary>
         public string guid { get; set; }
     }
 }
