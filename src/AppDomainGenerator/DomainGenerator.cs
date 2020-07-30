@@ -61,7 +61,7 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         public void SetAnnotationLicense()
         {
             // Initiate license class
-            var obj = (GroupDocs.Annotation.Common.License.License)Activator.CreateInstance(this.currentType);
+            var obj = (GroupDocs.Annotation.License)Activator.CreateInstance(this.currentType);
 
             // Set license
             this.SetLicense(obj);

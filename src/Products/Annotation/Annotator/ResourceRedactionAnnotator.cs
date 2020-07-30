@@ -1,4 +1,6 @@
-﻿using GroupDocs.Annotation.Domain;
+﻿using GroupDocs.Annotation.Models;
+using GroupDocs.Annotation.Models.AnnotationModels;
+using GroupDocs.Annotation.Options;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
 using System;
 
@@ -6,55 +8,48 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 {
     public class ResourceRedactionAnnotator : BaseAnnotator
     {
-        public ResourceRedactionAnnotator(AnnotationDataEntity annotationData, PageData pageData)
-            : base(annotationData, pageData)
+        private ResourcesRedactionAnnotation resourcesRedactionAnnotation;
+
+        public ResourceRedactionAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
+            : base(annotationData, pageInfo)
         {
+            this.resourcesRedactionAnnotation = new ResourcesRedactionAnnotation
+            {
+                Box = GetBox()
+            };
         }
-        
-        public override AnnotationInfo AnnotateWord()
+
+        public override AnnotationBase AnnotateWord()
         {
-            AnnotationInfo resourceRedactionAnnotation = InitAnnotationInfo();
-            return resourceRedactionAnnotation;
+            resourcesRedactionAnnotation = InitAnnotationBase(resourcesRedactionAnnotation) as ResourcesRedactionAnnotation;
+            return resourcesRedactionAnnotation;
         }
-        
-        public override AnnotationInfo AnnotatePdf()
+
+        public override AnnotationBase AnnotatePdf()
         {
-            // initiate AnnotationInfo object
-            AnnotationInfo resourceRedactionAnnotation = InitAnnotationInfo();
-            // set annotation X, Y position
-            resourceRedactionAnnotation.AnnotationPosition = new Point(annotationData.left, annotationData.top);
-            return resourceRedactionAnnotation;
+            return AnnotateWord();
         }
-        
-        public override AnnotationInfo AnnotateCells()
+
+        public override AnnotationBase AnnotateCells()
         {
-            throw new NotSupportedException(String.Format(Message, annotationData.type));
+            throw new NotSupportedException(string.Format(Message, annotationData.type));
         }
-        
-        public override AnnotationInfo AnnotateSlides()
+
+        public override AnnotationBase AnnotateSlides()
         {
-            AnnotationInfo resourceRedactionAnnotation = InitAnnotationInfo();
-            return resourceRedactionAnnotation;
+            return AnnotateWord();
         }
-        
-        public override AnnotationInfo AnnotateImage()
+
+        public override AnnotationBase AnnotateImage()
         {
-            AnnotationInfo resourceRedactionAnnotation = InitAnnotationInfo();
-            return resourceRedactionAnnotation;
+            return AnnotateWord();
         }
-        
-        public override AnnotationInfo AnnotateDiagram()
+
+        public override AnnotationBase AnnotateDiagram()
         {
-            // init annotation object
-            AnnotationInfo resourceRedactionAnnotation = InitAnnotationInfo();
-            return resourceRedactionAnnotation;
+            return AnnotateWord();
         }
-        
-        protected override Rectangle GetBox()
-        {
-            return new Rectangle(annotationData.left, annotationData.top, annotationData.width, annotationData.height);
-        }
-        
+
         protected override AnnotationType GetType()
         {
             return AnnotationType.ResourcesRedaction;
