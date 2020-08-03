@@ -29,7 +29,7 @@ namespace GroupDocs.Total.MVC
             signatureDomainGenerator.SetSignatureLicense();
 
             // set GroupDocs.Annotation license
-            DomainGenerator annotationDomainGenerator = new DomainGenerator(annotationAssemblyName, "GroupDocs.Annotation.Common.License.License");
+            DomainGenerator annotationDomainGenerator = new DomainGenerator(annotationAssemblyName, "GroupDocs.Annotation.License");
             annotationDomainGenerator.SetAnnotationLicense();
 
             // set GroupDocs.Comparison license
