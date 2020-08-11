@@ -1,5 +1,12 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+﻿using GroupDocs.Metadata.Common;
+using GroupDocs.Metadata.Formats.Document;
+using GroupDocs.Metadata.Options;
+using GroupDocs.Metadata.Tagging;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
+using GroupDocs.Total.MVC.Products.Metadata.Config;
+using GroupDocs.Total.MVC.Products.Metadata.Entity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,14 +17,6 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using GroupDocs.Total.MVC.Products.Metadata.Config;
-using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
-using GroupDocs.Metadata;
-using GroupDocs.Metadata.Common;
-using GroupDocs.Metadata.Options;
-using GroupDocs.Metadata.Tagging;
-using GroupDocs.Metadata.Formats.Document;
-using GroupDocs.Total.MVC.Products.Metadata.Entity;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
 {
