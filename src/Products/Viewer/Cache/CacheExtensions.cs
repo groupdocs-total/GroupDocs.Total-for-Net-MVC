@@ -22,6 +22,6 @@
             return entry;
         }
 
-        public delegate TEntry Func<TEntry>();
+        public delegate TEntry Func<out TEntry>();
     }
 }
