@@ -69,8 +69,8 @@
     <Reference Include="GroupDocs.Search, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Search.20.4.0\lib\net20\GroupDocs.Search.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Viewer, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Viewer.20.4.0\lib\net20\GroupDocs.Viewer.dll</HintPath>
+    <Reference Include="GroupDocs.Viewer, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Viewer.20.7.0\lib\net20\GroupDocs.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -340,10 +340,13 @@
     <Compile Include="Products\Conversion\Controllers\ConversionApiController.cs" />
     <Compile Include="Products\Editor\Config\EditorConfiguration.cs" />
     <Compile Include="Products\Editor\Controllers\EditorApiController.cs" />
-    <Compile Include="Products\Viewer\Cache\ConcurrentDictionaryKeyLockerStore.cs" />
-    <Compile Include="Products\Viewer\Cache\IKeyLockerStore.cs" />
-    <Compile Include="Products\Viewer\Cache\MemoryPageStreamFactory.cs" />
-    <Compile Include="Products\Viewer\Cache\ThreadSafeCache.cs" />
+    <Compile Include="Products\Viewer\Cache\CacheExtensions.cs" />
+    <Compile Include="Products\Viewer\Cache\CrossProcessLock.cs" />
+    <Compile Include="Products\Viewer\Cache\FileViewerCache.cs" />
+    <Compile Include="Products\Viewer\Cache\HtmlViewer.cs" />
+    <Compile Include="Products\Viewer\Cache\ICustomViewer.cs" />
+    <Compile Include="Products\Viewer\Cache\IViewerCache.cs" />
+    <Compile Include="Products\Viewer\Cache\PngViewer.cs" />
     <Compile Include="Products\Viewer\Config\ViewerConfiguration.cs" />
     <Compile Include="Products\Viewer\Controllers\ViewerApiController.cs" />
     <Compile Include="Products\Common\Entity\Web\PostedDataEntity.cs" />
