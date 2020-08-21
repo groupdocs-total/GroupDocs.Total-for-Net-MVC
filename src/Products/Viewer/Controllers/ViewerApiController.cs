@@ -296,7 +296,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 path = Path.Combine(path, resourceName);
 
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                var fileStream = new FileStream(path, FileMode.Open);
+                var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
                 response.Content = new StreamContent(fileStream);
                 var fileName = Path.GetFileName(path);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue(MimeMapping.GetMimeMapping(fileName));
