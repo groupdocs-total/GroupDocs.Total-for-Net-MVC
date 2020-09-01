@@ -1,6 +1,6 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Parser;
-using GroupDocs.Total.MVC.Products.Metadata.Util.Directory;
+using GroupDocs.Total.MVC.Products.Metadata.Util;
 using Newtonsoft.Json;
 using System;
 using System.IO;
