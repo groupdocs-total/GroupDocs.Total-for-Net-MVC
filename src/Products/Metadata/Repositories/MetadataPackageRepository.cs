@@ -24,7 +24,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
             MetadataPropertyType.LongArray
         };
 
-        public MetadataPackageRepository(MetadataPackage package)
+        protected MetadataPackageRepository(MetadataPackage package)
         {
             Package = package;
         }
@@ -89,21 +89,16 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 
         protected PropertyValue CreatePropertyValue(MetadataPropertyType type, dynamic value)
         {
-            switch (type)
+            if (type == MetadataPropertyType.Integer && value is long)
             {
-                case MetadataPropertyType.Integer:
-                    if (value is long)
-                    {
-                        return new PropertyValue((int)value);
-                    }
-                    break;
-                case MetadataPropertyType.Double:
-                    if (value is long)
-                    {
-                        return new PropertyValue((double)value);
-                    }
-                    break;
+                return new PropertyValue((int)value);
             }
+
+            if (type == MetadataPropertyType.Double && value is long)
+            {
+                return new PropertyValue((double)value);
+            }
+
             return new PropertyValue(value);
         }
     }
