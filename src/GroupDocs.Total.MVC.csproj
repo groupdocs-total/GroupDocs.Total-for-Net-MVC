@@ -48,8 +48,8 @@
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Annotation, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Annotation.19.6.0\lib\GroupDocs.Annotation.dll</HintPath>
+    <Reference Include="GroupDocs.Annotation, Version=20.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Annotation.20.6.0\lib\net20\GroupDocs.Annotation.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Comparison, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Comparison.19.6.0\lib\GroupDocs.Comparison.dll</HintPath>
@@ -60,14 +60,17 @@
     <Reference Include="GroupDocs.Editor, Version=20.5.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Editor.20.5.0\lib\net20\GroupDocs.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Metadata, Version=20.1.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Metadata.20.1.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
+    <Reference Include="GroupDocs.Metadata, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Metadata.20.7.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Signature, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.4.0\lib\net20\GroupDocs.Signature.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Viewer, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Viewer.20.4.0\lib\net20\GroupDocs.Viewer.dll</HintPath>
+    <Reference Include="GroupDocs.Search, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Search.20.4.0\lib\net20\GroupDocs.Search.dll</HintPath>
+    </Reference>
+    <Reference Include="GroupDocs.Viewer, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Viewer.20.7.0\lib\net20\GroupDocs.Viewer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -217,14 +220,13 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ComparisonController.cs" />
     <Compile Include="Controllers\AnnotationController.cs" />
+    <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\TotalController.cs" />
     <Compile Include="Controllers\SignatureController.cs" />
     <Compile Include="Controllers\ConversionController.cs" />
     <Compile Include="Controllers\EditorController.cs" />
     <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\ViewerController.cs" />
-    <Compile Include="Products\Annotation\Annotator\AbstractBoxAnnotator.cs" />
-    <Compile Include="Products\Annotation\Annotator\AbstractSvgAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\AbstractTextAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\AnnotatorFactory.cs" />
     <Compile Include="Products\Annotation\Annotator\AreaAnnotator.cs" />
@@ -234,12 +236,12 @@
     <Compile Include="Products\Annotation\Annotator\PointAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\PolylineAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\ResourceRedactionAnnotator.cs" />
-    <Compile Include="Products\Annotation\Annotator\TexStrikeoutAnnotator.cs" />
-    <Compile Include="Products\Annotation\Annotator\TextAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextHighlightAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextStrikeoutAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\TextFieldAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\TextRedactionAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\TextReplacementAnnotator.cs" />
-    <Compile Include="Products\Annotation\Annotator\TexUnderlineAnnotator.cs" />
+    <Compile Include="Products\Annotation\Annotator\TextUnderlineAnnotator.cs" />
     <Compile Include="Products\Annotation\Annotator\WatermarkAnnotator.cs" />
     <Compile Include="Products\Annotation\Config\AnnotationConfiguration.cs" />
     <Compile Include="Products\Annotation\Controllers\AnnotationApiController.cs" />
@@ -251,7 +253,6 @@
     <Compile Include="Products\Annotation\Entity\Web\AnnotationPostedDataEntity.cs" />
     <Compile Include="Products\Annotation\Entity\Web\PageDataDescriptionEntity.cs" />
     <Compile Include="Products\Annotation\Entity\Web\TextRowEntity.cs" />
-    <Compile Include="Products\Annotation\Importer\BaseImporter.cs" />
     <Compile Include="Products\Annotation\Util\AnnotationMapper.cs" />
     <Compile Include="Products\Annotation\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Annotation\Util\Directory\FilesDirectoryUtils.cs" />
@@ -289,6 +290,14 @@
     <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
     <Compile Include="Products\Metadata\Entity\FilePropertyName.cs" />
     <Compile Include="Products\Metadata\Util\Directory\DirectoryUtils.cs" />
+    <Compile Include="Products\Search\Config\SearchConfiguration.cs" />
+    <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
+    <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
+    <Compile Include="Products\Search\Service\SearchService.cs" />
+    <Compile Include="Products\Search\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
     <Compile Include="Products\Signature\Config\SignatureConfiguration.cs" />
     <Compile Include="Products\Signature\Entity\Directory\UploadedImageDataDirectoryEntity.cs" />
@@ -331,13 +340,16 @@
     <Compile Include="Products\Conversion\Controllers\ConversionApiController.cs" />
     <Compile Include="Products\Editor\Config\EditorConfiguration.cs" />
     <Compile Include="Products\Editor\Controllers\EditorApiController.cs" />
-    <Compile Include="Products\Viewer\Cache\ConcurrentDictionaryKeyLockerStore.cs" />
-    <Compile Include="Products\Viewer\Cache\IKeyLockerStore.cs" />
-    <Compile Include="Products\Viewer\Cache\ThreadSafeCache.cs" />
+    <Compile Include="Products\Viewer\Cache\CacheExtensions.cs" />
+    <Compile Include="Products\Viewer\Cache\CrossProcessLock.cs" />
+    <Compile Include="Products\Viewer\Cache\FileViewerCache.cs" />
+    <Compile Include="Products\Viewer\Cache\HtmlViewer.cs" />
+    <Compile Include="Products\Viewer\Cache\ICustomViewer.cs" />
+    <Compile Include="Products\Viewer\Cache\IViewerCache.cs" />
+    <Compile Include="Products\Viewer\Cache\PngViewer.cs" />
     <Compile Include="Products\Viewer\Config\ViewerConfiguration.cs" />
     <Compile Include="Products\Viewer\Controllers\ViewerApiController.cs" />
     <Compile Include="Products\Common\Entity\Web\PostedDataEntity.cs" />
-    <Compile Include="Products\Viewer\Entity\Web\RotatedPageEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -395,6 +407,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Metadata\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Search\Index.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

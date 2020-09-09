@@ -240,3 +240,17 @@ metadata:
   # Using cache
   # Set true to enable cache
   cache: true
+
+################################################
+# GroupDocs.Search configurations
+################################################
+search:
+  # Files directory path
+  # Absolute path to files directory
+  filesDirectory: 'DocumentSamples/Search'
+  # Index directory path
+  # Absolute path to index files directory
+  indexDirectory: 'DocumentSamples/Search/Index'
+  # Indexed files directory path
+  # Absolute path to indexed files directory
+  indexedFilesDirectory: 'DocumentSamples/Search/Indexed'

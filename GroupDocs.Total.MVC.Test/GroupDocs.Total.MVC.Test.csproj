@@ -198,6 +198,7 @@
     <Compile Include="ConversionControllerTest.cs" />
     <Compile Include="AnnotationControllerTest.cs" />
     <Compile Include="ComparisonControllerTest.cs" />
+    <Compile Include="SearchControllerTest.cs" />
     <Compile Include="SignatureControllerTest.cs" />
     <Compile Include="MetadataControllerTest.cs" />
     <Compile Include="ViewerControllerTest.cs" />
