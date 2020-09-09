@@ -1,5 +1,6 @@
 ﻿using GroupDocs.Editor;
 using GroupDocs.Editor.Formats;
+using GroupDocs.Editor.Metadata;
 using GroupDocs.Editor.Options;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -128,7 +130,6 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             try
             {
                 LoadDocumentEntity loadDocumentEntity = LoadDocument(postedData.guid, postedData.password);
-
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
@@ -187,6 +188,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                 string documentStoragePath = globalConfiguration.GetEditorConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
                 string fileSavePath = "";
+
                 if (string.IsNullOrEmpty(url))
                 {
                     if (HttpContext.Current.Request.Files.AllKeys != null)
@@ -217,6 +219,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                         // get file name from the URL
                         Uri uri = new Uri(url);
                         string fileName = Path.GetFileName(uri.LocalPath);
+
                         if (rewrite)
                         {
                             // Get the complete file path
@@ -281,8 +284,6 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                     if (saveOptions is WordProcessingSaveOptions)
                     {
                         saveOptions.EnablePagination = true;
-                        saveOptions.FontExtraction = FontExtractionOptions.ExtractEmbeddedWithoutSystem;
-                        saveOptions.EnableLanguageInformation = true;
                     }
 
                     using (FileStream outputStream = File.Create(tempPath))
@@ -336,8 +337,7 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
                         dynamic saveOptions = this.GetSaveOptions(saveFilePath);
                         if (saveOptions is WordProcessingSaveOptions)
                         {
-                            // TODO: leads to exception
-                            //saveOptions.EnablePagination = true;
+                            // TODO: saveOptions.EnablePagination = true here leads to exception
                         }
 
                         using (FileStream outputStream = File.Create(tempPath))
@@ -591,40 +591,37 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
         {
             List<string> outputListItems = new List<string>();
 
-            foreach (var item in typeof(WordProcessingFormats).GetFields())
+            using (IEnumerator<WordProcessingFormats> sequenceEnum = WordProcessingFormats.All.GetEnumerator())
             {
-                if (item.Name.Equals("Auto"))
+                while (sequenceEnum.MoveNext())
                 {
-                    continue;
-                }
-
-                if (item.Name.Equals("Text"))
-                {
-                    outputListItems.Add("Txt");
-                }
-
-                else
-                {
-                    outputListItems.Add(item.Name);
+                    outputListItems.Add(sequenceEnum.Current.Extension);
                 }
             }
 
-            foreach (var item in typeof(SpreadsheetFormats).GetFields())
+            using (IEnumerator<SpreadsheetFormats> sequenceEnum = SpreadsheetFormats.All.GetEnumerator())
             {
-                if (item.Name.Equals("Auto"))
+                while (sequenceEnum.MoveNext())
                 {
-                    continue;
+                    outputListItems.Add(sequenceEnum.Current.Extension);
                 }
-
-                outputListItems.Add(item.Name);
             }
 
-            return outputListItems;
+            using (IEnumerator<PresentationFormats> sequenceEnum = PresentationFormats.All.GetEnumerator())
+            {
+                while (sequenceEnum.MoveNext())
+                {
+                    outputListItems.Add(sequenceEnum.Current.Extension);
+                }
+            }
+
+            return outputListItems.Distinct().ToList();
         }
 
         private LoadDocumentEntity LoadDocument(string guid, string password)
         {
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
+            loadDocumentEntity.SetGuid(guid);
             ILoadOptions loadOptions = GetLoadOptions(guid);
             if (loadOptions != null)
             {
@@ -634,25 +631,60 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             // Instantiate Editor object by loading the input file
             using (GroupDocs.Editor.Editor editor = new GroupDocs.Editor.Editor(guid, delegate { return loadOptions; }))
             {
+                IDocumentInfo documentInfo = editor.GetDocumentInfo(password);
+
                 dynamic editOptions = GetEditOptions(guid);
                 if (editOptions is WordProcessingEditOptions)
                 {
                     editOptions.EnablePagination = true;
+
+                    // Open input document for edit — obtain an intermediate document, that can be edited
+                    EditableDocument beforeEdit = editor.Edit(editOptions);
+                    string allEmbeddedInsideString = beforeEdit.GetEmbeddedHtml();
+                    PageDescriptionEntity page = new PageDescriptionEntity();
+                    page.SetData(allEmbeddedInsideString);
+                    loadDocumentEntity.SetPages(page);
+                    beforeEdit.Dispose();
                 }
+                else if (editOptions is SpreadsheetEditOptions)
+                {
+                    for (var i = 0; i < documentInfo.PageCount; i++)
+                    {
+                        // Let's create an intermediate EditableDocument from the i tab
+                        SpreadsheetEditOptions sheetEditOptions = new SpreadsheetEditOptions();
+                        sheetEditOptions.WorksheetIndex = i; // index is 0-based
+                        EditableDocument tabBeforeEdit = editor.Edit(sheetEditOptions);
 
-                // Open input document for edit — obtain an intermediate document, that can be edited
-                EditableDocument beforeEdit = editor.Edit(editOptions);
+                        // Get document as a single base64-encoded string, where all resources (images, fonts, etc) 
+                        // are embedded inside this string along with main textual content
+                        string allEmbeddedInsideString = tabBeforeEdit.GetEmbeddedHtml();
+                        PageDescriptionEntity page = new PageDescriptionEntity();
+                        page.SetData(allEmbeddedInsideString);
+                        page.number = i + 1;
+                        loadDocumentEntity.SetPages(page);
+                        tabBeforeEdit.Dispose();
+                    }
+                }
+                else if (editOptions is PresentationEditOptions)
+                {
+                    for (var i = 0; i < documentInfo.PageCount; i++)
+                    {
+                        // Create editing options
+                        PresentationEditOptions presentationEditOptions = new PresentationEditOptions();
+                        // Specify slide index from original document.
+                        editOptions.SlideNumber = i; // Because index is 0-based, it is 1st slide
+                        EditableDocument slideBeforeEdit = editor.Edit(presentationEditOptions);
 
-                // Get document as a single base64-encoded string, where all resources (images, fonts, etc) 
-                // are embedded inside this string along with main textual content
-                string allEmbeddedInsideString = beforeEdit.GetEmbeddedHtml();
-
-                loadDocumentEntity.SetGuid(guid);
-                PageDescriptionEntity page = new PageDescriptionEntity();
-                page.SetData(allEmbeddedInsideString);
-                loadDocumentEntity.SetPages(page);
-
-                beforeEdit.Dispose();
+                        // Get document as a single base64-encoded string, where all resources (images, fonts, etc) 
+                        // are embedded inside this string along with main textual content
+                        string allEmbeddedInsideString = slideBeforeEdit.GetEmbeddedHtml();
+                        PageDescriptionEntity page = new PageDescriptionEntity();
+                        page.SetData(allEmbeddedInsideString);
+                        page.number = i + 1;
+                        loadDocumentEntity.SetPages(page);
+                        slideBeforeEdit.Dispose();
+                    }
+                }
             }
 
             return loadDocumentEntity;
