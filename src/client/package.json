@@ -49,7 +49,7 @@
     "zone.js": "^0.9.1",
     "@nrwl/angular": "^8.2.0",
     "@groupdocs.examples.angular/viewer": "^0.7.0",
-    "@groupdocs.examples.angular/editor": "^0.7.0",
+    "@groupdocs.examples.angular/editor": "^0.8.0",
     "@groupdocs.examples.angular/comparison": "^0.6.0",
     "@groupdocs.examples.angular/conversion": "^0.7.0",
     "@groupdocs.examples.angular/signature": "^0.7.0",
