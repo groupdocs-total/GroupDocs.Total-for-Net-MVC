@@ -99,6 +99,11 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                 return new PropertyValue((double)value);
             }
 
+            if (type == MetadataPropertyType.DateTime)
+            {
+                return new PropertyValue(DateTime.SpecifyKind((DateTime)value, DateTimeKind.Local));
+            }
+
             return new PropertyValue(value);
         }
     }
