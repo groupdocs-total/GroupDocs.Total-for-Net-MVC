@@ -5,12 +5,19 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Request
 {
     public class SearchPostedData : PostedDataEntity
     {
-        [JsonProperty]
-        private string query { get; set; }
+        [JsonProperty()]
+        internal string Query { get; set; }
 
-        internal string GetQuery()
-        {
-            return this.query;
-        }
+        [JsonProperty()]
+        internal bool CaseSensitiveSearch { get; set; }
+
+        [JsonProperty()]
+        internal bool FuzzySearch { get; set; }
+
+        [JsonProperty()]
+        internal int FuzzySearchMistakeCount { get; set; }
+
+        [JsonProperty()]
+        internal bool FuzzySearchOnlyBestResults { get; set; }
     }
 }

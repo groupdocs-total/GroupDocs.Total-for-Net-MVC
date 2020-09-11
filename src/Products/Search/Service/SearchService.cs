@@ -29,13 +29,18 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             {
                 return new SummarySearchResult();
             }
+            if (searchRequest == null)
+            {
+                return new SummarySearchResult();
+            }
 
             SearchOptions searchOptions = new SearchOptions();
+            searchOptions.UseCaseSensitiveSearch = searchRequest.CaseSensitiveSearch;
+            searchOptions.FuzzySearch.Enabled = searchRequest.FuzzySearch;
+            searchOptions.FuzzySearch.FuzzyAlgorithm = new TableDiscreteFunction(searchRequest.FuzzySearchMistakeCount);
+            searchOptions.FuzzySearch.OnlyBestResults = searchRequest.FuzzySearchOnlyBestResults;
 
-            // Turn on fuzzy search on
-            searchOptions.UseCaseSensitiveSearch = false;
-
-            var searchQuery = searchRequest.GetQuery();
+            var searchQuery = searchRequest.Query;
             SearchResult result;
 
             foreach (char specialChar in specialCharsList)
