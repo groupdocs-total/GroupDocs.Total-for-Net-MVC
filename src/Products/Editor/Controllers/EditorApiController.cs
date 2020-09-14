@@ -368,18 +368,17 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
         private static ILoadOptions GetLoadOptions(string guid)
         {
-            string extension = Path.GetExtension(guid).Replace(".", "");
-            extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
+            string extension = Path.GetExtension(guid).Replace(".", "").ToLower();
             ILoadOptions options = null;
 
             foreach (var item in typeof(WordProcessingFormats).GetFields())
             {
-                if (item.Name.Equals("Auto"))
+                if (item.Name.ToLower().Equals("auto"))
                 {
                     continue;
                 }
 
-                if (item.Name.Equals(extension))
+                if (item.Name.ToLower().Equals(extension))
                 {
                     options = new WordProcessingLoadOptions();
                     break;
@@ -388,12 +387,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
             foreach (var item in typeof(PresentationFormats).GetFields())
             {
-                if (item.Name.Equals("Auto"))
+                if (item.Name.ToLower().Equals("auto"))
                 {
                     continue;
                 }
 
-                if (item.Name.Equals(extension))
+                if (item.Name.ToLower().Equals(extension))
                 {
                     options = new PresentationLoadOptions();
                     break;
@@ -402,12 +401,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
             foreach (var item in typeof(SpreadsheetFormats).GetFields())
             {
-                if (item.Name.Equals("Auto"))
+                if (item.Name.ToLower().Equals("auto"))
                 {
                     continue;
                 }
 
-                if (item.Name.Equals(extension))
+                if (item.Name.ToLower().Equals(extension))
                 {
                     options = new SpreadsheetLoadOptions();
                     break;
@@ -419,11 +418,10 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
         private static IEditOptions GetEditOptions(string guid)
         {
-            string extension = Path.GetExtension(guid).Replace(".", "");
-            extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
+            string extension = Path.GetExtension(guid).Replace(".", "").ToLower();
             IEditOptions options = null;
 
-            if (extension.Equals("Txt"))
+            if (extension.ToLower().Equals("txt"))
             {
                 options = new TextEditOptions();
             }
@@ -431,12 +429,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             {
                 foreach (var item in typeof(WordProcessingFormats).GetFields())
                 {
-                    if (item.Name.Equals("Auto"))
+                    if (item.Name.ToLower().Equals("auto"))
                     {
                         continue;
                     }
 
-                    if (item.Name.Equals(extension))
+                    if (item.Name.ToLower().Equals(extension))
                     {
                         options = new WordProcessingEditOptions();
                         break;
@@ -445,12 +443,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
                 foreach (var item in typeof(PresentationFormats).GetFields())
                 {
-                    if (item.Name.Equals("Auto"))
+                    if (item.Name.ToLower().Equals("auto"))
                     {
                         continue;
                     }
 
-                    if (item.Name.Equals(extension))
+                    if (item.Name.ToLower().Equals(extension))
                     {
                         options = new PresentationEditOptions();
                         break;
@@ -468,11 +466,10 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
         private ISaveOptions GetSaveOptions(string guid)
         {
-            string extension = Path.GetExtension(guid).Replace(".", "");
-            extension = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(extension);
+            string extension = Path.GetExtension(guid).Replace(".", "").ToLower();
             ISaveOptions options = null;
 
-            if (extension.Equals("Txt"))
+            if (extension.ToLower().Equals("txt"))
             {
                 options = new TextSaveOptions();
             }
@@ -480,11 +477,11 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
             {
                 foreach (var item in typeof(WordProcessingFormats).GetFields())
                 {
-                    if (item.Name.Equals("Auto"))
+                    if (item.Name.ToLower().Equals("auto"))
                     {
                         continue;
                     }
-                    if (item.Name.Equals(extension))
+                    if (item.Name.ToLower().Equals(extension))
                     {
                         WordProcessingFormats format = WordProcessingFormats.FromExtension(extension);
                         options = new WordProcessingSaveOptions(format);
@@ -494,12 +491,12 @@ namespace GroupDocs.Total.MVC.Products.Editor.Controllers
 
                 foreach (var item in typeof(PresentationFormats).GetFields())
                 {
-                    if (item.Name.Equals("Auto"))
+                    if (item.Name.ToLower().Equals("auto"))
                     {
                         continue;
                     }
 
-                    if (item.Name.Equals(extension))
+                    if (item.Name.ToLower().Equals(extension))
                     {
                         PresentationFormats format = PresentationFormats.FromExtension(extension);
                         options = new PresentationSaveOptions(format);
