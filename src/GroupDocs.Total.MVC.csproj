@@ -63,11 +63,11 @@
     <Reference Include="GroupDocs.Metadata, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Metadata.20.7.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
+    <Reference Include="GroupDocs.Search, Version=20.8.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Search.20.8.0\lib\net20\GroupDocs.Search.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Signature, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.4.0\lib\net20\GroupDocs.Signature.dll</HintPath>
-    </Reference>
-    <Reference Include="GroupDocs.Search, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Search.20.4.0\lib\net20\GroupDocs.Search.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Viewer, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Viewer.20.7.0\lib\net20\GroupDocs.Viewer.dll</HintPath>
@@ -294,6 +294,7 @@
     <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
     <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\IndexProperties.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
     <Compile Include="Products\Search\Service\SearchService.cs" />

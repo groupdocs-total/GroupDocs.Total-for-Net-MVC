@@ -307,5 +307,17 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
 
             return this.Request.CreateResponse(HttpStatusCode.OK, indexingFilesList);
         }
+
+        /// <summary>
+        /// Gets index properties.
+        /// </summary>
+        /// <returns>The index properties.</returns>
+        [HttpPost]
+        [Route("search/getIndexProperties")]
+        public HttpResponseMessage GetIndexProperties()
+        {
+            var indexProperties = SearchService.GetIndexProperties();
+            return this.Request.CreateResponse(HttpStatusCode.OK, indexProperties);
+        }
     }
 }

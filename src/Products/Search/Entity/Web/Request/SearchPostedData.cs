@@ -19,5 +19,26 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Request
 
         [JsonProperty()]
         internal bool FuzzySearchOnlyBestResults { get; set; }
+
+        [JsonProperty()]
+        internal bool KeyboardLayoutCorrection { get; set; }
+
+        [JsonProperty()]
+        internal bool SynonymSearch { get; set; }
+
+        [JsonProperty()]
+        internal bool HomophoneSearch { get; set; }
+
+        [JsonProperty()]
+        internal bool WordFormsSearch { get; set; }
+
+        [JsonProperty()]
+        internal bool SpellingCorrection { get; set; }
+
+        [JsonProperty()]
+        internal int SpellingCorrectionMistakeCount { get; set; }
+
+        [JsonProperty()]
+        internal bool SpellingCorrectionOnlyBestResults { get; set; }
     }
 }

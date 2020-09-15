@@ -39,6 +39,13 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             searchOptions.FuzzySearch.Enabled = searchRequest.FuzzySearch;
             searchOptions.FuzzySearch.FuzzyAlgorithm = new TableDiscreteFunction(searchRequest.FuzzySearchMistakeCount);
             searchOptions.FuzzySearch.OnlyBestResults = searchRequest.FuzzySearchOnlyBestResults;
+            searchOptions.KeyboardLayoutCorrector.Enabled = searchRequest.KeyboardLayoutCorrection;
+            searchOptions.UseSynonymSearch = searchRequest.SynonymSearch;
+            searchOptions.UseHomophoneSearch = searchRequest.HomophoneSearch;
+            searchOptions.UseWordFormsSearch = searchRequest.WordFormsSearch;
+            searchOptions.SpellingCorrector.Enabled = searchRequest.SpellingCorrection;
+            searchOptions.SpellingCorrector.MaxMistakeCount = searchRequest.SpellingCorrectionMistakeCount;
+            searchOptions.SpellingCorrector.OnlyBestResults = searchRequest.SpellingCorrectionOnlyBestResults;
 
             var searchQuery = searchRequest.Query;
             SearchResult result;
@@ -132,7 +139,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             if (index == null)
             {
                 string indexedFilesDirectory = globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory();
-                index = new Index(globalConfiguration.GetSearchConfiguration().GetIndexDirectory(), true);
+                var settings = new IndexSettings();
+                settings.UseRawTextExtraction = false;
+                index = new Index(globalConfiguration.GetSearchConfiguration().GetIndexDirectory(), settings, true);
 
                 index.Events.OperationProgressChanged += (sender, args) =>
                 {
@@ -184,6 +193,24 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
                 InitSpecailCharsList();
             }
+        }
+
+        internal static IndexProperties GetIndexProperties()
+        {
+            var indexProperties = new IndexProperties();
+            if (index == null) return indexProperties;
+
+            indexProperties.IndexVersion = index.IndexInfo.Version;
+            indexProperties.IndexType = index.IndexSettings.IndexType.ToString();
+            indexProperties.UseStopWords = index.IndexSettings.UseStopWords;
+            indexProperties.UseCharacterReplacements = index.IndexSettings.UseCharacterReplacements;
+            indexProperties.AutoDetectEncoding = index.IndexSettings.AutoDetectEncoding;
+            indexProperties.UseRawTextExtraction = index.IndexSettings.UseRawTextExtraction;
+            var tss = index.IndexSettings.TextStorageSettings;
+            indexProperties.TextStorageCompression = tss == null ? "No storage" : tss.Compression.ToString();
+            indexProperties.IndexedFiles = index.GetIndexedDocuments().Length;
+
+            return indexProperties;
         }
 
         private static void InitSpecailCharsList()
