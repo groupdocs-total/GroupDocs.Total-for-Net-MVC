@@ -22,16 +22,22 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Model.IPTC
         {
             byte recordNumber;
             byte dataSetNumber;
-            TryParseName(name, out recordNumber, out dataSetNumber);
-            return GetUserFriendlyName(recordNumber, dataSetNumber);
+            if (TryParseName(name, out recordNumber, out dataSetNumber))
+            {
+                return GetUserFriendlyName(recordNumber, dataSetNumber);
+            }
+            return name;
         }
 
         public static string UserFriendlyNameToName(string userFreindlyName)
         {
             byte recordNumber;
             byte dataSetNumber;
-            TryParseName(userFreindlyName, out recordNumber, out dataSetNumber);
-            return GetName(recordNumber, dataSetNumber);
+            if (TryParseName(userFreindlyName, out recordNumber, out dataSetNumber))
+            {
+                return GetName(recordNumber, dataSetNumber);
+            }
+            return userFreindlyName;
         }
 
         private static bool TryParseName(string name, out byte recordNumber, out byte dataSetNumber)
@@ -76,7 +82,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Model.IPTC
         {
             if ((IptcRecordType)recordNumber == IptcRecordType.EnvelopeRecord && Enum.IsDefined(typeof(IptcEnvelopeRecordDataSet), dataSetNumber))
             {
-                 return ((IptcEnvelopeRecordDataSet)dataSetNumber).ToString();
+                return ((IptcEnvelopeRecordDataSet)dataSetNumber).ToString();
             }
 
             if ((IptcRecordType)recordNumber == IptcRecordType.ApplicationRecord && Enum.IsDefined(typeof(IptcApplicationRecordDataSet), dataSetNumber))

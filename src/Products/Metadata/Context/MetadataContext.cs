@@ -41,14 +41,11 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
 
                     foreach (var property in repository.GetProperties().OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
                     {
-                        var value = property.Value;
                         properties.Add(property);
                     }
 
                     foreach (var descriptor in repository.GetDescriptors().OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
                     {
-                        var accessLevel = descriptor.AccessLevel;
-
                         descriptors.Add(descriptor);
                     }
 
