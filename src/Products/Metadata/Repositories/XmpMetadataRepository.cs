@@ -7,13 +7,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 {
     public class XmpMetadataRepository : MetadataPackageRepository
     {
-        public XmpMetadataRepository(MetadataPackage package) : base(package)
+        public XmpMetadataRepository(MetadataPackage branchPackage) : base(branchPackage)
         {
         }
 
-        protected override IEnumerable<MetadataPackage> GetNestedPackages()
+        protected override IEnumerable<MetadataPackage> GetPackages()
         {
-            return ((XmpPacketWrapper)Package).Packages;
+            return ((XmpPacketWrapper)BranchPackage).Packages;
         }
     }
 }

@@ -5,16 +5,18 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 {
     public static class MetadataRepositoryFactory
     {
-        public static MetadataPackageRepository Create(MetadataPackage package)
+        public static MetadataPackageRepository Create(MetadataPackage branchPackage)
         {
-            switch (package.MetadataType)
+            switch (branchPackage.MetadataType)
             {
                 case MetadataType.Xmp:
-                    return new XmpMetadataRepository(package);
+                    return new XmpMetadataRepository(branchPackage);
                 case MetadataType.Exif:
-                    return new ExifMetadataRepository(package);
+                    return new ExifMetadataRepository(branchPackage);
+                case MetadataType.Iptc:
+                    return new IptcMetadataRepository(branchPackage);
                 default:
-                    return new OneLevelMetadataRepository(package);
+                    return new OneLevelMetadataRepository(branchPackage);
             }
         }
     }

@@ -7,13 +7,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 {
     public class ExifMetadataRepository : MetadataPackageRepository
     {
-        public ExifMetadataRepository(MetadataPackage package) : base(package)
+        public ExifMetadataRepository(MetadataPackage branchPackage) : base(branchPackage)
         {
         }
 
-        protected override IEnumerable<MetadataPackage> GetNestedPackages()
+        protected override IEnumerable<MetadataPackage> GetPackages()
         {
-            var exifPackage = (ExifPackage)Package;
+            var exifPackage = (ExifPackage)BranchPackage;
             yield return exifPackage.ExifIfdPackage;
             yield return exifPackage.GpsPackage;
             yield return exifPackage;

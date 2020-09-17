@@ -1,4 +1,5 @@
 ﻿using GroupDocs.Metadata.Common;
+using GroupDocs.Total.MVC.Products.Metadata.Model;
 using System;
 using System.Collections.Generic;
 
@@ -24,36 +25,36 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
             MetadataPropertyType.LongArray
         };
 
-        protected MetadataPackageRepository(MetadataPackage package)
+        protected MetadataPackageRepository(MetadataPackage branchPackage)
         {
-            Package = package;
+            BranchPackage = branchPackage;
         }
 
-        protected MetadataPackage Package { get; private set; }
+        protected MetadataPackage BranchPackage { get; private set; }
 
-        public virtual IEnumerable<PropertyDescriptor> GetDescriptors()
+        public virtual IEnumerable<Model.PropertyDescriptor> GetDescriptors()
         {
-            foreach (var package in GetNestedPackages())
+            foreach (var package in GetPackages())
             {
                 foreach (var descriptor in package.KnowPropertyDescriptors)
                 {
                     if (IsPropertyTypeSupported(descriptor.Type))
                     {
-                        yield return descriptor;
+                        yield return new Model.PropertyDescriptor(descriptor.Name, (PropertyType)descriptor.Type, (AccessLevels)descriptor.AccessLevel);
                     }
                 }
             }
         }
 
-        public virtual IEnumerable<MetadataProperty> GetProperties()
+        public virtual IEnumerable<Property> GetProperties()
         {
-            foreach (var package in GetNestedPackages())
+            foreach (var package in GetPackages())
             {
                 foreach (var property in package)
                 {
                     if (IsPropertyTypeSupported(property.Value.Type))
                     {
-                        yield return property;
+                        yield return new Property(property.Name, (PropertyType)property.Value.Type, property.Value.RawValue);
                     }
                 }
             }
@@ -61,26 +62,26 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 
         public virtual void RemoveProperty(string name)
         {
-            foreach (var package in GetNestedPackages())
+            foreach (var package in GetPackages())
             {
                 package.RemoveProperties(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
             }
         }
 
-        public virtual void SaveProperty(string name, MetadataPropertyType type, dynamic value)
+        public virtual void SaveProperty(string name, PropertyType type, dynamic value)
         {
             if (value != null)
             {
-                var propertyValue = CreatePropertyValue(type, value);
+                var propertyValue = CreatePropertyValue((MetadataPropertyType)type, value);
                 GroupDocs.Metadata.Common.Func<MetadataProperty, bool> condition = p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase);
-                foreach (var package in GetNestedPackages())
+                foreach (var package in GetPackages())
                 {
                     package.SetProperties(condition, propertyValue);
                 }
             }
         }
 
-        protected abstract IEnumerable<MetadataPackage> GetNestedPackages();
+        protected abstract IEnumerable<MetadataPackage> GetPackages();
 
         protected bool IsPropertyTypeSupported(MetadataPropertyType type)
         {

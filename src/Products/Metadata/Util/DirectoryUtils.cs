@@ -6,12 +6,22 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Util
 {
     public static class DirectoryUtils
     {
-        internal static bool IsFullPath(string path)
+        public static bool IsFullPath(string path)
         {
             return !string.IsNullOrWhiteSpace(path)
                 && path.IndexOfAny(Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
+        }
+
+        public static void MoveFile(string source, string destination)
+        {
+            if (File.Exists(destination))
+            {
+                File.Delete(destination);
+            }
+
+            File.Move(source, destination);
         }
     }
 }

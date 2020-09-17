@@ -6,13 +6,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 {
     public class OneLevelMetadataRepository : MetadataPackageRepository
     {
-        public OneLevelMetadataRepository(MetadataPackage package) : base(package)
+        public OneLevelMetadataRepository(MetadataPackage branchPackage) : base(branchPackage)
         {
         }
 
-        protected override IEnumerable<MetadataPackage> GetNestedPackages()
+        protected override IEnumerable<MetadataPackage> GetPackages()
         {
-            yield return Package;
+            yield return BranchPackage;
         }
     }
 }
