@@ -1,44 +1,47 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
+using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Viewer.Cache;
-using GroupDocs.Viewer.Caching;
+using GroupDocs.Total.MVC.Products.Viewer.Config;
+using GroupDocs.Viewer.Exceptions;
 using GroupDocs.Viewer.Options;
+using GroupDocs.Viewer.Results;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using GroupDocs.Total.MVC.Products.Viewer.Config;
-using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
-using GroupDocs.Viewer.Results;
-using System.Text;
-using GroupDocs.Viewer.Exceptions;
-using GroupDocs.Viewer.Interfaces;
 using System.Xml.Linq;
-using System.Linq;
-using System.Globalization;
-using System.Web;
-using System.Net.Http.Headers;
-using GroupDocs.Viewer;
+using WebGrease.Css.Extensions;
+using LoadOptions = GroupDocs.Viewer.Options.LoadOptions;
 
 namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
 {
     /// <summary>
-    /// ViewerApiController
+    /// ViewerApiController.
     /// </summary>
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ViewerApiController : ApiController
     {
+        /// <summary>
+        /// Map for locking keys in viewer cache.
+        /// </summary>
+        protected static readonly ConcurrentDictionary<string, object> KeyLockerMap = new ConcurrentDictionary<string, object>();
+
         private static readonly Common.Config.GlobalConfiguration globalConfiguration = new Common.Config.GlobalConfiguration();
 
-        public static readonly ConcurrentDictionary<string, object> KeyLockerMap =
-            new ConcurrentDictionary<string, object>();
+        private static readonly string cachePath = Path.Combine(globalConfiguration.GetViewerConfiguration().GetFilesDirectory(), globalConfiguration.GetViewerConfiguration().GetCacheFolderName());
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="ViewerApiController"/> class.
         /// </summary>
         public ViewerApiController()
         {
@@ -50,9 +53,9 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         }
 
         /// <summary>
-        /// Load Viewr configuration
+        /// Loads Viewer configuration.
         /// </summary>
-        /// <returns>Viewer configuration</returns>
+        /// <returns>Viewer configuration.</returns>
         [HttpGet]
         [Route("viewer/loadConfig")]
         public ViewerConfiguration LoadConfig()
@@ -61,149 +64,147 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         }
 
         /// <summary>
-        /// Get all files and directories from storage
+        /// Gets all files and directories from sample directory:
+        /// src/DocumentSamples/Viewer/.
         /// </summary>
-        /// <param name="postedData">Post data</param>
-        /// <returns>List of files and directories</returns>
+        /// <returns>List of files and directories.</returns>
         [HttpPost]
         [Route("viewer/loadFileTree")]
-        public HttpResponseMessage loadFileTree(PostedDataEntity postedData)
+        public HttpResponseMessage GetFileTree()
         {
             try
             {
                 List<FileDescriptionEntity> filesList = new List<FileDescriptionEntity>();
+
                 if (!string.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetFilesDirectory()))
                 {
-                    filesList = LoadFiles();
+                    var currentPath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
+                    List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
+                    allFiles.AddRange(Directory.GetDirectories(currentPath));
+
+                    string cacheFolderName = globalConfiguration.GetViewerConfiguration().GetCacheFolderName();
+
+                    allFiles.Sort(new FileNameComparator());
+                    allFiles.Sort(new FileDateComparator());
+
+                    foreach (string file in allFiles)
+                    {
+                        System.IO.FileInfo fileInfo = new System.IO.FileInfo(file);
+
+                        // check if current file/folder is hidden
+                        if (!(cacheFolderName.Equals(Path.GetFileName(file)) ||
+                              Path.GetFileName(file).StartsWith(".") ||
+                              fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
+                              Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetViewerConfiguration().GetFilesDirectory()))))
+                        {
+                            FileDescriptionEntity fileDescription = new FileDescriptionEntity
+                            {
+                                guid = Path.GetFullPath(file),
+                                name = Path.GetFileName(file),
+
+                                // set is directory true/false
+                                isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory),
+                            };
+
+                            // set file size
+                            if (!fileDescription.isDirectory)
+                            {
+                                fileDescription.size = fileInfo.Length;
+                            }
+
+                            // add object to array list
+                            filesList.Add(fileDescription);
+                        }
+                    }
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, filesList);
+
+                return this.Request.CreateResponse(HttpStatusCode.OK, filesList);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
+                return this.Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
             }
         }
 
         /// <summary>
-        /// Load documents
+        /// Gets document pages data, dimensions and angles.
         /// </summary>
-        /// <returns>List[FileDescriptionEntity]</returns>
-        public static List<FileDescriptionEntity> LoadFiles()
-        {
-            var currentPath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
-            List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
-            allFiles.AddRange(Directory.GetDirectories(currentPath));
-            List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
-
-            string cacheFolderName = globalConfiguration.GetViewerConfiguration().GetCacheFolderName();
-
-            allFiles.Sort(new FileNameComparator());
-            allFiles.Sort(new FileDateComparator());
-
-            foreach (string file in allFiles)
-            {
-                FileInfo fileInfo = new FileInfo(file);
-                // check if current file/folder is hidden
-                if (!(cacheFolderName.Equals(Path.GetFileName(file)) ||
-                      Path.GetFileName(file).StartsWith(".") ||
-                      fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                      Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetViewerConfiguration().GetFilesDirectory()))))
-                {
-                    FileDescriptionEntity fileDescription = new FileDescriptionEntity
-                    {
-                        guid = Path.GetFullPath(file),
-                        name = Path.GetFileName(file),
-                        // set is directory true/false
-                        isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory)
-                    };
-                    // set file size
-                    if (!fileDescription.isDirectory)
-                    {
-                        fileDescription.size = fileInfo.Length;
-                    }
-                    // add object to array list
-                    fileList.Add(fileDescription);
-                }
-            }
-
-            return fileList;
-        }
-
-        /// <summary>
-        /// Load document description
-        /// </summary>
-        /// <param name="postedData">Post data</param>
-        /// <returns>Document info object</returns>
+        /// <param name="postedData">Posted data with document guid.</param>
+        /// <returns>Document pages data, dimensions and angles.</returns>
         [HttpPost]
         [Route("viewer/loadDocumentDescription")]
-        public HttpResponseMessage LoadDocumentDescription(PostedDataEntity postedData)
+        public HttpResponseMessage GetDocumentData(PostedDataEntity postedData)
         {
             try
             {
-                LoadDocumentEntity loadDocumentEntity = LoadDocument(postedData, globalConfiguration.GetViewerConfiguration().GetPreloadPageCount() == 0);
+                LoadDocumentEntity loadDocumentEntity = GetDocumentPages(postedData, globalConfiguration.GetViewerConfiguration().GetPreloadPageCount() == 0);
+
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
+                return this.Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
             catch (PasswordRequiredException ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, postedData.password));
+                return this.Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, postedData.password));
             }
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, postedData.password));
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, postedData.password));
             }
         }
 
         /// <summary>
-        /// Get document page
+        /// Gets document page info.
         /// </summary>
-        /// <param name="postedData">Post data</param>
-        /// <returns>Document page object</returns>
+        /// <param name="postedData">Posted data with page number.</param>
+        /// <returns>Document page info.</returns>
         [HttpPost]
         [Route("viewer/loadDocumentPage")]
-        public HttpResponseMessage LoadDocumentPage(PostedDataEntity postedData)
+        public HttpResponseMessage GetDocumentPage(PostedDataEntity postedData)
         {
-            string password = "";
+            string password = string.Empty;
             try
             {
                 string documentGuid = postedData.guid;
                 int pageNumber = postedData.page;
                 password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
 
-                string cachePath;
-                ViewerSettings settings = GetViewerSettings(documentGuid, out cachePath);
+                var fileFolderName = Path.GetFileName(documentGuid).Replace(".", "_");
+                string fileCacheSubFolder = Path.Combine(cachePath, fileFolderName);
 
-                // set password for protected document
-                ViewInfo viewInfo;
-                using (GroupDocs.Viewer.Viewer viewer = new GroupDocs.Viewer.Viewer(documentGuid,
-                    GetLoadOptions(password), settings))
+                IViewerCache cache = new FileViewerCache(cachePath, fileCacheSubFolder);
+
+                PageDescriptionEntity page;
+                if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
                 {
-                    viewInfo = viewer.GetViewInfo(ViewInfoOptions.ForHtmlView());
-
-                    // we must generate cache files for future using
-                    GenerateViewerCache(viewer, pageNumber);
+                    using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password)))
+                    {
+                        page = this.GetPageDescritpionEntity(htmlViewer, documentGuid, pageNumber, fileCacheSubFolder);
+                    }
+                }
+                else
+                {
+                    using (PngViewer pngViewer = new PngViewer(documentGuid, cache, GetLoadOptions(password)))
+                    {
+                        page = this.GetPageDescritpionEntity(pngViewer, documentGuid, pageNumber, fileCacheSubFolder);
+                    }
                 }
 
-                var pagesInfoPath = Path.Combine(cachePath, "PagesInfo.xml");
-                PageDescriptionEntity page = GetPageDescriptionEntities(viewInfo.Pages[pageNumber - 1], pagesInfoPath);
-                page.SetData(GetPageContent(viewInfo.Pages[pageNumber - 1], password, documentGuid, settings));
-
-                return Request.CreateResponse(HttpStatusCode.OK, page);
+                return this.Request.CreateResponse(HttpStatusCode.OK, page);
             }
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+                return this.Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
             }
         }
 
         /// <summary>
-        /// Rotated specific page(s) of the document
+        /// Rotates specific page(s) of the document.
         /// </summary>
-        /// <param name="postedData">Document page number to rotate and rotation angle</param>
-        /// <returns>Rotated document page object</returns>
+        /// <param name="postedData">Document page number to rotate and rotation angle.</param>
+        /// <returns>Rotated document page object.</returns>
         [HttpPost]
         [Route("viewer/rotateDocumentPages")]
         public HttpResponseMessage RotateDocumentPages(PostedDataEntity postedData)
@@ -212,42 +213,51 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 var documentGuid = postedData.guid;
                 var pageNumber = postedData.pages[0];
+                string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
 
-                string cachePath;
-                ViewerSettings settings = GetViewerSettings(documentGuid, out cachePath);
+                var fileFolderName = Path.GetFileName(documentGuid).Replace(".", "_");
+                string fileCacheSubFolder = Path.Combine(cachePath, fileFolderName);
 
-                File.Delete(Path.Combine(cachePath, $"p{pageNumber}_html.dat"));
-                File.Delete(Path.Combine(cachePath, $"p{pageNumber}_png.dat"));
+                // Delete page cache-files before regenerating with another angle.
+                var cacheFiles = Directory.GetFiles(fileCacheSubFolder).Where(f => Path.GetFileName(f).StartsWith($"p{pageNumber}"));
+                cacheFiles.ForEach(f => File.Delete(f));
 
+                // Getting new rotation angle value.
+                var currentAngle = GetCurrentAngle(pageNumber, Path.Combine(fileCacheSubFolder, "PagesInfo.xml"));
+                int newAngle = GetNewAngleValue(currentAngle, postedData.angle);
+                SaveChangedAngleInCache(fileCacheSubFolder, pageNumber, newAngle);
+
+                IViewerCache cache = new FileViewerCache(cachePath, fileCacheSubFolder);
                 PageDescriptionEntity page;
-
-                using (GroupDocs.Viewer.Viewer viewer = new GroupDocs.Viewer.Viewer(documentGuid, GetLoadOptions(postedData.password), settings))
+                if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
                 {
-                    var currentAngle = GetCurrentAngle(pageNumber, Path.Combine(cachePath, "PagesInfo.xml"));
-                    int newAngle = GetNewAngleValue(currentAngle, postedData.angle);
-
-                    SaveChangedAngleInCache(cachePath, pageNumber, newAngle);
-                    GenerateViewerCache(viewer, pageNumber, newAngle);
-
-                    var viewInfo = viewer.GetViewInfo(ViewInfoOptions.ForHtmlView());
-                    page = GetPageDescriptionEntities(viewInfo.Pages[pageNumber - 1], Path.Combine(cachePath, "PagesInfo.xml"));
-                    page.SetData(GetPageContent(viewInfo.Pages[pageNumber - 1], postedData.password, documentGuid, settings));
+                    using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password), pageNumber, newAngle))
+                    {
+                        page = this.GetPageDescritpionEntity(htmlViewer, documentGuid, pageNumber, fileCacheSubFolder);
+                    }
+                }
+                else
+                {
+                    using (PngViewer pngViewer = new PngViewer(documentGuid, cache, GetLoadOptions(password), pageNumber, newAngle))
+                    {
+                        page = this.GetPageDescritpionEntity(pngViewer, documentGuid, pageNumber, fileCacheSubFolder);
+                    }
                 }
 
-                return Request.CreateResponse(HttpStatusCode.OK, page);
+                return this.Request.CreateResponse(HttpStatusCode.OK, page);
             }
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
         /// <summary>
-        /// Download curerntly viewed document
+        /// Downloads curerntly viewed document.
         /// </summary>
-        /// <param name="path">Path of the document to download</param>
-        /// <returns>Document stream as attachement</returns>
+        /// <param name="path">Path of the document to download.</param>
+        /// <returns>Document stream as attachement.</returns>
         [HttpGet]
         [Route("viewer/downloadDocument")]
         public HttpResponseMessage DownloadDocument(string path)
@@ -265,14 +275,43 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     return response;
                 }
             }
+
             return new HttpResponseMessage(HttpStatusCode.NotFound);
         }
 
         /// <summary>
-        /// Upload document
+        /// Downloads requested resource file.
         /// </summary>
-        /// <param name="postedData">Post data</param>
-        /// <returns>Uploaded document object</returns>
+        /// <param name="guid">Name of the file containing resource.</param>
+        /// <param name="resourceName">Name of the resource file.</param>
+        /// <returns>Document stream as attachement.</returns>
+        [HttpGet]
+        [Route("viewer/resources/{guid}/{resourceName}")]
+        public HttpResponseMessage GetResource(string guid, string resourceName)
+        {
+            if (!string.IsNullOrEmpty(guid))
+            {
+                var path = Path.Combine(globalConfiguration.GetViewerConfiguration().GetFilesDirectory(), globalConfiguration.GetViewerConfiguration().GetCacheFolderName());
+                path = Path.Combine(path, guid);
+                path = Path.Combine(path, resourceName);
+
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                response.Content = new StreamContent(fileStream);
+                var fileName = Path.GetFileName(path);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue(MimeMapping.GetMimeMapping(fileName));
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("inline");
+                response.Content.Headers.ContentDisposition.FileName = fileName;
+                return response;
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.NotFound);
+        }
+
+        /// <summary>
+        /// Uploads document.
+        /// </summary>
+        /// <returns>Uploaded document object.</returns>
         [HttpPost]
         [Route("viewer/uploadDocument")]
         public HttpResponseMessage UploadDocument()
@@ -280,10 +319,11 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             try
             {
                 string url = HttpContext.Current.Request.Form["url"];
+
                 // get documents storage path
                 string documentStoragePath = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
                 bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
-                string fileSavePath = "";
+                string fileSavePath = string.Empty;
                 if (string.IsNullOrEmpty(url))
                 {
                     if (HttpContext.Current.Request.Files.AllKeys != null)
@@ -323,6 +363,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                         {
                             fileSavePath = Resources.GetFreeFileName(documentStoragePath, fileName);
                         }
+
                         // Download the Web resource and save it into the current filesystem folder.
                         client.DownloadFile(url, fileSavePath);
                     }
@@ -330,71 +371,154 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
 
                 UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity
                 {
-                    guid = fileSavePath
+                    guid = fileSavePath,
                 };
 
-                return Request.CreateResponse(HttpStatusCode.OK, uploadedDocument);
+                return this.Request.CreateResponse(HttpStatusCode.OK, uploadedDocument);
             }
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
+        /// <summary>
+        /// Loads document pages thumbnails.
+        /// </summary>
+        /// <param name="loadDocumentRequest">Posted data with document guid.</param>
+        /// <returns>Data of all document pages.</returns>
         [HttpPost]
         [Route("viewer/loadThumbnails")]
-        public LoadDocumentEntity loadThumbnails(PostedDataEntity loadDocumentRequest)
+        public LoadDocumentEntity GetPagesThumbnails(PostedDataEntity loadDocumentRequest)
         {
-            return LoadDocument(loadDocumentRequest, true);
+            return GetDocumentPages(loadDocumentRequest, true);
         }
 
+        /// <summary>
+        /// Loads print version.
+        /// </summary>
+        /// <param name="loadDocumentRequest">PostedDataEntity.</param>
+        /// <returns>Data of all document pages.</returns>
         [HttpPost]
         [Route("viewer/loadPrint")]
-        public HttpResponseMessage loadPrint(PostedDataEntity loadDocumentRequest)
+        public HttpResponseMessage GetPrintVersion(PostedDataEntity loadDocumentRequest)
         {
             try
             {
-                LoadDocumentEntity loadPrintDocument = LoadDocument(loadDocumentRequest, true);
+                LoadDocumentEntity loadPrintDocument = GetDocumentPages(loadDocumentRequest, true);
+
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, loadPrintDocument);
-
+                return this.Request.CreateResponse(HttpStatusCode.OK, loadPrintDocument);
             }
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, loadDocumentRequest.password));
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, loadDocumentRequest.password));
             }
         }
 
-        [HttpPost]
-        [Route("viewer/printPdf")]
-        public HttpResponseMessage PrintPdf(PostedDataEntity loadDocumentRequest)
+        /// <summary>
+        /// Gets page dimensions and rotation angle.
+        /// </summary>
+        /// <param name="page">Page object.</param>
+        /// <param name="pagesInfoPath">Path to file with pages rotation angles data.</param>
+        /// <returns>Page dimensions and rotation angle.</returns>
+        private static PageDescriptionEntity GetPageInfo(Page page, string pagesInfoPath)
         {
-            // get document path
-            string documentGuid = loadDocumentRequest.guid;
-            string fileName = Path.GetFileName(documentGuid);
-            try
+            int currentAngle = GetCurrentAngle(page.Number, pagesInfoPath);
+
+            PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity
             {
-                var fileStream = new FileStream(documentGuid, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                response.Content = new StreamContent(fileStream);
-                // add file into the response
-                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(fileName);
-                return response;
+                number = page.Number,
+
+                // we intentionally use the 0 here because we plan to rotate only the page background using height/width
+                angle = 0,
+                height = currentAngle == 0 || currentAngle == 180 ? page.Height : page.Width,
+                width = currentAngle == 0 || currentAngle == 180 ? page.Width : page.Height,
+            };
+
+            return pageDescriptionEntity;
+        }
+
+        /// <summary>
+        /// Gets page content as a string.
+        /// </summary>
+        /// <param name="pageNumber">Page number.</param>
+        /// <param name="documentGuid">Document path.</param>
+        /// <param name="cachePath">Cache path.</param>
+        /// <returns>Page content as a string.</returns>
+        private static string GetPageContent(int pageNumber, string documentGuid, string cachePath)
+        {
+            var fileFolderName = Path.GetFileName(documentGuid).Replace(".", "_");
+
+            if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
+            {
+                string htmlFilePath = $"{cachePath}/{fileFolderName}/p{pageNumber}.html";
+                return File.ReadAllText(htmlFilePath);
             }
-            catch (Exception ex)
+            else
             {
-                // set exception message
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+                string pngFilePath = $"{cachePath}/{fileFolderName}/p{pageNumber}.png";
+
+                byte[] imageBytes = null;
+                using (Image image = Image.FromFile(pngFilePath))
+                {
+                    using (MemoryStream m = new MemoryStream())
+                    {
+                        image.Save(m, image.RawFormat);
+                        imageBytes = m.ToArray();
+                    }
+                }
+
+                return Convert.ToBase64String(imageBytes);
             }
         }
 
-        private static void SaveChangedAngleInCache(string cachePath, int pageNumber, int newAngle)
+        /// <summary>
+        /// Gets current rotation angle of the page.
+        /// </summary>
+        /// <param name="pageNumber">Page number.</param>
+        /// <param name="pagesInfoPath">Path to file with pages rotation angles data.</param>
+        /// <returns>Current rotation angle of the page.</returns>
+        private static int GetCurrentAngle(int pageNumber, string pagesInfoPath)
         {
-            var pagesInfoPath = Path.Combine(cachePath, "PagesInfo.xml");
+            XDocument xdoc = XDocument.Load(pagesInfoPath);
+            var pageData = xdoc.Descendants()?.Elements("Number")?.Where(x => int.Parse(x.Value) == pageNumber)?.Ancestors("PageData");
+            var angle = pageData?.Elements("Angle").FirstOrDefault();
+
+            if (angle != null)
+            {
+                return int.Parse(angle.Value);
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets document load options used in Viewer object constructor.
+        /// </summary>
+        /// <param name="password">Document password.</param>
+        /// <returns>Load options object.</returns>
+        private static LoadOptions GetLoadOptions(string password)
+        {
+            LoadOptions loadOptions = new LoadOptions
+            {
+                Password = password,
+            };
+
+            return loadOptions;
+        }
+
+        /// <summary>
+        /// Saves changed page rotation angle in cache.
+        /// </summary>
+        /// <param name="fileCacheSubFolder">Cache files path.</param>
+        /// <param name="pageNumber">Page number.</param>
+        /// <param name="newAngle">New angle value.</param>
+        private static void SaveChangedAngleInCache(string fileCacheSubFolder, int pageNumber, int newAngle)
+        {
+            var pagesInfoPath = Path.Combine(fileCacheSubFolder, "PagesInfo.xml");
 
             if (File.Exists(pagesInfoPath))
             {
@@ -411,6 +535,12 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             }
         }
 
+        /// <summary>
+        /// Calculates new page rotation angle value.
+        /// </summary>
+        /// <param name="currentAngle">Current page rotation angle value.</param>
+        /// <param name="postedAngle">Posted page rotation angle value.</param>
+        /// <returns>New page rotation angle value.</returns>
         private static int GetNewAngleValue(int currentAngle, int postedAngle)
         {
             switch (currentAngle)
@@ -428,100 +558,55 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             }
         }
 
-        private static Rotation GetRotationByAngle(int newAngle)
-        {
-            switch (newAngle)
-            {
-                case 90:
-                    return Rotation.On90Degree;
-                case 180:
-                    return Rotation.On180Degree;
-                case 270:
-                    return Rotation.On270Degree;
-                default:
-                    return Rotation.On90Degree;
-            }
-        }
-
-        private LoadDocumentEntity LoadDocument(PostedDataEntity postedData, bool loadAllPages)
+        /// <summary>
+        /// Gets document pages data, dimensions and rotation angles.
+        /// </summary>
+        /// <param name="postedData">Posted data with document guid.</param>
+        /// <param name="loadAllPages">Flag to load all pages.</param>
+        /// <returns>Document pages data, dimensions and rotation angles.</returns>
+        private static LoadDocumentEntity GetDocumentPages(PostedDataEntity postedData, bool loadAllPages)
         {
             // get/set parameters
             string documentGuid = postedData.guid;
-            string password = (string.IsNullOrEmpty(postedData.password)) ? null : postedData.password;
+            string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
 
-            string cachePath;
-            ViewerSettings settings = GetViewerSettings(documentGuid, out cachePath);
+            var fileFolderName = Path.GetFileName(documentGuid).Replace(".", "_");
+            string fileCacheSubFolder = Path.Combine(cachePath, fileFolderName);
 
-            using (GroupDocs.Viewer.Viewer viewer = new GroupDocs.Viewer.Viewer(documentGuid, GetLoadOptions(password), settings))
+            if (!File.Exists(documentGuid))
             {
-                if (loadAllPages)
-                {
-                    GenerateViewerCache(viewer);
-                }
-
-                return GetLoadDocumentEntity(viewer, documentGuid, cachePath, loadAllPages);
+                throw new GroupDocsViewerException("File not found.");
             }
-        }
 
-        private static void GenerateViewerCache(GroupDocs.Viewer.Viewer viewer, int pageNumber = -1, int newAngle = 0)
-        {
+            IViewerCache cache = new FileViewerCache(cachePath, fileCacheSubFolder);
+
+            LoadDocumentEntity loadDocumentEntity;
             if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
             {
-                HtmlViewOptions htmlViewOptions = HtmlViewOptions.ForEmbeddedResources(_ => new MemoryStream());
-                htmlViewOptions.SpreadsheetOptions.TextOverflowMode = TextOverflowMode.HideText;
-                SetWatermarkOptions(htmlViewOptions);
-
-                if (pageNumber < 0)
+                using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password)))
                 {
-                    viewer.View(htmlViewOptions);
-                }
-                else
-                {
-                    if (newAngle != 0)
-                    {
-                        Rotation rotationAngle = GetRotationByAngle(newAngle);
-                        htmlViewOptions.RotatePage(pageNumber, rotationAngle);
-                    }
-                    viewer.View(htmlViewOptions, pageNumber);
+                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, htmlViewer);
                 }
             }
             else
             {
-                PngViewOptions pngViewOptions = new PngViewOptions(_ => new MemoryStream());
-                SetWatermarkOptions(pngViewOptions);
-
-                if (pageNumber < 0)
+                using (PngViewer pngViewer = new PngViewer(documentGuid, cache, GetLoadOptions(password)))
                 {
-                    viewer.View(pngViewOptions);
-                }
-                else
-                {
-                    if (newAngle != 0)
-                    {
-                        Rotation rotationAngle = GetRotationByAngle(newAngle);
-                        pngViewOptions.RotatePage(pageNumber, rotationAngle);
-                    }
-                    viewer.View(pngViewOptions, pageNumber);
+                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, pngViewer);
                 }
             }
+
+            return loadDocumentEntity;
         }
 
-        private static ViewerSettings GetViewerSettings(string documentGuid, out string cachePath)
+        private static LoadDocumentEntity GetLoadDocumentEntity(bool loadAllPages, string documentGuid, string fileCacheSubFolder, ICustomViewer customViewer)
         {
-            string outputDirectory = globalConfiguration.GetViewerConfiguration().GetFilesDirectory();
-            cachePath = Path.Combine(outputDirectory, "cache");
-            cachePath = Path.Combine(cachePath, Path.GetFileNameWithoutExtension(documentGuid) + "_" + Path.GetExtension(documentGuid).Replace(".", string.Empty));
+            if (loadAllPages)
+            {
+                customViewer.CreateCache();
+            }
 
-            ICache fileCache = new FileCache(cachePath);
-            IKeyLockerStore keyLockerStore = new ConcurrentDictionaryKeyLockerStore(KeyLockerMap, cachePath);
-            ICache threadSafeCache = new ThreadSafeCache(fileCache, keyLockerStore);
-
-            return new ViewerSettings(threadSafeCache);
-        }
-
-        private static LoadDocumentEntity GetLoadDocumentEntity(GroupDocs.Viewer.Viewer viewer, string documentGuid, string cachePath, bool loadAllPages)
-        {
-            dynamic viewInfo;
+            dynamic viewInfo = customViewer.GetViewer().GetViewInfo(ViewInfoOptions.ForHtmlView());
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
 
             if (!Directory.Exists(cachePath))
@@ -529,187 +614,60 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 Directory.CreateDirectory(cachePath);
             }
 
-            var pagesInfoPath = Path.Combine(cachePath, "PagesInfo.xml");
-            viewInfo = viewer.GetViewInfo(ViewInfoOptions.ForHtmlView());
-
-            if (!File.Exists(pagesInfoPath))
-            {
-                CreatePagesInfoFile(pagesInfoPath, viewInfo);
-            }
-
-            List<string> pagesContent = new List<string>();
-
-            if (loadAllPages)
-            {
-                List<MemoryStream> pages = new List<MemoryStream>();
-                MemoryPageStreamFactory pageStreamFactory = new MemoryPageStreamFactory(pages);
-
-                if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
-                {
-                    ViewOptions viewOptions = HtmlViewOptions.ForEmbeddedResources(pageStreamFactory);
-                    viewOptions.SpreadsheetOptions.TextOverflowMode = TextOverflowMode.HideText;
-
-                    viewer.View(viewOptions);
-                }
-                else
-                {
-                    PngViewOptions pngViewOptions = new PngViewOptions(pageStreamFactory);
-
-                    viewer.View(pngViewOptions);
-                }
-
-                foreach (var pageStream in pages)
-                {
-                    if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
-                    {
-                        pagesContent.Add(Encoding.UTF8.GetString(pageStream.ToArray()));
-                    }
-                    else
-                    {
-                        pagesContent.Add(Convert.ToBase64String(pageStream.ToArray()));
-                    }
-                }
-            }
+            string pagesInfoPath;
+            TryCreatePagesInfoXml(fileCacheSubFolder, viewInfo, out pagesInfoPath);
 
             foreach (Page page in viewInfo.Pages)
             {
-                PageDescriptionEntity pageData = GetPageDescriptionEntities(page, pagesInfoPath);
-
-                if (pagesContent.Count > 0)
+                PageDescriptionEntity pageData = GetPageInfo(page, pagesInfoPath);
+                if (loadAllPages)
                 {
-                    pageData.SetData(pagesContent[page.Number - 1]);
+                    pageData.SetData(GetPageContent(page.Number, documentGuid, cachePath));
                 }
 
                 loadDocumentEntity.SetPages(pageData);
             }
 
             loadDocumentEntity.SetGuid(documentGuid);
-
             return loadDocumentEntity;
         }
 
-        internal class MemoryPageStreamFactory : IPageStreamFactory
+        private static void TryCreatePagesInfoXml(string fileCacheSubFolder, dynamic viewInfo, out string pagesInfoPath)
         {
-            private readonly List<MemoryStream> _pages;
-
-            public MemoryPageStreamFactory(List<MemoryStream> pages)
+            if (!Directory.Exists(fileCacheSubFolder))
             {
-                _pages = pages;
+                Directory.CreateDirectory(fileCacheSubFolder);
             }
 
-            public Stream CreatePageStream(int pageNumber)
+            pagesInfoPath = Path.Combine(fileCacheSubFolder, "PagesInfo.xml");
+
+            if (!File.Exists(pagesInfoPath))
             {
-                MemoryStream pageStream = new MemoryStream();
+                var xdoc = new XDocument(new XElement("Pages"));
 
-                _pages.Add(pageStream);
-
-                return pageStream;
-            }
-
-            public void ReleasePageStream(int pageNumber, Stream pageStream)
-            {
-                //Do not release page stream as we'll need to keep the stream open
-            }
-        }
-
-        private static PageDescriptionEntity GetPageDescriptionEntities(Page page, string pagesInfoPath)
-        {
-            int currentAngle = GetCurrentAngle(page.Number, pagesInfoPath);
-
-            PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
-            pageDescriptionEntity.number = page.Number;
-            // we intentionally use the 0 here because we plan to rotate only the page background using height/width
-            pageDescriptionEntity.angle = 0;
-            pageDescriptionEntity.height = currentAngle == 0 || currentAngle == 180 ? page.Height : page.Width;
-            pageDescriptionEntity.width = currentAngle == 0 || currentAngle == 180 ? page.Width : page.Height;
-            return pageDescriptionEntity;
-        }
-
-        private static string GetPageContent(Page page, string password, string documentGuid, ViewerSettings settings)
-        {
-            List<MemoryStream> pages = new List<MemoryStream>();
-
-            using (GroupDocs.Viewer.Viewer viewer = new GroupDocs.Viewer.Viewer(documentGuid, GetLoadOptions(password), settings))
-            {
-                MemoryPageStreamFactory pageStreamFactory = new MemoryPageStreamFactory(pages);
-
-                if (globalConfiguration.GetViewerConfiguration().GetIsHtmlMode())
+                foreach (var page in viewInfo.Pages)
                 {
-                    ViewOptions viewOptions = HtmlViewOptions.ForEmbeddedResources(pageStreamFactory);
-                    viewOptions.SpreadsheetOptions.TextOverflowMode = TextOverflowMode.HideText;
-
-                    viewer.View(viewOptions, page.Number);
-
-                    return Encoding.UTF8.GetString(pages[0].ToArray());
+                    xdoc.Element("Pages")
+                        .Add(new XElement(
+                            "PageData",
+                            new XElement("Number", page.Number),
+                            new XElement("Angle", 0)));
                 }
-                else
-                {
-                    PngViewOptions pngViewOptions = new PngViewOptions(pageStreamFactory);
 
-                    viewer.View(pngViewOptions, page.Number);
-
-                    return Convert.ToBase64String(pages[0].ToArray());
-                }
+                xdoc.Save(pagesInfoPath);
             }
         }
 
-        private static void CreatePagesInfoFile(string pagesInfoPath, ViewInfo viewInfo)
+        private PageDescriptionEntity GetPageDescritpionEntity(ICustomViewer customViewer, string documentGuid, int pageNumber, string fileCacheSubFolder)
         {
-            var xdoc = new XDocument(new XElement("Pages"));
+            PageDescriptionEntity page;
+            customViewer.CreateCache();
 
-            foreach (var page in viewInfo.Pages)
-            {
-                xdoc.Element("Pages")
-                    .Add(new XElement("PageData",
-                        new XElement("Number", page.Number),
-                        new XElement("Angle", 0)));
-            }
+            var viewInfo = customViewer.GetViewer().GetViewInfo(ViewInfoOptions.ForHtmlView());
+            page = GetPageInfo(viewInfo.Pages[pageNumber - 1], Path.Combine(fileCacheSubFolder, "PagesInfo.xml"));
+            page.SetData(GetPageContent(pageNumber, documentGuid, cachePath));
 
-            xdoc.Save(pagesInfoPath);
-        }
-
-        private static int GetCurrentAngle(int pageNumber, string pagesInfoPath)
-        {
-            XDocument xdoc = XDocument.Load(pagesInfoPath);
-            var pageData = xdoc.Descendants()?.Elements("Number")?.Where(x => int.Parse(x.Value) == pageNumber)?.Ancestors("PageData");
-            var angle = pageData?.Elements("Angle").FirstOrDefault();
-
-            if (angle != null)
-            {
-                return int.Parse(angle.Value);
-            }
-
-            return 0;
-        }
-
-        private static void SetWatermarkOptions(ViewOptions options)
-        {
-            Watermark watermark = null;
-
-            if (!string.IsNullOrEmpty(globalConfiguration.GetViewerConfiguration().GetWatermarkText()))
-            {
-                // Set watermark properties
-                watermark = new Watermark(globalConfiguration.GetViewerConfiguration().GetWatermarkText())
-                {
-                    Color = System.Drawing.Color.Blue,
-                    Position = Position.Diagonal
-                };
-            }
-
-            if (watermark != null)
-            {
-                options.Watermark = watermark;
-            }
-        }
-
-        private static GroupDocs.Viewer.Options.LoadOptions GetLoadOptions(string password)
-        {
-            GroupDocs.Viewer.Options.LoadOptions loadOptions = new GroupDocs.Viewer.Options.LoadOptions
-            {
-                Password = password
-            };
-
-            return loadOptions;
+            return page;
         }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Util.Parser;
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,14 +7,15 @@ using System.Linq;
 namespace GroupDocs.Total.MVC.Products.Common.Config
 {
     /// <summary>
-    /// Application configuration
+    /// Application configuration.
     /// </summary>
     public class ApplicationConfiguration
     {
-        private readonly string LicensePath = "Licenses";
-        
+        private readonly string licensePath = "Licenses";
+
         /// <summary>
-        /// Get license path from the application configuration section of the web.config
+        /// Initializes a new instance of the <see cref="ApplicationConfiguration"/> class.
+        /// Get license path from the application configuration section of the web.config.
         /// </summary>
         public ApplicationConfiguration()
         {
@@ -25,10 +23,10 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
             dynamic configuration = parser.GetConfiguration("application");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
             string license = valuesGetter.GetStringPropertyValue("licensePath");
-            if (String.IsNullOrEmpty(license))
+            if (string.IsNullOrEmpty(license))
             {
-                string[] files = System.IO.Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, LicensePath), "*.lic");
-                LicensePath = Path.Combine(LicensePath, files[0]);
+                string[] files = System.IO.Directory.GetFiles(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, this.licensePath), "*.lic");
+                this.licensePath = Path.Combine(this.licensePath, files[0]);
             }
             else
             {
@@ -40,26 +38,27 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
                         Directory.CreateDirectory(Path.GetDirectoryName(license));
                     }
                 }
-                LicensePath = license;
-                if (!File.Exists(LicensePath))
-                {                    
+
+                this.licensePath = license;
+                if (!File.Exists(this.licensePath))
+                {
                     Debug.WriteLine("License file path is incorrect, launched in trial mode");
-                    LicensePath = "";
+                    this.licensePath = string.Empty;
                 }
             }
         }
 
+        public string GetLicensePath()
+        {
+            return this.licensePath;
+        }
+
         private static bool IsFullPath(string path)
         {
-            return !String.IsNullOrWhiteSpace(path)
+            return !string.IsNullOrWhiteSpace(path)
                 && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
-        }
-
-        public string GetLicensePath()
-        {
-            return LicensePath;
         }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Specialized;
 using System.IO;
-using System.Reflection;
 using YamlDotNet.Serialization;
 
 namespace GroupDocs.Total.MVC.Products.Common.Util.Parser
 {
     public class YamlParser
     {
-        private static string YamlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "configuration.yml");
-        private readonly dynamic ConfiguationData;
+        private static readonly string YamlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "configuration.yml");
+        private readonly dynamic configuationData;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="YamlParser"/> class.
+        /// </summary>
         public YamlParser()
-        {           
+        {
             if (File.Exists(YamlPath))
             {
                 using (var reader = new StringReader(File.ReadAllText(YamlPath)))
@@ -26,17 +26,19 @@ namespace GroupDocs.Total.MVC.Products.Common.Util.Parser
                         .JsonCompatible()
                         .Build();
 
-                    ConfiguationData = serializer.Serialize(yamlObject);                     
+                    this.configuationData = serializer.Serialize(yamlObject);
                 }
-            }             
+            }
         }
 
-        public dynamic GetConfiguration(string configurationSectionName) {
+        public dynamic GetConfiguration(string configurationSectionName)
+        {
             dynamic productConfiguration = null;
-            if (ConfiguationData != null)
+            if (this.configuationData != null)
             {
-                productConfiguration = JsonConvert.DeserializeObject(ConfiguationData)[configurationSectionName];
-            } 
+                productConfiguration = JsonConvert.DeserializeObject(this.configuationData)[configurationSectionName];
+            }
+
             return productConfiguration;
         }
     }

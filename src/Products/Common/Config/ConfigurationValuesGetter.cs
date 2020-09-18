@@ -1,38 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace GroupDocs.Total.MVC.Products.Common.Config
 {
     public class ConfigurationValuesGetter
     {
-        private readonly dynamic Configuration;
+        private readonly dynamic configuration;
 
         public ConfigurationValuesGetter(dynamic configuration)
         {
-            Configuration = configuration;
+            this.configuration = configuration;
         }
 
         public string GetStringPropertyValue(string propertyName)
         {
-            return (Configuration != null && Configuration[propertyName] != null && !String.IsNullOrEmpty(Configuration[propertyName].ToString())) ?
-                Configuration[propertyName].ToString() :
+            return (this.configuration != null && this.configuration[propertyName] != null && !string.IsNullOrEmpty(this.configuration[propertyName].ToString())) ?
+                this.configuration[propertyName].ToString() :
                 null;
         }
 
         public string GetStringPropertyValue(string propertyName, string defaultValue)
         {
-            return (Configuration != null && Configuration[propertyName] != null && !String.IsNullOrEmpty(Configuration[propertyName].ToString())) ?
-                Configuration[propertyName].ToString() :
+            return (this.configuration != null && this.configuration[propertyName] != null && !string.IsNullOrEmpty(this.configuration[propertyName].ToString())) ?
+                this.configuration[propertyName].ToString() :
                 defaultValue;
         }
 
         public int GetIntegerPropertyValue(string propertyName, int defaultValue)
         {
             int value;
-            value = (Configuration != null && Configuration[propertyName] != null && !String.IsNullOrEmpty(Configuration[propertyName].ToString())) ?
-                Convert.ToInt32(Configuration[propertyName]) :
+            value = (this.configuration != null && this.configuration[propertyName] != null && !string.IsNullOrEmpty(this.configuration[propertyName].ToString())) ?
+                Convert.ToInt32(this.configuration[propertyName]) :
                 defaultValue;
             return value;
         }
@@ -40,16 +37,16 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
         public int GetIntegerPropertyValue(string propertyName, int defaultValue, string innerPropertyName)
         {
             int value;
-            if (!String.IsNullOrEmpty(innerPropertyName))
+            if (!string.IsNullOrEmpty(innerPropertyName))
             {
-                value = (Configuration != null && Configuration[propertyName] != null && !String.IsNullOrEmpty(Configuration[propertyName][innerPropertyName].ToString())) ?
-                    Convert.ToInt32(Configuration[propertyName][innerPropertyName]) :
+                value = (this.configuration != null && this.configuration[propertyName] != null && !string.IsNullOrEmpty(this.configuration[propertyName][innerPropertyName].ToString())) ?
+                    Convert.ToInt32(this.configuration[propertyName][innerPropertyName]) :
                     defaultValue;
             }
             else
             {
-                value = (Configuration != null && Configuration[propertyName] != null && !String.IsNullOrEmpty(Configuration[propertyName].ToString())) ?
-                    Convert.ToInt32(Configuration[propertyName]) :
+                value = (this.configuration != null && this.configuration[propertyName] != null && !string.IsNullOrEmpty(this.configuration[propertyName].ToString())) ?
+                    Convert.ToInt32(this.configuration[propertyName]) :
                     defaultValue;
             }
             return value;
@@ -57,7 +54,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Config
 
         public bool GetBooleanPropertyValue(string propertyName, bool defaultValue)
         {
-            return (Configuration != null && Configuration[propertyName] != null && !String.IsNullOrEmpty(Configuration[propertyName].ToString())) ? Convert.ToBoolean(Configuration[propertyName]) : defaultValue;
+            return (this.configuration != null && this.configuration[propertyName] != null && !string.IsNullOrEmpty(this.configuration[propertyName].ToString())) ? Convert.ToBoolean(this.configuration[propertyName]) : defaultValue;
         }
     }
 }

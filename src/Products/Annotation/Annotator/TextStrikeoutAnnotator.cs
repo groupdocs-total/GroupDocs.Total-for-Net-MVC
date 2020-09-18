@@ -2,31 +2,34 @@
 using GroupDocs.Annotation.Models.AnnotationModels;
 using GroupDocs.Annotation.Options;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
+using System;
 
 namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 {
-    public class PointAnnotator : BaseAnnotator
+    public class TexStrikeoutAnnotator : AbstractTextAnnotator
     {
-        private PointAnnotation pointAnnotation;
+        private StrikeoutAnnotation strikeoutAnnotation;
 
-        public PointAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
+        public TexStrikeoutAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
             : base(annotationData, pageInfo)
         {
-            pointAnnotation = new PointAnnotation
+            strikeoutAnnotation = new StrikeoutAnnotation
             {
-                Box = GetBox()
+                Points = GetPoints(annotationData, pageInfo)
             };
         }
 
         public override AnnotationBase AnnotateWord()
         {
-            pointAnnotation = base.InitAnnotationBase(pointAnnotation) as PointAnnotation;
-            return pointAnnotation;
+            strikeoutAnnotation = InitAnnotationBase(strikeoutAnnotation) as StrikeoutAnnotation;
+            return strikeoutAnnotation;
         }
 
         public override AnnotationBase AnnotatePdf()
         {
-            return AnnotateWord();
+            strikeoutAnnotation = InitAnnotationBase(strikeoutAnnotation) as StrikeoutAnnotation;
+            this.strikeoutAnnotation.FontColor = 0;
+            return strikeoutAnnotation;
         }
 
         public override AnnotationBase AnnotateCells()
@@ -46,12 +49,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 
         public override AnnotationBase AnnotateDiagram()
         {
-            return AnnotateWord();
+            throw new NotSupportedException(string.Format(Message, annotationData.type));
         }
 
         protected override AnnotationType GetType()
         {
-            return AnnotationType.Point;
+            return AnnotationType.TextStrikeout;
         }
     }
 }

@@ -2,26 +2,28 @@
 using GroupDocs.Annotation.Models.AnnotationModels;
 using GroupDocs.Annotation.Options;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
+using System;
 
 namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 {
-    public class PointAnnotator : BaseAnnotator
+    public class TextUnderlineAnnotator : AbstractTextAnnotator
     {
-        private PointAnnotation pointAnnotation;
+        private UnderlineAnnotation underlineAnnotation;
 
-        public PointAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
+        public TextUnderlineAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
             : base(annotationData, pageInfo)
         {
-            pointAnnotation = new PointAnnotation
+            underlineAnnotation = new UnderlineAnnotation
             {
-                Box = GetBox()
+                Points = GetPoints(annotationData, pageInfo)
             };
         }
 
         public override AnnotationBase AnnotateWord()
         {
-            pointAnnotation = base.InitAnnotationBase(pointAnnotation) as PointAnnotation;
-            return pointAnnotation;
+            underlineAnnotation = InitAnnotationBase(underlineAnnotation) as UnderlineAnnotation;
+            underlineAnnotation.FontColor = 1201033;
+            return underlineAnnotation;
         }
 
         public override AnnotationBase AnnotatePdf()
@@ -36,7 +38,9 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 
         public override AnnotationBase AnnotateSlides()
         {
-            return AnnotateWord();
+            underlineAnnotation = InitAnnotationBase(underlineAnnotation) as UnderlineAnnotation;
+            underlineAnnotation.FontColor = 0;
+            return underlineAnnotation;
         }
 
         public override AnnotationBase AnnotateImage()
@@ -46,12 +50,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 
         public override AnnotationBase AnnotateDiagram()
         {
-            return AnnotateWord();
+            throw new NotSupportedException(string.Format(Message, annotationData.type));
         }
 
         protected override AnnotationType GetType()
         {
-            return AnnotationType.Point;
+            return AnnotationType.TextUnderline;
         }
     }
 }

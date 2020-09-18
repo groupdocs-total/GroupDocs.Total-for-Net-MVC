@@ -2,26 +2,27 @@
 using GroupDocs.Annotation.Models.AnnotationModels;
 using GroupDocs.Annotation.Options;
 using GroupDocs.Total.MVC.Products.Annotation.Entity.Web;
+using System;
 
 namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 {
-    public class PointAnnotator : BaseAnnotator
+    public class TextHighlightAnnotator : AbstractTextAnnotator
     {
-        private PointAnnotation pointAnnotation;
+        private HighlightAnnotation highlightAnnotation;
 
-        public PointAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
+        public TextHighlightAnnotator(AnnotationDataEntity annotationData, PageInfo pageInfo)
             : base(annotationData, pageInfo)
         {
-            pointAnnotation = new PointAnnotation
+            highlightAnnotation = new HighlightAnnotation
             {
-                Box = GetBox()
+                Points = GetPoints(annotationData, pageInfo)
             };
         }
 
         public override AnnotationBase AnnotateWord()
         {
-            pointAnnotation = base.InitAnnotationBase(pointAnnotation) as PointAnnotation;
-            return pointAnnotation;
+            highlightAnnotation = InitAnnotationBase(highlightAnnotation) as HighlightAnnotation;
+            return highlightAnnotation;
         }
 
         public override AnnotationBase AnnotatePdf()
@@ -46,12 +47,12 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Annotator
 
         public override AnnotationBase AnnotateDiagram()
         {
-            return AnnotateWord();
+            throw new NotSupportedException(string.Format(Message, annotationData.type));
         }
 
         protected override AnnotationType GetType()
         {
-            return AnnotationType.Point;
+            return AnnotationType.TextHighlight;
         }
     }
 }
