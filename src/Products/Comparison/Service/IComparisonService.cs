@@ -20,14 +20,6 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         CompareResultResponse Compare(CompareRequest compareRequest);
 
         /// <summary>
-        ///  Load document pages as images
-        /// </summary>
-        /// <param name="path">string</param>
-        /// <param name="password">string</param>
-        /// <returns>LoadDocumentEntity</returns>
-        LoadDocumentEntity LoadDocumentPages(string path, string password);
-
-        /// <summary>
         ///  Load document page as images
         /// </summary>
         /// <param name="postedData">PostedDataEntity</param>
@@ -35,17 +27,10 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
         PageDescriptionEntity LoadDocumentPage(PostedDataEntity postedData);
 
         /// <summary>
-        ///  Load document info
-        /// </summary>
-        /// <param name="postedData">PostedDataEntity</param>
-        /// <returns>LoadDocumentEntity</returns>
-        LoadDocumentEntity LoadDocumentInfo(PostedDataEntity postedData);
-
-        /// <summary>
         /// Check format files for comparing
         /// </summary>
         /// <param name="file">CompareRequest</param>
         /// <returns>bool</returns>
-        bool CheckFiles(CompareRequest files);       
+        bool CheckFiles(CompareRequest files);
     }
 }
