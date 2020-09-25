@@ -15,6 +15,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                     return new ExifMetadataRepository(branchPackage);
                 case MetadataType.Iptc:
                     return new IptcMetadataRepository(branchPackage);
+                case MetadataType.ID3V2:
+                    return new ID3V2TagRepository(branchPackage);
                 default:
                     return new OneLevelMetadataRepository(branchPackage);
             }

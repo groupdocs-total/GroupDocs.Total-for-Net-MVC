@@ -302,6 +302,7 @@
     <Compile Include="Products\Metadata\Model\PropertyDescriptor.cs" />
     <Compile Include="Products\Metadata\Model\PropertyType.cs" />
     <Compile Include="Products\Metadata\Repositories\ExifMetadataRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\ID3V2TagRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\IptcMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\MetadataPackageRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\MetadataRepositoryFactory.cs" />

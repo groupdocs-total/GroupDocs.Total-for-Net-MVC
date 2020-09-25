@@ -53,7 +53,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
                     {
                         packages.Add(new Package(rootProperty.Name, (PackageType)package.MetadataType, properties, descriptors));
                     }
-
                 }
             }
 
