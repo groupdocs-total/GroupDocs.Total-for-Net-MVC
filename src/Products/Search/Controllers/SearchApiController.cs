@@ -316,8 +316,54 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         [Route("search/getIndexProperties")]
         public HttpResponseMessage GetIndexProperties()
         {
-            var indexProperties = SearchService.GetIndexProperties();
-            return this.Request.CreateResponse(HttpStatusCode.OK, indexProperties);
+            try
+            {
+                var indexProperties = SearchService.GetIndexProperties();
+                return this.Request.CreateResponse(HttpStatusCode.OK, indexProperties);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Gets the contents of the alphabet dictionary.
+        /// </summary>
+        /// <returns>The contents of the alphabet dictionary.</returns>
+        [HttpPost]
+        [Route("search/getAlphabetDictionary")]
+        public HttpResponseMessage GetAlphabetDictionary()
+        {
+            try
+            {
+                var response = SearchService.GetAlphabetDictionary();
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the alphabet dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the alphabet dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/saveAlphabetDictionary")]
+        public HttpResponseMessage SaveAlphabetDictionary(AlphabetUpdateRequest request)
+        {
+            try
+            {
+                SearchService.SaveAlphabetDictionary(request);
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
         }
     }
 }

@@ -293,7 +293,10 @@
     <Compile Include="Products\Search\Config\SearchConfiguration.cs" />
     <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
     <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\AlphabetUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\AlphabetCharacter.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\AlphabetReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\IndexProperties.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />

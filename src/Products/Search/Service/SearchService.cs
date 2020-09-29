@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GroupDocs.Search;
 using GroupDocs.Search.Common;
+using GroupDocs.Search.Dictionaries;
 using GroupDocs.Search.Highlighters;
 using GroupDocs.Search.Options;
 using GroupDocs.Search.Results;
@@ -211,6 +213,68 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             indexProperties.IndexedFiles = index.GetIndexedDocuments().Length;
 
             return indexProperties;
+        }
+
+        internal static AlphabetReadResponse GetAlphabetDictionary()
+        {
+            var response = new AlphabetReadResponse();
+            if (index == null) return response;
+
+            var alphabet = index.Dictionaries.Alphabet;
+            int count = alphabet.Count;
+
+            response.Characters = new AlphabetCharacter[count];
+            int order = 0;
+            for (int i = char.MinValue; i <= char.MaxValue; i++)
+            {
+                var characterType = alphabet.GetCharacterType((char)i);
+                if (characterType != CharacterType.Separator)
+                {
+                    response.Characters[order] = new AlphabetCharacter()
+                    {
+                        Character = i,
+                        Type = (int)characterType,
+                    };
+                    order++;
+                }
+            }
+
+            return response;
+        }
+
+        internal static void SaveAlphabetDictionary(AlphabetUpdateRequest request)
+        {
+            var alphabet = index.Dictionaries.Alphabet;
+            var separator = Enumerable.Range(char.MinValue, char.MaxValue)
+                .Select(v => (char)v);
+            {
+                int letterType = (int)CharacterType.Letter;
+                var letter = request.Characters
+                    .Where(ac => ac.Type == letterType)
+                    .Select(ac => (char)ac.Character)
+                    .ToArray();
+                alphabet.SetRange(letter, CharacterType.Letter);
+                separator = separator.Except(letter);
+            }
+            {
+                int blendedType = (int)CharacterType.Blended;
+                var blended = request.Characters
+                    .Where(ac => ac.Type == blendedType)
+                    .Select(ac => (char)ac.Character)
+                    .ToArray();
+                alphabet.SetRange(blended, CharacterType.Blended);
+                separator = separator.Except(blended);
+            }
+            {
+                int separateWordType = (int)CharacterType.SeparateWord;
+                var separateWord = request.Characters
+                    .Where(ac => ac.Type == separateWordType)
+                    .Select(ac => (char)ac.Character)
+                    .ToArray();
+                alphabet.SetRange(separateWord, CharacterType.SeparateWord);
+                separator = separator.Except(separateWord);
+            }
+            alphabet.SetRange(separator.ToArray(), CharacterType.Separator);
         }
 
         private static void InitSpecailCharsList()

@@ -6,39 +6,39 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Request
     public class SearchPostedData : PostedDataEntity
     {
         [JsonProperty()]
-        internal string Query { get; set; }
+        public string Query { get; set; }
 
         [JsonProperty()]
-        internal bool CaseSensitiveSearch { get; set; }
+        public bool CaseSensitiveSearch { get; set; }
 
         [JsonProperty()]
-        internal bool FuzzySearch { get; set; }
+        public bool FuzzySearch { get; set; }
 
         [JsonProperty()]
-        internal int FuzzySearchMistakeCount { get; set; }
+        public int FuzzySearchMistakeCount { get; set; }
 
         [JsonProperty()]
-        internal bool FuzzySearchOnlyBestResults { get; set; }
+        public bool FuzzySearchOnlyBestResults { get; set; }
 
         [JsonProperty()]
-        internal bool KeyboardLayoutCorrection { get; set; }
+        public bool KeyboardLayoutCorrection { get; set; }
 
         [JsonProperty()]
-        internal bool SynonymSearch { get; set; }
+        public bool SynonymSearch { get; set; }
 
         [JsonProperty()]
-        internal bool HomophoneSearch { get; set; }
+        public bool HomophoneSearch { get; set; }
 
         [JsonProperty()]
-        internal bool WordFormsSearch { get; set; }
+        public bool WordFormsSearch { get; set; }
 
         [JsonProperty()]
-        internal bool SpellingCorrection { get; set; }
+        public bool SpellingCorrection { get; set; }
 
         [JsonProperty()]
-        internal int SpellingCorrectionMistakeCount { get; set; }
+        public int SpellingCorrectionMistakeCount { get; set; }
 
         [JsonProperty()]
-        internal bool SpellingCorrectionOnlyBestResults { get; set; }
+        public bool SpellingCorrectionOnlyBestResults { get; set; }
     }
 }
