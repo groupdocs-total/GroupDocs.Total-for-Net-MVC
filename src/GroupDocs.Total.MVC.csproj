@@ -51,14 +51,14 @@
     <Reference Include="GroupDocs.Annotation, Version=20.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Annotation.20.6.0\lib\net20\GroupDocs.Annotation.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Comparison, Version=19.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Comparison.19.6.0\lib\GroupDocs.Comparison.dll</HintPath>
+    <Reference Include="GroupDocs.Comparison, Version=20.6.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Comparison.20.6.0\lib\net20\GroupDocs.Comparison.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Conversion, Version=20.3.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Conversion.20.3.0\lib\net20\GroupDocs.Conversion.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Editor, Version=20.2.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Editor.20.2.0\lib\net20\GroupDocs.Editor.dll</HintPath>
+    <Reference Include="GroupDocs.Editor, Version=20.8.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Editor.20.8.0\lib\net20\GroupDocs.Editor.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Metadata, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Metadata.20.7.0\lib\net20\GroupDocs.Metadata.dll</HintPath>

@@ -1,5 +1,6 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Parser;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
@@ -11,9 +12,14 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
     /// </summary>
     public class ComparisonConfiguration : CommonConfiguration
     {
-        private string FilesDirectory = "DocumentSamples/Comparison";
-        private string ResultDirectory = "DocumentSamples/Comparison/Compared";
-        private int PreloadResultPageCount = 0;         
+        [JsonProperty]
+        private string filesDirectory = "DocumentSamples/Comparison";
+
+        [JsonProperty]
+        private string resultDirectory = "DocumentSamples/Comparison/Compared";
+
+        [JsonProperty]
+        private int preloadResultPageCount;
 
         /// <summary>
         /// Constructor
@@ -24,63 +30,63 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Config
             dynamic configuration = parser.GetConfiguration("comparison");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
             // get Comparison configuration section from the web.config            
-            FilesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", FilesDirectory);
-            if (!IsFullPath(FilesDirectory))
+            filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
+            if (!IsFullPath(filesDirectory))
             {
-                FilesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FilesDirectory);
-                if (!Directory.Exists(FilesDirectory))
+                filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filesDirectory);
+                if (!Directory.Exists(filesDirectory))
                 {
-                    Directory.CreateDirectory(FilesDirectory);
+                    Directory.CreateDirectory(filesDirectory);
                 }
             }
-            ResultDirectory = valuesGetter.GetStringPropertyValue("resultDirectory", ResultDirectory);
-            if (!IsFullPath(ResultDirectory))
+            resultDirectory = valuesGetter.GetStringPropertyValue("resultDirectory", resultDirectory);
+            if (!IsFullPath(resultDirectory))
             {
-                ResultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ResultDirectory);
-                if (!Directory.Exists(ResultDirectory))
-                {                    
-                    Directory.CreateDirectory(ResultDirectory);
+                resultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, resultDirectory);
+                if (!Directory.Exists(resultDirectory))
+                {
+                    Directory.CreateDirectory(resultDirectory);
                 }
             }
-            PreloadResultPageCount = valuesGetter.GetIntegerPropertyValue("preloadResultPageCount", PreloadResultPageCount);
+            preloadResultPageCount = valuesGetter.GetIntegerPropertyValue("preloadResultPageCount", preloadResultPageCount);
         }
 
         private static bool IsFullPath(string path)
         {
-            return !String.IsNullOrWhiteSpace(path)
-                && path.IndexOfAny(System.IO.Path.GetInvalidPathChars().ToArray()) == -1
+            return !string.IsNullOrWhiteSpace(path)
+                && path.IndexOfAny(Path.GetInvalidPathChars().ToArray()) == -1
                 && Path.IsPathRooted(path)
                 && !Path.GetPathRoot(path).Equals(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal);
         }
 
         public void SetFilesDirectory(string filesDirectory)
         {
-            this.FilesDirectory = filesDirectory;
+            this.filesDirectory = filesDirectory;
         }
 
         public string GetFilesDirectory()
         {
-            return FilesDirectory;
+            return filesDirectory;
         }
 
         public void SetResultDirectory(string resultDirectory)
         {
-            this.ResultDirectory = resultDirectory;
+            this.resultDirectory = resultDirectory;
         }
 
         public string GetResultDirectory()
         {
-            return ResultDirectory;
+            return resultDirectory;
         }
 
         public void SetPreloadResultPageCounty(int preloadResultPageCount)
         {
-            this.PreloadResultPageCount = preloadResultPageCount;
+            this.preloadResultPageCount = preloadResultPageCount;
         }
 
         public int GetPreloadResultPageCount()
         {
-            return PreloadResultPageCount;
-        }      
+            return preloadResultPageCount;
+        }
     }
 }
