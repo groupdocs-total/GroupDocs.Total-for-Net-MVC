@@ -352,12 +352,51 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <param name="request">The new contents of the alphabet dictionary.</param>
         /// <returns>HTTP response message.</returns>
         [HttpPost]
-        [Route("search/saveAlphabetDictionary")]
-        public HttpResponseMessage SaveAlphabetDictionary(AlphabetUpdateRequest request)
+        [Route("search/setAlphabetDictionary")]
+        public HttpResponseMessage SetAlphabetDictionary(AlphabetUpdateRequest request)
         {
             try
             {
-                SearchService.SaveAlphabetDictionary(request);
+                SearchService.SetAlphabetDictionary(request);
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Gets the contents of the alphabet dictionary.
+        /// </summary>
+        /// <returns>The contents of the alphabet dictionary.</returns>
+        [HttpPost]
+        [Route("search/getStopWordDictionary")]
+        public HttpResponseMessage GetStopWordDictionary()
+        {
+            try
+            {
+                var response = SearchService.GetStopWordDictionary();
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the stop word dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the stop word dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/setStopWordDictionary")]
+        public HttpResponseMessage SetStopWordDictionary(StopWordsUpdateRequest request)
+        {
+            try
+            {
+                SearchService.SetStopWordDictionary(request);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)

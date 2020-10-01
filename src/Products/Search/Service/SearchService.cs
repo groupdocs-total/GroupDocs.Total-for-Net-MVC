@@ -218,7 +218,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
         internal static AlphabetReadResponse GetAlphabetDictionary()
         {
             var response = new AlphabetReadResponse();
-            if (index == null) return response;
 
             var alphabet = index.Dictionaries.Alphabet;
             int count = alphabet.Count;
@@ -242,7 +241,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             return response;
         }
 
-        internal static void SaveAlphabetDictionary(AlphabetUpdateRequest request)
+        internal static void SetAlphabetDictionary(AlphabetUpdateRequest request)
         {
             var alphabet = index.Dictionaries.Alphabet;
             var separator = Enumerable.Range(char.MinValue, char.MaxValue)
@@ -275,6 +274,23 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 separator = separator.Except(separateWord);
             }
             alphabet.SetRange(separator.ToArray(), CharacterType.Separator);
+        }
+
+        internal static StopWordsReadResponse GetStopWordDictionary()
+        {
+            var response = new StopWordsReadResponse();
+
+            var dictionary = index.Dictionaries.StopWordDictionary;
+            response.StopWords = dictionary.ToArray();
+
+            return response;
+        }
+
+        internal static void SetStopWordDictionary(StopWordsUpdateRequest request)
+        {
+            var dictionary = index.Dictionaries.StopWordDictionary;
+            dictionary.Clear();
+            dictionary.AddRange(request.StopWords);
         }
 
         private static void InitSpecailCharsList()
