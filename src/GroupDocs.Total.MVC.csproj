@@ -63,6 +63,9 @@
     <Reference Include="GroupDocs.Metadata, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Metadata.20.7.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
+    <Reference Include="GroupDocs.Parser, Version=20.8.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Parser.20.8.0\lib\net20\GroupDocs.Parser.dll</HintPath>
+    </Reference>
     <Reference Include="GroupDocs.Signature, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.4.0\lib\net20\GroupDocs.Signature.dll</HintPath>
     </Reference>
@@ -290,6 +293,9 @@
     <Compile Include="Products\Metadata\Controllers\MetadataApiController.cs" />
     <Compile Include="Products\Metadata\Entity\FilePropertyName.cs" />
     <Compile Include="Products\Metadata\Util\Directory\DirectoryUtils.cs" />
+    <Compile Include="Products\Parser\Config\ParserConfiguration.cs" />
+    <Compile Include="Products\Parser\Controllers\ParserApiController.cs" />
+    <Compile Include="Products\Parser\Entity\Web\ParserDocumentEntity.cs" />
     <Compile Include="Products\Search\Config\SearchConfiguration.cs" />
     <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
     <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
@@ -447,11 +453,11 @@
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
-  <Target Name="BeforeBuild">
+  <!--<Target Name="BeforeBuild">
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js update" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js run build  --scripts-prepend-node-path" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js run build  - -scripts-prepend-node-path" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe .\node_modules\gulp\bin\gulp.js copy" Condition=" '$(OS)' == 'Windows_NT' " />
   </Target>
   <Target Name="AfterBuild">
@@ -469,6 +475,6 @@
       <ZipFiles Include="$(ProjectDir)Mono.WebServer2.dll" />
     </ItemGroup>
     <Zip Files="@(ZipFiles)" WorkingDirectory="$(ProjectDir)" ZipFileName="GroupDocs.Total.MVC.zip" />
-  </Target>
+  </Target>-->
   <Import Project="..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets" Condition="Exists('..\packages\MSBuildTasks.1.5.0.235\build\MSBuildTasks.targets')" />
 </Project>

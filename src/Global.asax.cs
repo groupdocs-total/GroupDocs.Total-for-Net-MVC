@@ -19,6 +19,7 @@ namespace GroupDocs.Total.MVC
             string editorAssemblyName = "GroupDocs.Editor.dll";
             string metadataAssemblyName = "GroupDocs.Metadata.dll";
             string searchAssemblyName = "GroupDocs.Search.dll";
+            string parserAssemblyName = "GroupDocs.Parser.dll";
 
             // set GroupDocs.Viewer license
             DomainGenerator viewerDomainGenerator = new DomainGenerator(viewerAssemblyName, "GroupDocs.Viewer.License");
@@ -50,6 +51,10 @@ namespace GroupDocs.Total.MVC
 
             // set GroupDocs.Search license
             DomainGenerator searchDomainGenerator = new DomainGenerator(searchAssemblyName, "GroupDocs.Search.License");
+            searchDomainGenerator.SetSearchLicense();
+
+            // set GroupDocs.Parser license
+            DomainGenerator parserDomainGenerator = new DomainGenerator(parserAssemblyName, "GroupDocs.Parser.License");
             searchDomainGenerator.SetSearchLicense();
 
             AreaRegistration.RegisterAllAreas();
