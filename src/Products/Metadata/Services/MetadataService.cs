@@ -59,8 +59,9 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 
                     packages.Add(new ExtractedPackageDto
                     {
-                        id = package.Name,
-                        name = package.Type.ToString(),
+                        id = package.Id,
+                        name = package.Name,
+                        index = package.Index,
                         type = (int)package.Type,
                         properties = properties,
                         knownProperties = descriptors,

@@ -264,6 +264,8 @@
     <Compile Include="Products\Common\Config\ServerConfiguration.cs" />
     <Compile Include="Products\Common\Config\CommonConfiguration.cs" />
     <Compile Include="Products\Metadata\Context\MetadataContext.cs" />
+    <Compile Include="Products\Metadata\Context\MetadataPathConfig.cs" />
+    <Compile Include="Products\Metadata\Context\NestedPackageInfo.cs" />
     <Compile Include="Products\Metadata\DTO\ExtractedPackageDto.cs" />
     <Compile Include="Products\Metadata\DTO\MetadataPropertyDto.cs" />
     <Compile Include="Products\Common\Entity\Web\LoadDocumentEntity.cs" />

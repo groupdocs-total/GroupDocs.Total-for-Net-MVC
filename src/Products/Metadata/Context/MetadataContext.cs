@@ -12,6 +12,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
     {
         private readonly GroupDocs.Metadata.Metadata metadata;
 
+        private readonly MetadataPathConfig metadataPathConfig;
+
         private bool disposedValue;
 
         public MetadataContext(string filePath, string password)
@@ -22,36 +24,45 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             };
 
             metadata = new GroupDocs.Metadata.Metadata(filePath, loadOptions);
+            metadataPathConfig = new MetadataPathConfig();
         }
 
         public IEnumerable<Package> GetPackages()
         {
             var root = metadata.GetRootPackage();
             var packages = new List<Package>();
-            foreach (var rootProperty in root)
+            foreach (var branchProperty in root)
             {
-                if (rootProperty.Value != null && rootProperty.Value.Type == MetadataPropertyType.Metadata)
+                if (branchProperty.Value != null && branchProperty.Value.Type == MetadataPropertyType.Metadata)
                 {
-                    var package = rootProperty.Value.ToClass<MetadataPackage>();
+                    var branchPackage = branchProperty.Value.ToClass<MetadataPackage>();
 
-                    var repository = MetadataRepositoryFactory.Create(package);
-
-                    var properties = new List<Property>();
-                    var descriptors = new List<Model.PropertyDescriptor>();
-
-                    foreach (var property in repository.GetProperties().OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
+                    foreach (var nestedPackageInfo in metadataPathConfig.GetRegisteredPackages(branchPackage))
                     {
-                        properties.Add(property);
-                    }
+                        var repository = MetadataRepositoryFactory.Create(nestedPackageInfo.Package);
+                        var properties = new List<Property>();
+                        var descriptors = new List<Model.PropertyDescriptor>();
 
-                    foreach (var descriptor in repository.GetDescriptors().OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
-                    {
-                        descriptors.Add(descriptor);
-                    }
+                        foreach (var property in repository.GetProperties().OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
+                        {
+                            properties.Add(property);
+                        }
 
-                    if (properties.Count > 0 || descriptors.Any(descriptor => (descriptor.AccessLevel & AccessLevels.Add) != 0))
-                    {
-                        packages.Add(new Package(rootProperty.Name, (PackageType)package.MetadataType, properties, descriptors));
+                        foreach (var descriptor in repository.GetDescriptors().OrderBy(p => p.Name, StringComparer.OrdinalIgnoreCase))
+                        {
+                            descriptors.Add(descriptor);
+                        }
+
+                        if (properties.Count > 0 || descriptors.Any(descriptor => (descriptor.AccessLevel & AccessLevels.Add) != 0))
+                        {
+                            packages.Add(
+                                new Package(metadataPathConfig.CombinePath(branchProperty.Name, nestedPackageInfo.Path),
+                                nestedPackageInfo.Package.GetType().Name,
+                                nestedPackageInfo.Index,
+                                (PackageType)nestedPackageInfo.Package.MetadataType,
+                                properties,
+                                descriptors));
+                        }
                     }
                 }
             }
@@ -63,7 +74,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
         {
             var root = metadata.GetRootPackage();
 
-            var package = root[packageName].Value.ToClass<MetadataPackage>();
+            var package = metadataPathConfig.GetPackageByPath(root, packageName);
             var repository = MetadataRepositoryFactory.Create(package);
             foreach (var property in properties)
             {
@@ -75,7 +86,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
         {
             var root = metadata.GetRootPackage();
 
-            var repository = MetadataRepositoryFactory.Create(root[packageName].Value.ToClass<MetadataPackage>());
+            var package = metadataPathConfig.GetPackageByPath(root, packageName);
+            var repository = MetadataRepositoryFactory.Create(package);
             foreach (var propertyName in properties)
             {
                 repository.RemoveProperty(propertyName);

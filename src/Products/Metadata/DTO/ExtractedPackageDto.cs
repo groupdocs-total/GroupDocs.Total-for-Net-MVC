@@ -9,6 +9,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.DTO
 
         public string name { get; set; }
 
+        public int index { get; set; }
+
         public int type { get; set; }
 
         public IEnumerable<PropertyDto> properties { get; set; }

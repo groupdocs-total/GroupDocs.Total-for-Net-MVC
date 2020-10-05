@@ -6,15 +6,27 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Model
 {
     public class Package
     {
-        public Package(string name, PackageType type, IEnumerable<Property> properties, IEnumerable<PropertyDescriptor> descriptors)
+        public Package(
+            string id, 
+            string name, 
+            int index, 
+            PackageType type, 
+            IEnumerable<Property> properties, 
+            IEnumerable<PropertyDescriptor> descriptors)
         {
+            Id = id;
             Name = name;
+            Index = index;
             Type = type;
             Properties = properties;
             Descriptors = descriptors;
         }
 
+        public string Id { get; private set; }
+
         public string Name { get; private set; }
+
+        public int Index { get; private set; }
 
         public PackageType Type { get; private set; }
 
