@@ -1,6 +1,8 @@
 ﻿
 using GroupDocs.Metadata.Common;
+using GroupDocs.Metadata.Formats.Video;
 using GroupDocs.Metadata.Standards.Exif;
+using GroupDocs.Total.MVC.Products.Metadata.Repositories.Matroska;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
 {
@@ -17,14 +19,23 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                     {
                         return new ExifMetadataRepository(branchPackage);
                     }
-                    else
-                    {
-                        return new OneLevelMetadataRepository(branchPackage);
-                    }
+                    return new OneLevelMetadataRepository(branchPackage);
                 case MetadataType.Iptc:
                     return new IptcMetadataRepository(branchPackage);
                 case MetadataType.ID3V2:
                     return new ID3V2TagRepository(branchPackage);
+                case MetadataType.Matroska:
+                    if (branchPackage is MatroskaTag)
+                    {
+                        return new MatroskaTagRepository(branchPackage);
+                    }
+                    if (branchPackage is MatroskaTrack)
+                    {
+                        return new MatroskaTrackRepository(branchPackage);
+                    }
+                    return new OneLevelMetadataRepository(branchPackage);
+                case MetadataType.FileFormat:
+                    return new FileTypeRepository(branchPackage);
                 default:
                     return new OneLevelMetadataRepository(branchPackage);
             }

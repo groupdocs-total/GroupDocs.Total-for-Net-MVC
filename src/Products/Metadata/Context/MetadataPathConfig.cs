@@ -12,12 +12,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
     {
         private const char PathSeparator = '/';
 
-        private readonly IDictionary<Type, string> metadataPaths = new Dictionary<Type, string>
+        private readonly IDictionary<Type, string[]> metadataPaths = new Dictionary<Type, string[]>
         {
-            { typeof(NoteInspectionPackage), "Pages" },
-            { typeof(ZipPackage), "Files" },
-            { typeof(TorrentPackage), "files" },
-            { typeof(MovPackage), "Atoms" }
+            { typeof(NoteInspectionPackage), new[] { "Pages" } },
+            { typeof(ZipPackage), new[] { "Files" } },
+            { typeof(TorrentPackage), new[] { "files" } },
+            { typeof(MovPackage), new[] { "Atoms" } },
+            { typeof(MatroskaPackage), new[] { "EbmlHeader", "Segments", "Tracks", "Tags" } },
         };
 
         public IEnumerable<NestedPackageInfo> GetRegisteredPackages(MetadataPackage branchPackage)
@@ -26,9 +27,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             var packageType = branchPackage.GetType();
             if (metadataPaths.ContainsKey(packageType))
             {
-                foreach (var nestedPackage in GetPackages(branchPackage, metadataPaths[packageType]))
+                foreach (var packagePath in metadataPaths[packageType])
                 {
-                    yield return nestedPackage;
+                    foreach (var nestedPackage in GetPackages(branchPackage, packagePath))
+                    {
+                        yield return nestedPackage;
+                    }
                 }
             }
         }
