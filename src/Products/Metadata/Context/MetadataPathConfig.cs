@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GroupDocs.Metadata.Common;
 using GroupDocs.Metadata.Formats.Archive;
+using GroupDocs.Metadata.Formats.BusinessCard;
 using GroupDocs.Metadata.Formats.Document;
 using GroupDocs.Metadata.Formats.Peer2Peer;
 using GroupDocs.Metadata.Formats.Video;
@@ -19,6 +20,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             { typeof(TorrentPackage), new[] { "files" } },
             { typeof(MovPackage), new[] { "Atoms" } },
             { typeof(MatroskaPackage), new[] { "EbmlHeader", "Segments", "Tracks", "Tags" } },
+            { typeof(VCardPackage), new[] { "Cards" } },
         };
 
         public IEnumerable<NestedPackageInfo> GetRegisteredPackages(MetadataPackage branchPackage)

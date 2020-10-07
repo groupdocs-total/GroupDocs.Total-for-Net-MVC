@@ -313,6 +313,7 @@
     <Compile Include="Products\Metadata\Repositories\MetadataPackageRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\MetadataRepositoryFactory.cs" />
     <Compile Include="Products\Metadata\Repositories\OneLevelMetadataRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\VCardRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\XmpMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Services\FileService.cs" />
     <Compile Include="Products\Metadata\Services\MetadataService.cs" />

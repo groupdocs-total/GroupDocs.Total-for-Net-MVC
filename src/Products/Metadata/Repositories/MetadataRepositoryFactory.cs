@@ -1,5 +1,6 @@
 ﻿
 using GroupDocs.Metadata.Common;
+using GroupDocs.Metadata.Formats.BusinessCard;
 using GroupDocs.Metadata.Formats.Video;
 using GroupDocs.Metadata.Standards.Exif;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Matroska;
@@ -36,6 +37,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                     return new OneLevelMetadataRepository(branchPackage);
                 case MetadataType.FileFormat:
                     return new FileTypeRepository(branchPackage);
+                case MetadataType.VCard:
+                    if (branchPackage is VCardCard)
+                    {
+                        return new VCardRepository(branchPackage);
+                    }
+                    return new OneLevelMetadataRepository(branchPackage);
                 default:
                     return new OneLevelMetadataRepository(branchPackage);
             }
