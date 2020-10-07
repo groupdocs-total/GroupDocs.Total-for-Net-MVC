@@ -303,6 +303,9 @@
     <Compile Include="Products\Metadata\Model\Property.cs" />
     <Compile Include="Products\Metadata\Model\PropertyDescriptor.cs" />
     <Compile Include="Products\Metadata\Model\PropertyType.cs" />
+    <Compile Include="Products\Metadata\Repositories\Asf\AsfCodecRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\Asf\AsfRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\Asf\AsfStreamRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\EnumMapperRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\ExifMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\FileTypeRepository.cs" />

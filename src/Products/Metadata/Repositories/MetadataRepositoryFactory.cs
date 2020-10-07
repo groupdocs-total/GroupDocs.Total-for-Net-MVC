@@ -3,6 +3,7 @@ using GroupDocs.Metadata.Common;
 using GroupDocs.Metadata.Formats.BusinessCard;
 using GroupDocs.Metadata.Formats.Video;
 using GroupDocs.Metadata.Standards.Exif;
+using GroupDocs.Total.MVC.Products.Metadata.Repositories.Asf;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Matroska;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
@@ -41,6 +42,20 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                     if (branchPackage is VCardCard)
                     {
                         return new VCardRepository(branchPackage);
+                    }
+                    return new OneLevelMetadataRepository(branchPackage);
+                case MetadataType.Asf:
+                    if (branchPackage is AsfPackage)
+                    {
+                        return new AsfRepository(branchPackage);
+                    }
+                    if (branchPackage is AsfCodec)
+                    {
+                        return new AsfCodecRepository(branchPackage);
+                    }
+                    if (branchPackage is AsfBaseStreamProperty)
+                    {
+                        return new AsfStreamRepository(branchPackage);
                     }
                     return new OneLevelMetadataRepository(branchPackage);
                 default:
