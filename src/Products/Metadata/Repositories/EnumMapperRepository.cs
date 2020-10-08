@@ -10,7 +10,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
     {
         private readonly IDictionary<string, Type> enumMap;
 
-        public EnumMapperRepository(MetadataPackage branchPackage, IDictionary<string, Type> enumMap) : base(branchPackage)
+        protected EnumMapperRepository(MetadataPackage branchPackage, IDictionary<string, Type> enumMap) : base(branchPackage)
         {
             this.enumMap = enumMap;
         }
