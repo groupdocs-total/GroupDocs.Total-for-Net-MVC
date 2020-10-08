@@ -23,6 +23,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             { typeof(MatroskaPackage), new[] { "EbmlHeader", "Segments", "Tracks", "Tags" } },
             { typeof(VCardPackage), new[] { "Cards" } },
             { typeof(AsfPackage), new[] { "StreamProperties", "MetadataDescriptors", "CodecInformation" } },
+            { typeof(OpenTypePackage), new[] { "Fonts" } },
         };
 
         public IEnumerable<NestedPackageInfo> GetRegisteredPackages(MetadataPackage branchPackage)

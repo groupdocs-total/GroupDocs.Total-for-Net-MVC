@@ -1,9 +1,11 @@
 ﻿
 using GroupDocs.Metadata.Common;
 using GroupDocs.Metadata.Formats.BusinessCard;
+using GroupDocs.Metadata.Formats.Font;
 using GroupDocs.Metadata.Formats.Video;
 using GroupDocs.Metadata.Standards.Exif;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Asf;
+using GroupDocs.Total.MVC.Products.Metadata.Repositories.Fonts;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Matroska;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
@@ -58,6 +60,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                         return new AsfStreamRepository(branchPackage);
                     }
                     return new OneLevelMetadataRepository(branchPackage);
+                case MetadataType.OpenType:
+                    if (branchPackage is OpenTypeFont)
+                    {
+                        return new OpenTypeRepository(branchPackage);
+                    }
+                    return new OneLevelMetadataRepository(branchPackage);
+                case MetadataType.DigitalSignature:
+                    return new DigitalSignatureRepository(branchPackage);
                 default:
                     return new OneLevelMetadataRepository(branchPackage);
             }

@@ -306,9 +306,11 @@
     <Compile Include="Products\Metadata\Repositories\Asf\AsfCodecRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Asf\AsfRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Asf\AsfStreamRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\DigitalSignatureRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\EnumMapperRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\ExifMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\FileTypeRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\Fonts\OpenTypeRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\ID3V2TagRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\IptcMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Matroska\MatroskaTagRepository.cs" />
