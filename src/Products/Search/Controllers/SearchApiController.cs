@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Search.Config;
@@ -398,6 +399,26 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             {
                 SearchService.SetStopWordDictionary(request);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the stop word dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the stop word dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/highlightTerms")]
+        public HttpResponseMessage HighlightTerms(HighlightTermsRequest request)
+        {
+            try
+            {
+                var response = SearchService.HighlightTerms(request, this.globalConfiguration.GetSearchConfiguration().GetFilesDirectory());
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
             }
             catch (Exception ex)
             {

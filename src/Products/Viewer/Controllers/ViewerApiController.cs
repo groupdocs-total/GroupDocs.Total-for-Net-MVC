@@ -1,11 +1,16 @@
-﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+﻿using Castle.Components.DictionaryAdapter.Xml;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web.Request;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web.Response;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
+using GroupDocs.Total.MVC.Products.Search.Service;
 using GroupDocs.Total.MVC.Products.Viewer.Cache;
 using GroupDocs.Total.MVC.Products.Viewer.Config;
 using GroupDocs.Viewer.Exceptions;
 using GroupDocs.Viewer.Options;
 using GroupDocs.Viewer.Results;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,6 +21,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -181,6 +188,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password)))
                     {
                         page = this.GetPageDescritpionEntity(htmlViewer, documentGuid, pageNumber, fileCacheSubFolder);
+                        HighlightTerms(page, postedData.terms);
                     }
                 }
                 else
@@ -234,6 +242,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password), pageNumber, newAngle))
                     {
                         page = this.GetPageDescritpionEntity(htmlViewer, documentGuid, pageNumber, fileCacheSubFolder);
+                        HighlightTerms(page, postedData.terms);
                     }
                 }
                 else
@@ -568,6 +577,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
         {
             // get/set parameters
             string documentGuid = postedData.guid;
+            var terms = postedData.terms;
             string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
 
             var fileFolderName = Path.GetFileName(documentGuid).Replace(".", "_");
@@ -585,21 +595,27 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password)))
                 {
-                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, htmlViewer, printVersion);
+                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, htmlViewer, terms, printVersion);
                 }
             }
             else
             {
                 using (PngViewer pngViewer = new PngViewer(documentGuid, cache, GetLoadOptions(password)))
                 {
-                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, pngViewer, printVersion);
+                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, pngViewer, null, printVersion);
                 }
             }
 
             return loadDocumentEntity;
         }
 
-        private static LoadDocumentEntity GetLoadDocumentEntity(bool loadAllPages, string documentGuid, string fileCacheSubFolder, ICustomViewer customViewer, bool printVersion)
+        private static LoadDocumentEntity GetLoadDocumentEntity(
+            bool loadAllPages,
+            string documentGuid,
+            string fileCacheSubFolder,
+            ICustomViewer customViewer,
+            string[] terms,
+            bool printVersion)
         {
             if (loadAllPages)
             {
@@ -623,6 +639,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 if (loadAllPages)
                 {
                     pageData.SetData(GetPageContent(page.Number, documentGuid, cachePath, printVersion));
+                    HighlightTerms(pageData, terms);
                 }
 
                 loadDocumentEntity.SetPages(pageData);
@@ -668,6 +685,44 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             page.SetData(GetPageContent(pageNumber, documentGuid, cachePath, false));
 
             return page;
+        }
+
+        private static void HighlightTerms(PageDescriptionEntity page, string[] terms)
+        {
+            if (terms == null || terms.Length == 0)
+            {
+                return;
+            }
+
+            var request = new HighlightTermsRequest();
+            request.Html = page.GetData();
+            request.Terms = terms;
+            var response = SearchService.HighlightTerms(request, globalConfiguration.GetSearchConfiguration().GetFilesDirectory());
+            page.SetData(response.Html);
+
+            //var task = RequestHighlight(page.GetData(), terms);
+            //task.Wait();
+            //var highlighted = task.Result;
+            //page.SetData(highlighted);
+        }
+
+        private static async Task<string> RequestHighlight(string html, string[] terms)
+        {
+            var request = new HighlightTermsRequest();
+            request.Html = html;
+            request.Terms = terms;
+
+            var json = JsonConvert.SerializeObject(request);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var url = "http://localhost:8080/search/highlightTerms";
+            using (var client = new HttpClient())
+            {
+                var responseMessage = await client.PostAsync(url, data);
+                string resultText = await responseMessage.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<HighlightTermsResponse>(resultText);
+                return response.Html;
+            }
         }
     }
 }

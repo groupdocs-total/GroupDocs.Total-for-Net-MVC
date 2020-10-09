@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Aspose.Html;
 using GroupDocs.Search;
 using GroupDocs.Search.Common;
 using GroupDocs.Search.Dictionaries;
@@ -10,6 +11,8 @@ using GroupDocs.Search.Options;
 using GroupDocs.Search.Results;
 using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web.Request;
+using GroupDocs.Total.MVC.Products.Common.Entity.Web.Response;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Response;
 
@@ -21,9 +24,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static Dictionary<string, string> FileIndexingStatusDict { get; } = new Dictionary<string, string>();
         internal static Dictionary<string, string> PassRequiredStatusDict { get; } = new Dictionary<string, string>();
-
-        private static readonly List<char> specialCharsList = new List<char>();
-        private static readonly List<char> foundSpecialChars = new List<char>();
 
         public static SummarySearchResult Search(SearchPostedData searchRequest, GlobalConfiguration globalConfiguration)
         {
@@ -38,45 +38,40 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
             SearchOptions searchOptions = new SearchOptions();
             searchOptions.UseCaseSensitiveSearch = searchRequest.CaseSensitiveSearch;
-            searchOptions.FuzzySearch.Enabled = searchRequest.FuzzySearch;
-            searchOptions.FuzzySearch.FuzzyAlgorithm = new TableDiscreteFunction(searchRequest.FuzzySearchMistakeCount);
-            searchOptions.FuzzySearch.OnlyBestResults = searchRequest.FuzzySearchOnlyBestResults;
-            searchOptions.KeyboardLayoutCorrector.Enabled = searchRequest.KeyboardLayoutCorrection;
-            searchOptions.UseSynonymSearch = searchRequest.SynonymSearch;
-            searchOptions.UseHomophoneSearch = searchRequest.HomophoneSearch;
-            searchOptions.UseWordFormsSearch = searchRequest.WordFormsSearch;
-            searchOptions.SpellingCorrector.Enabled = searchRequest.SpellingCorrection;
-            searchOptions.SpellingCorrector.MaxMistakeCount = searchRequest.SpellingCorrectionMistakeCount;
-            searchOptions.SpellingCorrector.OnlyBestResults = searchRequest.SpellingCorrectionOnlyBestResults;
+            if (!searchRequest.CaseSensitiveSearch)
+            {
+                searchOptions.FuzzySearch.Enabled = searchRequest.FuzzySearch;
+                searchOptions.FuzzySearch.FuzzyAlgorithm = new TableDiscreteFunction(searchRequest.FuzzySearchMistakeCount);
+                searchOptions.FuzzySearch.OnlyBestResults = searchRequest.FuzzySearchOnlyBestResults;
+                searchOptions.KeyboardLayoutCorrector.Enabled = searchRequest.KeyboardLayoutCorrection;
+                searchOptions.UseSynonymSearch = searchRequest.SynonymSearch;
+                searchOptions.UseHomophoneSearch = searchRequest.HomophoneSearch;
+                searchOptions.UseWordFormsSearch = searchRequest.WordFormsSearch;
+                searchOptions.SpellingCorrector.Enabled = searchRequest.SpellingCorrection;
+                searchOptions.SpellingCorrector.MaxMistakeCount = searchRequest.SpellingCorrectionMistakeCount;
+                searchOptions.SpellingCorrector.OnlyBestResults = searchRequest.SpellingCorrectionOnlyBestResults;
+            }
 
             var searchQuery = searchRequest.Query;
             SearchResult result;
 
-            foreach (char specialChar in specialCharsList)
+            var alphabet = index.Dictionaries.Alphabet;
+            var containedSeparators = new HashSet<char>();
+            foreach (char c in searchQuery)
             {
-                if (searchQuery.Contains(specialChar))
+                var type = alphabet.GetCharacterType(c);
+                if (type == CharacterType.Separator)
                 {
-                    foundSpecialChars.Add(specialChar);
+                    containedSeparators.Add(c);
                 }
             }
 
-            if (searchQuery.Contains(" "))
+            if (containedSeparators.Count > 0)
             {
-                result = index.Search("\"" + searchQuery + "\"", searchOptions);
-            }
-            else if (foundSpecialChars.Count > 0)
-            {
-                foreach (char specialChar in foundSpecialChars)
+                foreach (char specialChar in containedSeparators)
                 {
                     searchQuery = searchQuery.Replace(specialChar, ' ');
                 }
-
-                foundSpecialChars.Clear();
-                result = index.Search("\"" + searchQuery + "\"", searchOptions);
-            }
-            else if (Path.HasExtension(searchQuery))
-            {
-                searchQuery = searchQuery.Replace(".", " ");
                 result = index.Search("\"" + searchQuery + "\"", searchOptions);
             }
             else
@@ -91,7 +86,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             {
                 TermsBefore = 5,
                 TermsAfter = 5,
-                TermsTotal = 10,
+                TermsTotal = 13,
             };
 
             for (int i = 0; i < result.DocumentCount; i++)
@@ -122,6 +117,11 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 searchDocumentResult.SetSize(new FileInfo(document.DocumentInfo.FilePath).Length);
                 searchDocumentResult.SetOccurrences(document.OccurrenceCount);
                 searchDocumentResult.SetFoundPhrases(foundPhrases.ToArray());
+                var terms = document.TermSequences
+                    .SelectMany(s => s)
+                    .Concat(document.Terms)
+                    .ToArray();
+                searchDocumentResult.SetTerms(terms);
 
                 foundFiles.Add(searchDocumentResult);
             }
@@ -192,8 +192,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 };
 
                 index.Add(indexedFilesDirectory);
-
-                InitSpecailCharsList();
             }
         }
 
@@ -293,13 +291,18 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             dictionary.AddRange(request.StopWords);
         }
 
-        private static void InitSpecailCharsList()
+        internal static HighlightTermsResponse HighlightTerms(HighlightTermsRequest request, string baseDirectory)
         {
-            IEnumerator<char> ie = index.Dictionaries.Alphabet.GetEnumerator();
-            while (ie.MoveNext())
+            using (var document = new HTMLDocument(request.Html, string.Empty))
             {
-                char item = ie.Current;
-                specialCharsList.Add(item);
+                var highlighter = new TermHighlighter(document, request.Terms);
+                highlighter.Run();
+
+                var response = new HighlightTermsResponse();
+                var filePath = Path.Combine(baseDirectory, "temp.temp");
+                document.Save(filePath);
+                response.Html = File.ReadAllText(filePath);
+                return response;
             }
         }
 

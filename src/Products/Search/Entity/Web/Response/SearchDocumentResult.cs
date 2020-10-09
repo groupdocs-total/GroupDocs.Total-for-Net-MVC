@@ -19,6 +19,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
         [JsonProperty]
         private string[] foundPhrases { get; set; }
 
+        [JsonProperty]
+        private string[] terms { get; set; }
+
         public void SetGuid(string guid)
         {
             this.guid = guid;
@@ -42,6 +45,11 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
         public void SetFoundPhrases(string[] foundPhrases)
         {
             this.foundPhrases = foundPhrases;
+        }
+
+        public void SetTerms(string[] terms)
+        {
+            this.terms = terms;
         }
     }
 }

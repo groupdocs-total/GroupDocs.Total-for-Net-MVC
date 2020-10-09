@@ -125,11 +125,9 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// <param name="type">Type.</param>
         public void SetSearchLicense()
         {
-            // Initiate license class
-            var obj = (GroupDocs.Search.License)Activator.CreateInstance(this.currentType);
-
-            // Set license
-            this.SetLicense(obj);
+            var path = GetLicensePath();
+            new GroupDocs.Search.License().SetLicense(path);
+            new Aspose.Html.License().SetLicense(path);
         }
 
         /// <summary>
@@ -139,15 +137,13 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         /// <returns>Assebmly name.</returns>
         private string GetAssemblyPath(string assemblyName)
         {
-            string path = string.Empty;
-
             // Get path of the executable
             string codeBase = Assembly.GetExecutingAssembly().CodeBase;
             UriBuilder uri = new UriBuilder(codeBase);
             string uriPath = Uri.UnescapeDataString(uri.Path);
 
             // Get path of the assembly
-            path = Path.Combine(Path.GetDirectoryName(uriPath), assemblyName);
+            string path = Path.Combine(Path.GetDirectoryName(uriPath), assemblyName);
             return path;
         }
 
@@ -172,11 +168,18 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             return type;
         }
 
-        private void SetLicense(dynamic obj) {
-            if (!string.IsNullOrEmpty(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
+        private void SetLicense(dynamic obj)
+        {
+            var path = GetLicensePath();
+            if (!string.IsNullOrEmpty(path))
             {
-                obj.SetLicense(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath());
+                obj.SetLicense(path);
             }
+        }
+
+        private string GetLicensePath()
+        {
+            return this.globalConfiguration.GetApplicationConfiguration().GetLicensePath();
         }
     }
 }
