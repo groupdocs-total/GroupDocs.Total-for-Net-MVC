@@ -21,7 +21,7 @@ namespace GroupDocs.Total.MVC.Products.Parser.Config
         public ParserConfiguration()
         {
             YamlParser parser = new YamlParser();
-            dynamic configuration = parser.GetConfiguration("annotation");
+            dynamic configuration = parser.GetConfiguration("parser");
             ConfigurationValuesGetter valuesGetter = new ConfigurationValuesGetter(configuration);
 
             filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);

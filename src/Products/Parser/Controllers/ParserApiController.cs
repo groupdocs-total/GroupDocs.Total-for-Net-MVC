@@ -12,6 +12,11 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using System.Web.Helpers;
+using GroupDocs.Parser.Templates;
+using System.Text.RegularExpressions;
+using GroupDocs.Parser.Data;
+using System.Linq;
 
 namespace GroupDocs.Total.MVC.Products.Parser.Controllers
 {
@@ -190,7 +195,42 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
             }
         }
 
-        public ParserDocumentEntity LoadDocument(PostedDataEntity loadDocumentRequest, bool loadAllPages)
+        [HttpPost]
+        [Route("parser/parseByTemplate")]
+        public HttpResponseMessage ParseByTemplate()
+        {
+            try
+            {
+                using (var reader = new StreamReader(HttpContext.Current.Request.InputStream))
+                {
+                    dynamic data = System.Web.Helpers.Json.Decode(reader.ReadToEnd());
+
+                    using (var parser = new GroupDocs.Parser.Parser(data.guid))
+                    {
+                        var fields = new List<TemplateField>();
+                        foreach (dynamic field in data.fields)
+                        {
+                            fields.Add(new TemplateField(new TemplateFixedPosition(new Rectangle(
+                                new Point((double)field.position.x, (double)field.position.y),
+                                new Size((double)field.size.width, (double)field.size.height))), field.name, field.pageNumber - 1));
+                        }
+
+                        var template = new Template(fields);
+                        var parsedData = parser.ParseByTemplate(template)
+                            .Select(x => new { name = x.Name, value = (x.PageArea as PageTextArea)?.Text });
+
+                        return Request.CreateResponse(HttpStatusCode.OK, parsedData);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // set exception message
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex));
+            }
+        }
+
+        private ParserDocumentEntity LoadDocument(PostedDataEntity loadDocumentRequest, bool loadAllPages)
         {
             string password = loadDocumentRequest.password;
             ParserDocumentEntity description = new ParserDocumentEntity();

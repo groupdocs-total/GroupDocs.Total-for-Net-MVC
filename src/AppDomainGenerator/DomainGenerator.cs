@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -133,6 +134,19 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
         }
 
         /// <summary>
+        /// Set GroupDocs.Parser license.
+        /// </summary>
+        /// <param name="type">Type.</param>
+        public void SetParserLicense()
+        {
+            // Initiate license class
+            var obj = Activator.CreateInstance(this.currentType);
+
+            // Set license
+            this.SetLicense(obj);
+        }
+
+        /// <summary>
         /// Get assembly full path by its name.
         /// </summary>
         /// <param name="assemblyName">string.</param>
@@ -172,10 +186,18 @@ namespace GroupDocs.Total.MVC.AppDomainGenerator
             return type;
         }
 
-        private void SetLicense(dynamic obj) {
-            if (!string.IsNullOrEmpty(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
+        private void SetLicense(dynamic obj)
+        {
+            try
             {
-                obj.SetLicense(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath());
+                if (!string.IsNullOrEmpty(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath()))
+                {
+                    obj.SetLicense(this.globalConfiguration.GetApplicationConfiguration().GetLicensePath());
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.Message);
             }
         }
     }

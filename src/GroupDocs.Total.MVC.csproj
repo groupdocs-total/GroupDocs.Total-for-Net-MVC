@@ -385,6 +385,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Products\Parser\Entity\Request\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>

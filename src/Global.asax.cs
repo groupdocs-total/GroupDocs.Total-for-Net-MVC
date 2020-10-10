@@ -55,7 +55,7 @@ namespace GroupDocs.Total.MVC
 
             // set GroupDocs.Parser license
             DomainGenerator parserDomainGenerator = new DomainGenerator(parserAssemblyName, "GroupDocs.Parser.License");
-            searchDomainGenerator.SetSearchLicense();
+            parserDomainGenerator.SetParserLicense();
 
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
