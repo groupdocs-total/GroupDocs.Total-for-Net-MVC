@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Aspose.Html;
@@ -299,9 +300,26 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 highlighter.Run();
 
                 var response = new HighlightTermsResponse();
-                var filePath = Path.Combine(baseDirectory, "temp.temp");
-                document.Save(filePath);
-                response.Html = File.ReadAllText(filePath);
+                var fileName = UniqueIdProvider.GetId().ToString(CultureInfo.InvariantCulture) + ".temp";
+                var filePath = Path.Combine(baseDirectory, fileName);
+                try
+                {
+                    document.Save(filePath);
+                    response.Html = File.ReadAllText(filePath);
+                }
+                finally
+                {
+                    if (File.Exists(filePath))
+                    {
+                        try
+                        {
+                            File.Delete(filePath);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
+                }
                 return response;
             }
         }
