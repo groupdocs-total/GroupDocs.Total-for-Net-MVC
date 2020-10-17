@@ -187,11 +187,13 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
                 // return document description
                 return Request.CreateResponse(HttpStatusCode.OK, loadDocumentEntity);
             }
+            catch (GroupDocs.Parser.Exceptions.InvalidPasswordException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+            }
             catch (Exception ex)
             {
-                // set exception message
-                // TODO: return InternalServerError for common Exception and Forbidden for PasswordProtectedException
-                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
             }
         }
 
@@ -205,7 +207,7 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
                 {
                     dynamic data = System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
-                    using (var parser = new GroupDocs.Parser.Parser(data.guid))
+                    using (GroupDocs.Parser.Parser parser = CreateParser(data.guid, data.password))
                     {
                         var fields = new List<TemplateField>();
                         foreach (dynamic field in data.fields)
@@ -226,7 +228,7 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
             catch (Exception ex)
             {
                 // set exception message
-                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex));
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
             }
         }
 
@@ -236,7 +238,7 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
             ParserDocumentEntity description = new ParserDocumentEntity();
             string documentGuid = loadDocumentRequest.guid;
 
-            using (GroupDocs.Parser.Parser parser = new GroupDocs.Parser.Parser(documentGuid))
+            using (GroupDocs.Parser.Parser parser = CreateParser(documentGuid, password))
             {
                 GroupDocs.Parser.Options.IDocumentInfo documentInfo = parser.GetDocumentInfo();
                 IList<string> pagesContent = loadAllPages
@@ -267,6 +269,20 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
             return description;
         }
 
+        private static GroupDocs.Parser.Parser CreateParser(string documentGuid, string password)
+        {
+            return string.IsNullOrEmpty(password)
+                ? new GroupDocs.Parser.Parser(documentGuid)
+                : new GroupDocs.Parser.Parser(documentGuid, new GroupDocs.Parser.Options.LoadOptions(password));
+        }
+
+        private static GroupDocs.Parser.Parser CreateParser(Stream stream, string password)
+        {
+            return string.IsNullOrEmpty(password)
+                ? new GroupDocs.Parser.Parser(stream)
+                : new GroupDocs.Parser.Parser(stream, new GroupDocs.Parser.Options.LoadOptions(password));
+        }
+
         private static List<string> GetAllPagesContent(string password, string documentGuid, GroupDocs.Parser.Options.IDocumentInfo pages)
         {
             List<string> allPages = new List<string>();
@@ -293,7 +309,7 @@ namespace GroupDocs.Total.MVC.Products.Parser.Controllers
 
             using (FileStream outputStream = File.OpenRead(documentGuid))
             {
-                using (GroupDocs.Parser.Parser parser = new GroupDocs.Parser.Parser(outputStream))
+                using (GroupDocs.Parser.Parser parser = CreateParser(outputStream, password))
                 {
                     GroupDocs.Parser.Options.PreviewOptions previewOptions = new GroupDocs.Parser.Options.PreviewOptions(pageNumber => result)
                     {
