@@ -57,5 +57,10 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
         /// Terms to highlight.
         /// </summary>
         public string[] terms { get; set; }
+
+        /// <summary>
+        /// Case sensitivity flag.
+        /// </summary>
+        public bool caseSensitive { get; set; }
     }
 }

@@ -188,7 +188,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password)))
                     {
                         page = this.GetPageDescritpionEntity(htmlViewer, documentGuid, pageNumber, fileCacheSubFolder);
-                        HighlightTerms(page, postedData.terms);
+                        HighlightTerms(page, postedData.terms, postedData.caseSensitive);
                     }
                 }
                 else
@@ -242,7 +242,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                     using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password), pageNumber, newAngle))
                     {
                         page = this.GetPageDescritpionEntity(htmlViewer, documentGuid, pageNumber, fileCacheSubFolder);
-                        HighlightTerms(page, postedData.terms);
+                        HighlightTerms(page, postedData.terms, postedData.caseSensitive);
                     }
                 }
                 else
@@ -595,14 +595,21 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             {
                 using (HtmlViewer htmlViewer = new HtmlViewer(documentGuid, cache, GetLoadOptions(password)))
                 {
-                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, htmlViewer, terms, printVersion);
+                    loadDocumentEntity = GetLoadDocumentEntity(
+                        loadAllPages,
+                        documentGuid,
+                        fileCacheSubFolder,
+                        htmlViewer,
+                        terms,
+                        postedData.caseSensitive,
+                        printVersion);
                 }
             }
             else
             {
                 using (PngViewer pngViewer = new PngViewer(documentGuid, cache, GetLoadOptions(password)))
                 {
-                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, pngViewer, null, printVersion);
+                    loadDocumentEntity = GetLoadDocumentEntity(loadAllPages, documentGuid, fileCacheSubFolder, pngViewer, null, false, printVersion);
                 }
             }
 
@@ -615,6 +622,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             string fileCacheSubFolder,
             ICustomViewer customViewer,
             string[] terms,
+            bool caseSensitive,
             bool printVersion)
         {
             if (loadAllPages)
@@ -639,7 +647,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
                 if (loadAllPages)
                 {
                     pageData.SetData(GetPageContent(page.Number, documentGuid, cachePath, printVersion));
-                    HighlightTerms(pageData, terms);
+                    HighlightTerms(pageData, terms, caseSensitive);
                 }
 
                 loadDocumentEntity.SetPages(pageData);
@@ -687,7 +695,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             return page;
         }
 
-        private static void HighlightTerms(PageDescriptionEntity page, string[] terms)
+        private static void HighlightTerms(PageDescriptionEntity page, string[] terms, bool caseSensitive)
         {
             if (terms == null || terms.Length == 0)
             {
@@ -697,6 +705,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Controllers
             var request = new HighlightTermsRequest();
             request.Html = page.GetData();
             request.Terms = terms;
+            request.CaseSensitive = caseSensitive;
             var response = SearchService.HighlightTerms(request, globalConfiguration.GetSearchConfiguration().GetFilesDirectory());
             page.SetData(response.Html);
 

@@ -1,5 +1,6 @@
 ﻿using Aspose.Html;
 using Aspose.Html.Dom;
+using GroupDocs.Search.Dictionaries;
 using System;
 using System.Collections.Generic;
 
@@ -8,13 +9,13 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
     internal class TermHighlighter
     {
         private readonly HTMLDocument document;
-        private readonly string[] terms;
+        private readonly TermFinder termFinder;
         private List<Text> result;
 
-        public TermHighlighter(HTMLDocument document, string[] terms)
+        public TermHighlighter(bool isCaseSensitive, Alphabet alphabet, HTMLDocument document, string[] terms)
         {
             this.document = document;
-            this.terms = terms;
+            termFinder = new TermFinder(isCaseSensitive, alphabet, terms);
         }
 
         public void Run()
@@ -32,10 +33,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
             foreach (var node in result)
             {
-                foreach (var term in terms)
-                {
-                    Replace(node, term);
-                }
+                Replace(node);
             }
         }
 
@@ -64,29 +62,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
         }
 
-        private static void Replace(Text node, string term)
+        private void Replace(Text node)
         {
-            HTMLDocument document = (HTMLDocument)node.OwnerDocument;
-            Text currentNode = node;
-            while (true)
-            {
-                int index = currentNode.TextContent.IndexOf(term, StringComparison.InvariantCultureIgnoreCase);
-                if (index < 0)
-                {
-                    break;
-                }
-
-                currentNode = currentNode.SplitText(index);
-                var lastTextNode = currentNode.SplitText(term.Length);
-
-                var span = document.CreateElement("span");
-                span.ClassName = "gd-found-term";
-
-                currentNode.ParentNode.ReplaceChild(span, currentNode);
-                span.AppendChild(currentNode);
-
-                currentNode = lastTextNode;
-            }
+            termFinder.Start(node);
         }
     }
 }

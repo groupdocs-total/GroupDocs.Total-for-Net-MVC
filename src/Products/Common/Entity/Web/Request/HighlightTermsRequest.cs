@@ -9,5 +9,8 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web.Request
 
         [JsonProperty]
         internal string[] Terms { get; set; }
+
+        [JsonProperty]
+        internal bool CaseSensitive { get; set; }
     }
 }

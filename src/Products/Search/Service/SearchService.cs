@@ -294,9 +294,14 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static HighlightTermsResponse HighlightTerms(HighlightTermsRequest request, string baseDirectory)
         {
+            if (index == null)
+            {
+                throw new InvalidOperationException("The index has not yet been created.");
+            }
+
             using (var document = new HTMLDocument(request.Html, string.Empty))
             {
-                var highlighter = new TermHighlighter(document, request.Terms);
+                var highlighter = new TermHighlighter(request.CaseSensitive, index.Dictionaries.Alphabet, document, request.Terms);
                 highlighter.Run();
 
                 var response = new HighlightTermsResponse();
