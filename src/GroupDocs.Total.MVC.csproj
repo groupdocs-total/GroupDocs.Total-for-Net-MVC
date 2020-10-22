@@ -309,7 +309,6 @@
     <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
     <Compile Include="Products\Search\Service\SearchService.cs" />
     <Compile Include="Products\Search\Service\TermFinder.cs" />
-    <Compile Include="Products\Search\Service\UniqueIdProvider.cs" />
     <Compile Include="Products\Search\Service\TermHighlighter.cs" />
     <Compile Include="Products\Search\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />

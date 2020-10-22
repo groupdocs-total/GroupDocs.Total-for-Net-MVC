@@ -33,7 +33,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
             foreach (var node in result)
             {
-                Replace(node);
+                termFinder.Start(node);
             }
         }
 
@@ -60,11 +60,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             {
                 Find(child);
             }
-        }
-
-        private void Replace(Text node)
-        {
-            termFinder.Start(node);
         }
     }
 }

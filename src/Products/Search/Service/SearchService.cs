@@ -305,26 +305,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 highlighter.Run();
 
                 var response = new HighlightTermsResponse();
-                var fileName = UniqueIdProvider.GetId().ToString(CultureInfo.InvariantCulture) + ".temp";
-                var filePath = Path.Combine(baseDirectory, fileName);
-                try
-                {
-                    document.Save(filePath);
-                    response.Html = File.ReadAllText(filePath);
-                }
-                finally
-                {
-                    if (File.Exists(filePath))
-                    {
-                        try
-                        {
-                            File.Delete(filePath);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
-                }
+                response.Html = document.DocumentElement.OuterHTML;
                 return response;
             }
         }
