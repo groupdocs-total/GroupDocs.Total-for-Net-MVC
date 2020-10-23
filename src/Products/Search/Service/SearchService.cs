@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Aspose.Html;
 using GroupDocs.Search;
 using GroupDocs.Search.Common;
@@ -356,6 +357,79 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
             index.Update(GetUpdateOptions());
             index.Optimize();
+        }
+
+        internal static SynonymsReadResponse GetSynonymGroups()
+        {
+            if (index == null)
+            {
+                throw new InvalidOperationException("The index has not yet been created.");
+            }
+
+            var type = typeof(SynonymDictionary);
+            var method = type.GetRuntimeMethods()
+                .First(mi =>
+                {
+                    var array = mi.GetParameters();
+                    return
+                        !mi.IsPublic &&
+                        array.Length == 1 &&
+                        array[0].ParameterType == typeof(string) &&
+                        mi.ReturnType == typeof(string[]);
+                });
+
+            var dictionary = index.Dictionaries.SynonymDictionary;
+            var getSynonyms = (GetTerms)method.CreateDelegate(typeof(GetTerms), dictionary);
+
+            var sets = new HashSet<TermGroup>();
+            foreach (var term in dictionary)
+            {
+                var allTerms = getSynonyms(term);
+                var freeTerms = new HashSet<string>(allTerms);
+                while (freeTerms.Count > 0)
+                {
+                    string lockedTerm = freeTerms.First();
+                    freeTerms.Remove(lockedTerm);
+
+                    var unitedTerms = new List<string>();
+                    unitedTerms.Add(lockedTerm);
+
+                    for (int i = 0; i < allTerms.Length; i++)
+                    {
+                        string current = allTerms[i];
+                        if (current == lockedTerm) continue;
+
+                        bool contains = true;
+                        foreach (var word in unitedTerms)
+                        {
+                            var array = getSynonyms(word);
+                            if (!array.Contains(current))
+                            {
+                                contains = false;
+                                break;
+                            }
+                        }
+                        if (contains)
+                        {
+                            freeTerms.Remove(current);
+                            unitedTerms.Add(current);
+                        }
+                    }
+                    unitedTerms.Add(term);
+                    var set = new TermGroup(unitedTerms);
+                    sets.Add(set);
+                }
+            }
+            var response = new SynonymsReadResponse();
+            response.SynonymGroups = sets.Select(g => g.Terms).ToArray();
+            return response;
+        }
+
+        internal static void SetSynonymGroups(SynonymsUpdateRequest request)
+        {
+            var dictionary = index.Dictionaries.SynonymDictionary;
+            dictionary.Clear();
+            dictionary.AddRange(request.SynonymGroups);
         }
 
         private static UpdateOptions GetUpdateOptions()

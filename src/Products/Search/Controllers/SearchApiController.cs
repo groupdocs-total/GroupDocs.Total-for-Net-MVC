@@ -407,6 +407,45 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
+        /// Gets the contents of the synonym dictionary.
+        /// </summary>
+        /// <returns>The contents of the synonym dictionary.</returns>
+        [HttpPost]
+        [Route("search/getSynonymDictionary")]
+        public HttpResponseMessage GetSynonymDictionary()
+        {
+            try
+            {
+                var response = SearchService.GetSynonymGroups();
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the synonym dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the synonym dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/setSynonymDictionary")]
+        public HttpResponseMessage SetSynonymDictionary(SynonymsUpdateRequest request)
+        {
+            try
+            {
+                SearchService.SetSynonymGroups(request);
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
         /// Updates the contents of the stop word dictionary.
         /// </summary>
         /// <param name="request">The new contents of the stop word dictionary.</param>

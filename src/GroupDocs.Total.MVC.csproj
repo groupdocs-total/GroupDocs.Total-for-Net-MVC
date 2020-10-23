@@ -300,6 +300,7 @@
     <Compile Include="Products\Common\Entity\Web\Request\HighlightTermsRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\StopWordsUpdateRequest.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\SynonymsUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetCharacter.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetReadResponse.cs" />
     <Compile Include="Products\Common\Entity\Web\Response\HighlightTermsResponse.cs" />
@@ -307,8 +308,11 @@
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\StopWordsReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\SynonymsReadResponse.cs" />
+    <Compile Include="Products\Search\Service\GetTerms.cs" />
     <Compile Include="Products\Search\Service\SearchService.cs" />
     <Compile Include="Products\Search\Service\TermFinder.cs" />
+    <Compile Include="Products\Search\Service\TermGroup.cs" />
     <Compile Include="Products\Search\Service\TermHighlighter.cs" />
     <Compile Include="Products\Search\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
