@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GroupDocs.Total.MVC.Products.Metadata.Config;
 using GroupDocs.Total.MVC.Products.Metadata.Context;
 using GroupDocs.Total.MVC.Products.Metadata.DTO;
 using GroupDocs.Total.MVC.Products.Metadata.Model;
@@ -11,6 +12,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 {
     public class MetadataService
     {
+        private readonly MetadataConfiguration metadataConfiguration;
+
         private readonly HashSet<PropertyType> arrayTypes = new HashSet<PropertyType>
         {
             PropertyType.PropertyValueArray,
@@ -21,9 +24,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             PropertyType.LongArray,
         };
 
+        public MetadataService(MetadataConfiguration metadataConfiguration)
+        {
+            this.metadataConfiguration = metadataConfiguration;
+        }
+
         public IEnumerable<ExtractedPackageDto> GetPackages(PostedDataDto postedData)
         {
-            using (MetadataContext context = new MetadataContext(postedData.guid, postedData.password))
+            using (MetadataContext context = new MetadataContext(metadataConfiguration.GetAbsolutePath(postedData.guid), postedData.password))
             {
                 var packages = new List<ExtractedPackageDto>();
                 foreach (var package in context.GetPackages())
@@ -74,8 +82,9 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 
         public void SaveProperties(PostedDataDto postedData)
         {
-            var tempFilePath = GetTempPath(postedData);
-            using (MetadataContext context = new MetadataContext(postedData.guid, postedData.password))
+            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
+            var tempFilePath = GetTempPath(filePath);
+            using (MetadataContext context = new MetadataContext(filePath, postedData.password))
             {
                 foreach (var packageInfo in postedData.packages)
                 {
@@ -84,13 +93,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 context.Save(tempFilePath);
             }
 
-            DirectoryUtils.MoveFile(tempFilePath, postedData.guid);
+            DirectoryUtils.MoveFile(tempFilePath, filePath);
         }
 
         public void RemoveProperties(PostedDataDto postedData)
         {
-            var tempFilePath = GetTempPath(postedData);
-            using (MetadataContext context = new MetadataContext(postedData.guid, postedData.password))
+            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
+            var tempFilePath = GetTempPath(filePath);
+            using (MetadataContext context = new MetadataContext(filePath, postedData.password))
             {
                 foreach (var packageInfo in postedData.packages)
                 {
@@ -98,13 +108,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 }
                 context.Save(tempFilePath);
             }
-            DirectoryUtils.MoveFile(tempFilePath, postedData.guid);
+            DirectoryUtils.MoveFile(tempFilePath, filePath);
         }
 
-        private static string GetTempPath(PostedDataDto postedData)
+        private static string GetTempPath(string filePath)
         {
-            string tempFilename = Path.GetFileNameWithoutExtension(postedData.guid) + "_tmp";
-            return Path.Combine(Path.GetDirectoryName(postedData.guid), tempFilename + Path.GetExtension(postedData.guid));
+            string tempFilename = Path.GetFileNameWithoutExtension(filePath) + "_tmp";
+            return Path.Combine(Path.GetDirectoryName(filePath), tempFilename + Path.GetExtension(filePath));
         }
     }
 }

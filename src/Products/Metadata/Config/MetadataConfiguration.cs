@@ -101,5 +101,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
         {
             return cache;
         }
+
+        public string GetAbsolutePath(string filePath)
+        {
+            if (!Path.IsPathRooted(filePath))
+            {
+                return Path.Combine(GetFilesDirectory(), filePath);
+            }
+            return filePath;
+        }
     }
 }

@@ -33,8 +33,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         {
             // Check if filesDirectory is relative or absolute path
             globalConfiguration = new Common.Config.GlobalConfiguration();
-            metadataService = new MetadataService();
-            fileService = new FileService();
+            metadataService = new MetadataService(globalConfiguration.GetMetadataConfiguration());
+            fileService = new FileService(globalConfiguration.GetMetadataConfiguration());
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         {
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadFileTree(globalConfiguration));
+                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadFileTree());
             }
             catch (Exception ex)
             {
@@ -138,7 +138,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             try
             {
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadDocument(postedData, globalConfiguration));
+                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadDocument(postedData));
             }
             catch (DocumentProtectedException ex)
             {
@@ -161,14 +161,15 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         {
             if (!string.IsNullOrEmpty(path))
             {
-                if (File.Exists(path))
+                string absolutePath = globalConfiguration.GetMetadataConfiguration().GetAbsolutePath(path);
+                if (File.Exists(absolutePath))
                 {
                     HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                    var fileStream = new FileStream(path, FileMode.Open);
+                    var fileStream = new FileStream(absolutePath, FileMode.Open);
                     response.Content = new StreamContent(fileStream);
                     response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                     response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
+                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(absolutePath);
                     return response;
                 }
             }
@@ -186,7 +187,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         {
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, fileService.UploadDocument(HttpContext.Current.Request, globalConfiguration));
+                return Request.CreateResponse(HttpStatusCode.OK, fileService.UploadDocument(HttpContext.Current.Request));
             }
             catch (Exception ex)
             {

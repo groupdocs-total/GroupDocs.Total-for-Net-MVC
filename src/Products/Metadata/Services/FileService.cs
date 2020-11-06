@@ -1,9 +1,9 @@
 ﻿using GroupDocs.Metadata.Common;
 using GroupDocs.Metadata.Options;
-using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
+using GroupDocs.Total.MVC.Products.Metadata.Config;
 using GroupDocs.Total.MVC.Products.Metadata.DTO;
 using System;
 using System.Collections.Generic;
@@ -15,12 +15,19 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 {
     public class FileService
     {
-        public IEnumerable<FileDescriptionEntity> LoadFileTree(GlobalConfiguration globalConfiguration)
+        private readonly MetadataConfiguration metadataConfiguration;
+
+        public FileService(MetadataConfiguration metadataConfiguration)
+        {
+            this.metadataConfiguration = metadataConfiguration;
+        }
+
+        public IEnumerable<FileDescriptionEntity> LoadFileTree()
         {
             List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
-            if (!string.IsNullOrEmpty(globalConfiguration.GetMetadataConfiguration().GetFilesDirectory()))
+            if (!string.IsNullOrEmpty(metadataConfiguration.GetFilesDirectory()))
             {
-                var currentPath = globalConfiguration.GetMetadataConfiguration().GetFilesDirectory();
+                var currentPath = metadataConfiguration.GetFilesDirectory();
                 List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
                 allFiles.AddRange(Directory.GetDirectories(currentPath));
 
@@ -37,7 +44,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                     if (!(tempDirectoryName.Equals(Path.GetFileName(file)) ||
                         fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
                         fileInfo.Name.StartsWith(".") ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(globalConfiguration.GetMetadataConfiguration().GetFilesDirectory()))))
+                        Path.GetFileName(file).Equals(Path.GetFileName(metadataConfiguration.GetFilesDirectory()))))
                     {
                         FileDescriptionEntity fileDescription = new FileDescriptionEntity();
                         fileDescription.guid = Path.GetFullPath(file);
@@ -57,18 +64,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             return fileList;
         }
 
-        public LoadDocumentEntity LoadDocument(PostedDataDto postedData, GlobalConfiguration globalConfiguration)
+        public LoadDocumentEntity LoadDocument(PostedDataDto postedData)
         {
             // get/set parameters
-            string documentGuid = postedData.guid;
+            string documentGuid = metadataConfiguration.GetAbsolutePath(postedData.guid);
             string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-
-            // check if documentGuid contains path or only file name
-            if (!Path.IsPathRooted(documentGuid))
-            {
-                documentGuid = globalConfiguration.GetMetadataConfiguration().GetFilesDirectory() + "/" + documentGuid;
-            }
 
             // set password for protected document
             var loadOptions = new LoadOptions
@@ -76,7 +77,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 Password = password
             };
 
-            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(postedData.guid, loadOptions))
+            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(documentGuid, loadOptions))
             {
                 GroupDocs.Metadata.Common.IReadOnlyList<PageInfo> pages = metadata.GetDocumentInfo().Pages;
 
@@ -112,11 +113,11 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             return loadDocumentEntity;
         }
 
-        public UploadedDocumentEntity UploadDocument(HttpRequest request, GlobalConfiguration globalConfiguration)
+        public UploadedDocumentEntity UploadDocument(HttpRequest request)
         {
             string url = request.Form["url"];
             // get documents storage path
-            string documentStoragePath = globalConfiguration.GetMetadataConfiguration().GetFilesDirectory();
+            string documentStoragePath = metadataConfiguration.GetFilesDirectory();
             bool rewrite = bool.Parse(request.Form["rewrite"]);
             string fileSavePath = "";
             if (string.IsNullOrEmpty(url))
