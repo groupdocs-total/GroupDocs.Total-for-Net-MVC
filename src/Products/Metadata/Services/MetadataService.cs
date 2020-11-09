@@ -111,6 +111,26 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             DirectoryUtils.MoveFile(tempFilePath, filePath);
         }
 
+        public void CleanMetadata(PostedDataDto postedData)
+        {
+            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
+            var tempFilePath = GetTempPath(filePath);
+            using (MetadataContext context = new MetadataContext(filePath, postedData.password))
+            {
+                context.Sanitize();
+                context.Save(tempFilePath);
+            }
+            DirectoryUtils.MoveFile(tempFilePath, filePath);
+        }
+
+        public byte[] ExportMetadata(PostedDataDto postedData)
+        {
+            using (MetadataContext context = new MetadataContext(metadataConfiguration.GetAbsolutePath(postedData.guid), postedData.password))
+            {
+                return context.ExportProperties();
+            }
+        }
+
         private static string GetTempPath(string filePath)
         {
             string tempFilename = Path.GetFileNameWithoutExtension(filePath) + "_tmp";

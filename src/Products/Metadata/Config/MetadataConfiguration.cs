@@ -50,6 +50,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             preloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", preloadPageCount);
             htmlMode = valuesGetter.GetBooleanPropertyValue("htmlMode", htmlMode);
             cache = valuesGetter.GetBooleanPropertyValue("cache", cache);
+            browse = valuesGetter.GetBooleanPropertyValue("browse", browse);
+            upload = valuesGetter.GetBooleanPropertyValue("upload", upload);
         }
 
         public void SetFilesDirectory(string filesDirectory)

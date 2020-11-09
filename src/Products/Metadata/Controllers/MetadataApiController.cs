@@ -56,6 +56,10 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         [Route("metadata/loadFileTree")]
         public HttpResponseMessage LoadFileTree()
         {
+            if (!globalConfiguration.GetMetadataConfiguration().browse)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+            }
             try
             {
                 return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadFileTree());
@@ -97,6 +101,26 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             try
             {
                 metadataService.SaveProperties(postedData);
+                return Request.CreateResponse(HttpStatusCode.OK, new object());
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Removes all available metadata properties from the document
+        /// </summary>
+        /// <param name="postedData"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("metadata/clean")]
+        public HttpResponseMessage CleanMetadata(PostedDataDto postedData)
+        {
+            try
+            {
+                metadataService.CleanMetadata(postedData);
                 return Request.CreateResponse(HttpStatusCode.OK, new object());
             }
             catch (Exception ex)
@@ -178,6 +202,28 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         }
 
         /// <summary>
+        /// Exports all detected metadata properties to an Excel workbook
+        /// </summary>
+        /// <param name="postedData"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("metadata/export")]
+        public HttpResponseMessage ExportProperties(PostedDataDto postedData)
+        {
+            var result = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new ByteArrayContent(metadataService.ExportMetadata(postedData))
+            };
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "ExportedProperties.xlsx"
+            };
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            return result;
+        }
+
+        /// <summary>
         /// Upload document
         /// </summary>
         /// <returns>Uploaded document object</returns>
@@ -185,6 +231,10 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         [Route("metadata/uploadDocument")]
         public HttpResponseMessage UploadDocument()
         {
+            if (!globalConfiguration.GetMetadataConfiguration().upload)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+            }
             try
             {
                 return Request.CreateResponse(HttpStatusCode.OK, fileService.UploadDocument(HttpContext.Current.Request));

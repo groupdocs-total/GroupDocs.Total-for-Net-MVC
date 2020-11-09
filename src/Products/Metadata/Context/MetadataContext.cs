@@ -5,6 +5,8 @@ using GroupDocs.Metadata.Common;
 using GroupDocs.Metadata.Options;
 using GroupDocs.Total.MVC.Products.Metadata.Model;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories;
+using GroupDocs.Metadata.Export;
+using System.IO;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Context
 {
@@ -94,9 +96,25 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             }
         }
 
+        public byte[] ExportProperties()
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                var root = metadata.GetRootPackage();
+                ExportManager manager = new ExportManager(root);
+                manager.Export(stream, ExportFormat.Xlsx);
+                return stream.ToArray();
+            }
+        }
+
         public void Save(string filePath)
         {
             metadata.Save(filePath);
+        }
+
+        public void Sanitize()
+        {
+            metadata.Sanitize();
         }
 
         protected virtual void Dispose(bool disposing)
