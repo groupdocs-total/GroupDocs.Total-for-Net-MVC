@@ -86,7 +86,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                     PreviewOptions previewOptions = new PreviewOptions(pageNumber => stream, (pageNumber, pageStream) => { });
                     previewOptions.PreviewFormat = PreviewOptions.PreviewFormats.PNG;
 
-                    for (int i = 0; i < pages.Count; i++)
+                    int pageCount = pages.Count;
+                    if (metadataConfiguration.GetPreloadPageCount() > 0)
+                    {
+                        pageCount = metadataConfiguration.GetPreloadPageCount();
+                    }
+                    for (int i = 0; i < pageCount; i++)
                     {
                         previewOptions.PageNumbers = new[] { i + 1 };
                         try
