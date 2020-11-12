@@ -12,7 +12,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
     /// </summary>
     public class MetadataConfiguration : CommonConfiguration
     {
-        [JsonProperty]
         private string filesDirectory = "DocumentSamples/Metadata";
 
         [JsonProperty]
@@ -110,7 +109,17 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             {
                 return Path.Combine(GetFilesDirectory(), filePath);
             }
-            return filePath;
+            string absolutePath = Path.GetFullPath(filePath);
+            string fileDirectory = Path.GetFullPath(GetFilesDirectory());
+            if (!fileDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                fileDirectory += Path.DirectorySeparatorChar;
+            }
+            if (!absolutePath.StartsWith(fileDirectory))
+            {
+                throw new ArgumentException("Invalid file path");
+            }
+            return absolutePath;
         }
     }
 }

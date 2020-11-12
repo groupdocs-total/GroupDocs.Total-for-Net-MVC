@@ -47,7 +47,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                         Path.GetFileName(file).Equals(Path.GetFileName(metadataConfiguration.GetFilesDirectory()))))
                     {
                         FileDescriptionEntity fileDescription = new FileDescriptionEntity();
-                        fileDescription.guid = Path.GetFullPath(file);
+                        fileDescription.guid = Path.GetFileName(file);
                         fileDescription.name = Path.GetFileName(file);
                         // set is directory true/false
                         fileDescription.isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory);
@@ -67,7 +67,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
         public LoadDocumentEntity LoadDocument(PostedDataDto postedData)
         {
             // get/set parameters
-            string documentGuid = metadataConfiguration.GetAbsolutePath(postedData.guid);
+            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
             string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
             LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
 
@@ -77,7 +77,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 Password = password
             };
 
-            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(documentGuid, loadOptions))
+            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(filePath, loadOptions))
             {
                 GroupDocs.Metadata.Common.IReadOnlyList<PageInfo> pages = metadata.GetDocumentInfo().Pages;
 
@@ -112,7 +112,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 }
             }
 
-            loadDocumentEntity.SetGuid(documentGuid);
+            loadDocumentEntity.SetGuid(postedData.guid);
 
             // return document description
             return loadDocumentEntity;
@@ -124,29 +124,28 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             // get documents storage path
             string documentStoragePath = metadataConfiguration.GetFilesDirectory();
             bool rewrite = bool.Parse(request.Form["rewrite"]);
-            string fileSavePath = "";
+            string fileSavePath = string.Empty;
             if (string.IsNullOrEmpty(url))
             {
-                if (HttpContext.Current.Request.Files.AllKeys != null)
+                // Get the uploaded document from the Files collection
+                var httpPostedFile = request.Files["file"];
+                if (httpPostedFile == null || Path.IsPathRooted(httpPostedFile.FileName))
                 {
-                    // Get the uploaded document from the Files collection
-                    var httpPostedFile = request.Files["file"];
-                    if (httpPostedFile != null)
-                    {
-                        if (rewrite)
-                        {
-                            // Get the complete file path
-                            fileSavePath = Path.Combine(documentStoragePath, httpPostedFile.FileName);
-                        }
-                        else
-                        {
-                            fileSavePath = Resources.GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
-                        }
-
-                        // Save the uploaded file to "UploadedFiles" folder
-                        httpPostedFile.SaveAs(fileSavePath);
-                    }
+                    throw new ArgumentException("Could not upload the file");
                 }
+                if (rewrite)
+                {
+                    // Get the complete file path
+                    fileSavePath = Path.Combine(documentStoragePath, httpPostedFile.FileName);
+                }
+                else
+                {
+                    fileSavePath = Resources.GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
+                }
+
+                // Save the uploaded file to "UploadedFiles" folder
+                httpPostedFile.SaveAs(fileSavePath);
+
             }
             else
             {
@@ -170,7 +169,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             }
 
             UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-            uploadedDocument.guid = fileSavePath;
+            uploadedDocument.guid = Path.GetFileName(fileSavePath);
 
             return uploadedDocument;
         }

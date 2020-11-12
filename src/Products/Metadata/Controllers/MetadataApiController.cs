@@ -31,7 +31,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         /// </summary>
         public MetadataApiController()
         {
-            // Check if filesDirectory is relative or absolute path
             globalConfiguration = new Common.Config.GlobalConfiguration();
             metadataService = new MetadataService(globalConfiguration.GetMetadataConfiguration());
             fileService = new FileService(globalConfiguration.GetMetadataConfiguration());
