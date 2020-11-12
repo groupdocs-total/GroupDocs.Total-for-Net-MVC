@@ -254,3 +254,11 @@ search:
   # Indexed files directory path
   # Absolute path to indexed files directory
   indexedFilesDirectory: 'DocumentSamples/Search/Indexed'
+  
+################################################
+# GroupDocs.Parser configurations
+################################################
+search:
+  # Files directory path
+  # Absolute path to files directory
+  filesDirectory: 'DocumentSamples/Parser'
