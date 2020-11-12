@@ -9,7 +9,7 @@ namespace GroupDocs.Total.MVC.Products.Parser.Entity.Web
 {
     public class ParserDocumentEntity : PageDescriptionEntity
     {
-        public string guid;
-        public List<PageDescriptionEntity> pages = new List<PageDescriptionEntity>();
+        public string guid { get; set; }
+        public List<PageDescriptionEntity> pages { get; } = new List<PageDescriptionEntity>();
     }
 }
