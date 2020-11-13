@@ -431,6 +431,79 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             dictionary.AddRange(request.SynonymGroups);
         }
 
+        internal static HomophonesReadResponse GetHomophoneGroups()
+        {
+            if (index == null)
+            {
+                throw new InvalidOperationException("The index has not yet been created.");
+            }
+
+            var type = typeof(HomophoneDictionary);
+            var method = type.GetRuntimeMethods()
+                .First(mi =>
+                {
+                    var array = mi.GetParameters();
+                    return
+                        !mi.IsPublic &&
+                        array.Length == 1 &&
+                        array[0].ParameterType == typeof(string) &&
+                        mi.ReturnType == typeof(string[]);
+                });
+
+            var dictionary = index.Dictionaries.HomophoneDictionary;
+            var getHomophones = (GetTerms)method.CreateDelegate(typeof(GetTerms), dictionary);
+
+            var sets = new HashSet<TermGroup>();
+            foreach (var term in dictionary)
+            {
+                var allTerms = getHomophones(term);
+                var freeTerms = new HashSet<string>(allTerms);
+                while (freeTerms.Count > 0)
+                {
+                    string lockedTerm = freeTerms.First();
+                    freeTerms.Remove(lockedTerm);
+
+                    var unitedTerms = new List<string>();
+                    unitedTerms.Add(lockedTerm);
+
+                    for (int i = 0; i < allTerms.Length; i++)
+                    {
+                        string current = allTerms[i];
+                        if (current == lockedTerm) continue;
+
+                        bool contains = true;
+                        foreach (var word in unitedTerms)
+                        {
+                            var array = getHomophones(word);
+                            if (!array.Contains(current))
+                            {
+                                contains = false;
+                                break;
+                            }
+                        }
+                        if (contains)
+                        {
+                            freeTerms.Remove(current);
+                            unitedTerms.Add(current);
+                        }
+                    }
+                    unitedTerms.Add(term);
+                    var set = new TermGroup(unitedTerms);
+                    sets.Add(set);
+                }
+            }
+            var response = new HomophonesReadResponse();
+            response.HomophoneGroups = sets.Select(g => g.Terms).ToArray();
+            return response;
+        }
+
+        internal static void SetHomophoneGroups(HomophonesUpdateRequest request)
+        {
+            var dictionary = index.Dictionaries.HomophoneDictionary;
+            dictionary.Clear();
+            dictionary.AddRange(request.HomophoneGroups);
+        }
+
         private static UpdateOptions GetUpdateOptions()
         {
             return new UpdateOptions

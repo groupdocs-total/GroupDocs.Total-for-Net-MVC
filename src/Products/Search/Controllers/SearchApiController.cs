@@ -446,6 +446,45 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
+        /// Gets the contents of the homophone dictionary.
+        /// </summary>
+        /// <returns>The contents of the homophone dictionary.</returns>
+        [HttpPost]
+        [Route("search/getHomophoneDictionary")]
+        public HttpResponseMessage GetHomophoneDictionary()
+        {
+            try
+            {
+                var response = SearchService.GetHomophoneGroups();
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the homophone dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the homophone dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/setHomophoneDictionary")]
+        public HttpResponseMessage SetHomophoneDictionary(HomophonesUpdateRequest request)
+        {
+            try
+            {
+                SearchService.SetHomophoneGroups(request);
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
         /// Updates the contents of the stop word dictionary.
         /// </summary>
         /// <param name="request">The new contents of the stop word dictionary.</param>
