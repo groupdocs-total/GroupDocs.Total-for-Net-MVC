@@ -197,9 +197,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
         }
 
-        internal static IndexProperties GetIndexProperties()
+        internal static IndexPropertiesResponse GetIndexProperties()
         {
-            var indexProperties = new IndexProperties();
+            var indexProperties = new IndexPropertiesResponse();
             if (index == null) return indexProperties;
 
             indexProperties.IndexVersion = index.IndexInfo.Version;
