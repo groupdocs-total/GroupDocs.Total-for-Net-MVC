@@ -24,8 +24,5 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 
         [JsonProperty]
         public string TextStorageCompression { get; set; }
-
-        [JsonProperty]
-        public int IndexedFiles { get; set; }
     }
 }

@@ -210,7 +210,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             indexProperties.UseRawTextExtraction = index.IndexSettings.UseRawTextExtraction;
             var tss = index.IndexSettings.TextStorageSettings;
             indexProperties.TextStorageCompression = tss == null ? "No storage" : tss.Compression.ToString();
-            indexProperties.IndexedFiles = index.GetIndexedDocuments().Length;
 
             return indexProperties;
         }

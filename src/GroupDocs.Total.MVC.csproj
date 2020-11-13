@@ -304,7 +304,7 @@
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetCharacter.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetReadResponse.cs" />
     <Compile Include="Products\Common\Entity\Web\Response\HighlightTermsResponse.cs" />
-    <Compile Include="Products\Search\Entity\Web\Response\IndexProperties.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\IndexPropertiesResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\StopWordsReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
