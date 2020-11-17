@@ -26,6 +26,12 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
         [JsonProperty]
         private bool printAllowed = true;
 
+        /// <summary>
+        /// Document show grid lines flag (for Excel files). 
+        /// </summary>
+        [JsonProperty]
+        private bool showGridLines = true;
+
         public void SetPrintAllowed(bool allowed)
         {
             this.printAllowed = allowed;
@@ -34,6 +40,16 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
         public bool GetPrintAllowed()
         {
             return this.printAllowed;
+        }
+
+        public void SetShowGridLines(bool show)
+        {
+            this.showGridLines = show;
+        }
+
+        public bool GetShowGridLines()
+        {
+            return this.showGridLines;
         }
 
         public void SetGuid(string guid)
