@@ -31,7 +31,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 
         public IEnumerable<ExtractedPackageDto> GetPackages(PostedDataDto postedData)
         {
-            using (MetadataContext context = new MetadataContext(metadataConfiguration.GetAbsolutePath(postedData.guid), postedData.password))
+            using(Stream fileStream = File.Open(metadataConfiguration.GetAbsolutePath(postedData.guid), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (MetadataContext context = new MetadataContext(fileStream, postedData.password))
             {
                 var packages = new List<ExtractedPackageDto>();
                 foreach (var package in context.GetPackages())

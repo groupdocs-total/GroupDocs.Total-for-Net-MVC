@@ -18,14 +18,18 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
 
         private bool disposedValue;
 
-        public MetadataContext(string filePath, string password)
+        public MetadataContext(string filePath, string password) : this()
         {
-            var loadOptions = new LoadOptions
-            {
-                Password = password == string.Empty ? null : password
-            };
+            metadata = new GroupDocs.Metadata.Metadata(filePath, CreateLoadOptions(password));
+        }
 
-            metadata = new GroupDocs.Metadata.Metadata(filePath, loadOptions);
+        public MetadataContext(Stream fileStream, string password) : this()
+        {
+            metadata = new GroupDocs.Metadata.Metadata(fileStream, CreateLoadOptions(password));
+        }
+
+        private MetadataContext()
+        {
             metadataPathConfig = new MetadataPathConfig();
         }
 
@@ -117,6 +121,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             metadata.Sanitize();
         }
 
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -129,10 +139,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             }
         }
 
-        public void Dispose()
+        private LoadOptions CreateLoadOptions(string password)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            return new LoadOptions
+            {
+                Password = password == string.Empty ? null : password
+            };
         }
     }
 }
