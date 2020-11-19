@@ -47,10 +47,5 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
         /// Flag indicating whether the file should be overwritten.
         /// </summary>
         public bool rewrite { get; set; }
-
-        /// <summary>
-        /// Collection of the document properties with their data.
-        /// </summary>
-        public List<FilePropertyEntity> properties { get; set; }
     }
 }
