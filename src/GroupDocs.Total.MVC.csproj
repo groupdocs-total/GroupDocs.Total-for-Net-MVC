@@ -66,8 +66,8 @@
     <Reference Include="GroupDocs.Metadata, Version=20.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Metadata.20.7.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Search, Version=20.8.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Search.20.8.0\lib\net20\GroupDocs.Search.dll</HintPath>
+    <Reference Include="GroupDocs.Search, Version=20.11.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Search.20.11.0\lib\net20\GroupDocs.Search.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Signature, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.4.0\lib\net20\GroupDocs.Signature.dll</HintPath>
@@ -311,10 +311,8 @@
     <Compile Include="Products\Search\Entity\Web\Response\StopWordsReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SummarySearchResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SynonymsReadResponse.cs" />
-    <Compile Include="Products\Search\Service\GetTerms.cs" />
     <Compile Include="Products\Search\Service\SearchService.cs" />
     <Compile Include="Products\Search\Service\TermFinder.cs" />
-    <Compile Include="Products\Search\Service\TermGroup.cs" />
     <Compile Include="Products\Search\Service\TermHighlighter.cs" />
     <Compile Include="Products\Search\Util\Directory\DirectoryUtils.cs" />
     <Compile Include="Products\Signature\Controllers\SignatureApiController.cs" />
