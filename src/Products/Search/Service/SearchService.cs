@@ -396,6 +396,25 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             dictionary.AddRange(request.HomophoneGroups);
         }
 
+        internal static SpellingCorrectorReadResponse GetSpellingCorrectorWords()
+        {
+            if (index == null)
+            {
+                throw new InvalidOperationException("The index has not yet been created.");
+            }
+
+            var response = new SpellingCorrectorReadResponse();
+            response.Words = index.Dictionaries.SpellingCorrector.GetWords();
+            return response;
+        }
+
+        internal static void SetSpellingCorrectorWords(SpellingCorrectorUpdateRequest request)
+        {
+            var dictionary = index.Dictionaries.SpellingCorrector;
+            dictionary.Clear();
+            dictionary.AddRange(request.Words);
+        }
+
         private static UpdateOptions GetUpdateOptions()
         {
             return new UpdateOptions
