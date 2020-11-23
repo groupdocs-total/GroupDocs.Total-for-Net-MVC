@@ -49,11 +49,6 @@ namespace GroupDocs.Total.MVC.Products.Common.Entity.Web
         public bool rewrite { get; set; }
 
         /// <summary>
-        /// Collection of the document properties with their data.
-        /// </summary>
-        public List<FilePropertyEntity> properties { get; set; }
-
-        /// <summary>
         /// Terms to highlight.
         /// </summary>
         public string[] terms { get; set; }
