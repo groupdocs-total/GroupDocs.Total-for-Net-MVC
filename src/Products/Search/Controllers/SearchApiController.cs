@@ -524,6 +524,45 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
+        /// Gets the contents of the character replacement dictionary.
+        /// </summary>
+        /// <returns>The contents of the character replacement dictionary.</returns>
+        [HttpPost]
+        [Route("search/getCharacterReplacementDictionary")]
+        public HttpResponseMessage GetCharacterReplacementDictionary()
+        {
+            try
+            {
+                var response = SearchService.GetCharacterReplacements();
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the character replacement dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the character replacement dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/setCharacterReplacementDictionary")]
+        public HttpResponseMessage SetCharacterReplacementDictionary(CharacterReplacementsUpdateRequest request)
+        {
+            try
+            {
+                SearchService.SetCharacterReplacements(request);
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
         /// Updates the contents of the stop word dictionary.
         /// </summary>
         /// <param name="request">The new contents of the stop word dictionary.</param>

@@ -332,6 +332,7 @@
     <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\AlphabetUpdateRequest.cs" />
     <Compile Include="Products\Common\Entity\Web\Request\HighlightTermsRequest.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\CharacterReplacementsUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\HomophonesUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SpellingCorrectorUpdateRequest.cs" />
@@ -340,6 +341,7 @@
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetCharacter.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetReadResponse.cs" />
     <Compile Include="Products\Common\Entity\Web\Response\HighlightTermsResponse.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\CharacterReplacementsReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\HomophonesReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\IndexPropertiesResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />

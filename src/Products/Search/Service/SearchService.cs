@@ -415,6 +415,31 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             dictionary.AddRange(request.Words);
         }
 
+        internal static CharacterReplacementsReadResponse GetCharacterReplacements()
+        {
+            if (index == null)
+            {
+                throw new InvalidOperationException("The index has not yet been created.");
+            }
+
+            var dictionary = index.Dictionaries.CharacterReplacements;
+            var response = new CharacterReplacementsReadResponse();
+            response.Replacements = Enumerable.Range(char.MinValue, char.MaxValue + 1)
+                .Select(character => (int)dictionary.GetReplacement((char)character))
+                .ToArray();
+            return response;
+        }
+
+        internal static void SetCharacterReplacements(CharacterReplacementsUpdateRequest request)
+        {
+            var dictionary = index.Dictionaries.CharacterReplacements;
+            dictionary.Clear();
+            var pairs = request.Replacements
+                .Select((replacement, index) => new CharacterReplacementPair((char)index, (char)replacement))
+                .ToArray();
+            dictionary.AddRange(pairs);
+        }
+
         private static UpdateOptions GetUpdateOptions()
         {
             return new UpdateOptions
