@@ -563,6 +563,45 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         }
 
         /// <summary>
+        /// Gets the contents of the document password dictionary.
+        /// </summary>
+        /// <returns>The contents of the document password dictionary.</returns>
+        [HttpPost]
+        [Route("search/getDocumentPasswordDictionary")]
+        public HttpResponseMessage GetDocumentPasswordDictionary()
+        {
+            try
+            {
+                var response = SearchService.GetDocumentPasswords();
+                return this.Request.CreateResponse(HttpStatusCode.OK, response);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
+        /// Updates the contents of the document password dictionary.
+        /// </summary>
+        /// <param name="request">The new contents of the document password dictionary.</param>
+        /// <returns>HTTP response message.</returns>
+        [HttpPost]
+        [Route("search/setDocumentPasswordDictionary")]
+        public HttpResponseMessage SetDocumentPasswordDictionary(DocumentPasswordsUpdateRequest request)
+        {
+            try
+            {
+                SearchService.SetDocumentPasswords(request);
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
+        /// <summary>
         /// Updates the contents of the stop word dictionary.
         /// </summary>
         /// <param name="request">The new contents of the stop word dictionary.</param>

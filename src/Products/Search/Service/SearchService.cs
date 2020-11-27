@@ -216,6 +216,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static AlphabetReadResponse GetAlphabetDictionary()
         {
+            CheckIndex();
+
             var response = new AlphabetReadResponse();
 
             var alphabet = index.Dictionaries.Alphabet;
@@ -242,6 +244,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void SetAlphabetDictionary(AlphabetUpdateRequest request)
         {
+            CheckIndex();
+
             var alphabet = index.Dictionaries.Alphabet;
             var separator = Enumerable.Range(char.MinValue, char.MaxValue)
                 .Select(v => (char)v);
@@ -277,16 +281,18 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static StopWordsReadResponse GetStopWordDictionary()
         {
-            var response = new StopWordsReadResponse();
+            CheckIndex();
 
+            var response = new StopWordsReadResponse();
             var dictionary = index.Dictionaries.StopWordDictionary;
             response.StopWords = dictionary.ToArray();
-
             return response;
         }
 
         internal static void SetStopWordDictionary(StopWordsUpdateRequest request)
         {
+            CheckIndex();
+
             var dictionary = index.Dictionaries.StopWordDictionary;
             dictionary.Clear();
             dictionary.AddRange(request.StopWords);
@@ -294,10 +300,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static HighlightTermsResponse HighlightTerms(HighlightTermsRequest request, string baseDirectory)
         {
-            if (index == null)
-            {
-                throw new InvalidOperationException("The index has not yet been created.");
-            }
+            CheckIndex();
 
             using (var document = new HTMLDocument(request.Html, string.Empty))
             {
@@ -312,6 +315,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void AddFilesToIndex(PostedDataEntity[] postedData, GlobalConfiguration globalConfiguration)
         {
+            CheckIndex();
+
             string indexedFilesDirectory = globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory();
 
             foreach (var entity in postedData)
@@ -344,6 +349,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void RemoveFileFromIndex(string guid)
         {
+            CheckIndex();
+
             if (File.Exists(guid))
             {
                 File.Delete(guid);
@@ -360,10 +367,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static SynonymsReadResponse GetSynonymGroups()
         {
-            if (index == null)
-            {
-                throw new InvalidOperationException("The index has not yet been created.");
-            }
+            CheckIndex();
 
             var response = new SynonymsReadResponse();
             response.SynonymGroups = index.Dictionaries.SynonymDictionary.GetAllSynonymGroups();
@@ -372,6 +376,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void SetSynonymGroups(SynonymsUpdateRequest request)
         {
+            CheckIndex();
+
             var dictionary = index.Dictionaries.SynonymDictionary;
             dictionary.Clear();
             dictionary.AddRange(request.SynonymGroups);
@@ -379,10 +385,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static HomophonesReadResponse GetHomophoneGroups()
         {
-            if (index == null)
-            {
-                throw new InvalidOperationException("The index has not yet been created.");
-            }
+            CheckIndex();
 
             var response = new HomophonesReadResponse();
             response.HomophoneGroups = index.Dictionaries.HomophoneDictionary.GetAllHomophoneGroups();
@@ -391,6 +394,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void SetHomophoneGroups(HomophonesUpdateRequest request)
         {
+            CheckIndex();
+
             var dictionary = index.Dictionaries.HomophoneDictionary;
             dictionary.Clear();
             dictionary.AddRange(request.HomophoneGroups);
@@ -398,10 +403,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static SpellingCorrectorReadResponse GetSpellingCorrectorWords()
         {
-            if (index == null)
-            {
-                throw new InvalidOperationException("The index has not yet been created.");
-            }
+            CheckIndex();
 
             var response = new SpellingCorrectorReadResponse();
             response.Words = index.Dictionaries.SpellingCorrector.GetWords();
@@ -410,6 +412,8 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void SetSpellingCorrectorWords(SpellingCorrectorUpdateRequest request)
         {
+            CheckIndex();
+
             var dictionary = index.Dictionaries.SpellingCorrector;
             dictionary.Clear();
             dictionary.AddRange(request.Words);
@@ -417,10 +421,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static CharacterReplacementsReadResponse GetCharacterReplacements()
         {
-            if (index == null)
-            {
-                throw new InvalidOperationException("The index has not yet been created.");
-            }
+            CheckIndex();
 
             var dictionary = index.Dictionaries.CharacterReplacements;
             var response = new CharacterReplacementsReadResponse();
@@ -432,12 +433,46 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
 
         internal static void SetCharacterReplacements(CharacterReplacementsUpdateRequest request)
         {
+            CheckIndex();
+
             var dictionary = index.Dictionaries.CharacterReplacements;
             dictionary.Clear();
             var pairs = request.Replacements
                 .Select((replacement, index) => new CharacterReplacementPair((char)index, (char)replacement))
                 .ToArray();
             dictionary.AddRange(pairs);
+        }
+
+        internal static DocumentPasswordsReadResponse GetDocumentPasswords()
+        {
+            CheckIndex();
+
+            var dictionary = index.Dictionaries.DocumentPasswords;
+            var response = new DocumentPasswordsReadResponse();
+            response.Passwords = dictionary
+                .Select(key => new KeyPasswordPair(key, dictionary.GetPassword(key)))
+                .ToArray();
+            return response;
+        }
+
+        internal static void SetDocumentPasswords(DocumentPasswordsUpdateRequest request)
+        {
+            CheckIndex();
+
+            var dictionary = index.Dictionaries.DocumentPasswords;
+            dictionary.Clear();
+            foreach (var pair in request.Passwords)
+            {
+                dictionary.Add(pair.Key, pair.Password);
+            }
+        }
+
+        private static void CheckIndex()
+        {
+            if (index == null)
+            {
+                throw new InvalidOperationException("The index has not yet been created.");
+            }
         }
 
         private static UpdateOptions GetUpdateOptions()
