@@ -112,6 +112,11 @@ namespace GroupDocs.Total.MVC.Products.Comparison.Service
                 Dictionary<int, string> pagesContent = new Dictionary<int, string>();
                 IDocumentInfo documentInfo = comparer.Source.GetDocumentInfo();
 
+                if (documentInfo.PagesInfo == null)
+                {
+                    throw new GroupDocs.Comparison.Common.Exceptions.ComparisonException("File is corrupted.");
+                }
+
                 if (loadAllPages)
                 {
                     for (int i = 0; i < documentInfo.PageCount; i++)
