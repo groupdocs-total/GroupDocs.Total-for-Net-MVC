@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Aspose.Html;
 using GroupDocs.Search;
 using GroupDocs.Search.Common;
@@ -15,6 +13,7 @@ using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Common.Entity.Web.Response;
+using GroupDocs.Total.MVC.Products.Search.Entity.Web;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Response;
 
@@ -114,26 +113,26 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                     }
                 }
 
-                searchDocumentResult.SetGuid(document.DocumentInfo.FilePath);
-                searchDocumentResult.SetName(Path.GetFileName(document.DocumentInfo.FilePath));
-                searchDocumentResult.SetSize(new FileInfo(document.DocumentInfo.FilePath).Length);
-                searchDocumentResult.SetOccurrences(document.OccurrenceCount);
-                searchDocumentResult.SetFoundPhrases(foundPhrases.ToArray());
+                searchDocumentResult.guid = document.DocumentInfo.FilePath;
+                searchDocumentResult.name = Path.GetFileName(document.DocumentInfo.FilePath);
+                searchDocumentResult.size = new FileInfo(document.DocumentInfo.FilePath).Length;
+                searchDocumentResult.occurrences = document.OccurrenceCount;
+                searchDocumentResult.foundPhrases = foundPhrases.ToArray();
                 var terms = document.TermSequences
                     .SelectMany(s => s)
                     .Concat(document.Terms)
                     .ToArray();
-                searchDocumentResult.SetTerms(terms);
+                searchDocumentResult.terms = terms;
 
                 foundFiles.Add(searchDocumentResult);
             }
 
-            summaryResult.SetFoundFiles(foundFiles.ToArray());
-            summaryResult.SetTotalOccurences(result.OccurrenceCount);
-            summaryResult.SetTotalFiles(result.DocumentCount);
+            summaryResult.foundFiles = foundFiles.ToArray();
+            summaryResult.totalOccurences = result.OccurrenceCount;
+            summaryResult.totalFiles = result.DocumentCount;
             string searchDurationString = result.SearchDuration.ToString(@"ss\.ff");
-            summaryResult.SetSearchDuration(searchDurationString.Equals("00.00") ? "< 1" : searchDurationString);
-            summaryResult.SetIndexedFiles(Directory.GetFiles(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory(), "*", SearchOption.TopDirectoryOnly).Length);
+            summaryResult.searchDuration = searchDurationString.Equals("00.00") ? "< 1" : searchDurationString;
+            summaryResult.indexedFiles = Directory.GetFiles(globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory(), "*", SearchOption.TopDirectoryOnly).Length;
 
             return summaryResult;
         }

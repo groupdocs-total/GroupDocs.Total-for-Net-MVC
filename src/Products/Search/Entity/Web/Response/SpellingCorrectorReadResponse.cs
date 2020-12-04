@@ -2,7 +2,7 @@
 
 namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 {
-    internal class SpellingCorrectorReadResponse
+    public class SpellingCorrectorReadResponse
     {
         [JsonProperty]
         public string[] Words { get; set; }

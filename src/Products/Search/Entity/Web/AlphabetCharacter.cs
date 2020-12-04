@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
+namespace GroupDocs.Total.MVC.Products.Search.Entity.Web
 {
-    internal class AlphabetCharacter
+    public class AlphabetCharacter
     {
         [JsonProperty]
         public int Character { get; set; }

@@ -2,7 +2,7 @@
 
 namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 {
-    internal class CharacterReplacementsReadResponse
+    public class CharacterReplacementsReadResponse
     {
         [JsonProperty]
         public int[] Replacements { get; set; }

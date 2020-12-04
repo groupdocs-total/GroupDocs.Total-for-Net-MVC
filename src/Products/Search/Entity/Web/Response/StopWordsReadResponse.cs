@@ -2,7 +2,7 @@
 
 namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 {
-    internal class StopWordsReadResponse
+    public class StopWordsReadResponse
     {
         [JsonProperty]
         public string[] StopWords { get; set; }

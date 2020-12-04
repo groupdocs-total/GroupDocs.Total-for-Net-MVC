@@ -339,14 +339,14 @@
     <Compile Include="Products\Search\Entity\Web\Request\SpellingCorrectorUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\StopWordsUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SynonymsUpdateRequest.cs" />
-    <Compile Include="Products\Search\Entity\Web\Response\AlphabetCharacter.cs" />
+    <Compile Include="Products\Search\Entity\Web\AlphabetCharacter.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\AlphabetReadResponse.cs" />
     <Compile Include="Products\Common\Entity\Web\Response\HighlightTermsResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\CharacterReplacementsReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\DocumentPasswordsReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\HomophonesReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\IndexPropertiesResponse.cs" />
-    <Compile Include="Products\Search\Entity\Web\Response\KeyPasswordPair.cs" />
+    <Compile Include="Products\Search\Entity\Web\KeyPasswordPair.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SpellingCorrectorReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\StopWordsReadResponse.cs" />

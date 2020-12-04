@@ -2,7 +2,7 @@
 
 namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Response
 {
-    internal class IndexPropertiesResponse
+    public class IndexPropertiesResponse
     {
         [JsonProperty]
         public string IndexVersion { get; set; }
