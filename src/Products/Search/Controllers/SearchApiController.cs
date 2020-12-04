@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web;
@@ -47,93 +48,55 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             return this.globalConfiguration.GetSearchConfiguration();
         }
 
-        /// <summary>
-        /// Gets all files and directories from storage.
-        /// </summary>
-        /// <param name="fileTreeRequest">Posted data with path.</param>
-        /// <returns>List of files and directories.</returns>
         [HttpPost]
-        [Route("search/loadFileTree")]
-        public HttpResponseMessage LoadFileTree(PostedDataEntity fileTreeRequest)
+        [Route("search/getUploadedFiles")]
+        public IndexedFileDescriptionEntity[] GetUploadedFiles()
         {
-            try
-            {
-                List<IndexedFileDescriptionEntity> filesList = new List<IndexedFileDescriptionEntity>();
-
-                string filesDirectory = string.IsNullOrEmpty(fileTreeRequest.path) ?
-                                        this.globalConfiguration.GetSearchConfiguration().GetFilesDirectory() :
-                                        fileTreeRequest.path;
-
-                if (!string.IsNullOrEmpty(this.globalConfiguration.GetSearchConfiguration().GetFilesDirectory()))
+            var directory = globalConfiguration.GetSearchConfiguration().GetFilesDirectory();
+            var files = Directory.GetFiles(directory)
+                .Select(filePath =>
                 {
-                    filesList = this.LoadFiles(filesDirectory);
-                }
-
-                return this.Request.CreateResponse(HttpStatusCode.OK, filesList);
-            }
-            catch (Exception ex)
-            {
-                return this.Request.CreateResponse(HttpStatusCode.OK, new Resources().GenerateException(ex));
-            }
+                    FileInfo fileInfo = new FileInfo(filePath);
+                    var descriptor = new IndexedFileDescriptionEntity()
+                    {
+                        guid = fileInfo.FullName,
+                        name = fileInfo.Name,
+                        isDirectory = false,
+                        size = fileInfo.Length,
+                    };
+                    return descriptor;
+                })
+                .ToArray();
+            return files;
         }
 
-        /// <summary>
-        /// Loads documents.
-        /// </summary>
-        /// <param name="filesDirectory">Files directory.</param>
-        /// <returns>List of documents.</returns>
-        public List<IndexedFileDescriptionEntity> LoadFiles(string filesDirectory)
+        [HttpPost]
+        [Route("search/getIndexedFiles")]
+        public IndexedFileDescriptionEntity[] GetIndexedFiles()
         {
-            List<string> allFiles = new List<string>(Directory.GetFiles(filesDirectory));
-            allFiles.AddRange(Directory.GetDirectories(filesDirectory));
-            List<IndexedFileDescriptionEntity> fileList = new List<IndexedFileDescriptionEntity>();
-
-            allFiles.Sort(new FileNameComparator());
-            allFiles.Sort(new FileDateComparator());
-
-            foreach (string file in allFiles)
-            {
-                FileInfo fileInfo = new FileInfo(file);
-
-                if (!(Path.GetFileName(file).StartsWith(".") ||
-                      fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                      Path.GetFileName(file).Equals(Path.GetFileName(this.globalConfiguration.GetSearchConfiguration().GetFilesDirectory())) ||
-                      Path.GetFileName(file).Equals(Path.GetFileName(this.globalConfiguration.GetSearchConfiguration().GetIndexDirectory())) ||
-                      Path.GetFileName(file).Equals(Path.GetFileName(this.globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))))
+            var directory = globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory();
+            var files = Directory.GetFiles(directory)
+                .Select(filePath =>
                 {
-                    IndexedFileDescriptionEntity fileDescription = new IndexedFileDescriptionEntity
+                    FileInfo fileInfo = new FileInfo(filePath);
+                    var fullPath = fileInfo.FullName;
+                    string status;
+                    if (!SearchService.FileIndexingStatusDict.TryGetValue(fullPath, out status))
                     {
-                        guid = Path.GetFullPath(file),
-                        name = Path.GetFileName(file),
-
-                        // set is directory true/false
-                        isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory),
+                        status = "Indexing";
+                    }
+                    var descriptor = new IndexedFileDescriptionEntity()
+                    {
+                        guid = fullPath,
+                        name = fileInfo.Name,
+                        isDirectory = false,
+                        size = fileInfo.Length,
+                        documentStatus = status,
                     };
-
-                    // set file size
-                    if (!fileDescription.isDirectory)
-                    {
-                        fileDescription.size = fileInfo.Length;
-                    }
-
-                    if (filesDirectory.Contains(this.globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory()))
-                    {
-                        string value;
-                        if (SearchService.FileIndexingStatusDict.TryGetValue(fileDescription.guid, out value))
-                        {
-                            fileDescription.documentStatus = value;
-                        }
-                        else
-                        {
-                            fileDescription.documentStatus = "Indexing";
-                        }
-                    }
-
-                    fileList.Add(fileDescription);
-                }
-            }
-
-            return fileList;
+                    return descriptor;
+                })
+                .ToArray();
+            return files;
         }
 
         /// <summary>

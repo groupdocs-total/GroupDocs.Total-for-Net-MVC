@@ -213,6 +213,15 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             return indexProperties;
         }
 
+        internal static IEnumerable<string> GetIndexedFiles()
+        {
+            if (index == null) return new string[0];
+
+            var documents = index.GetIndexedDocuments()
+                .Select(di => di.FilePath);
+            return documents;
+        }
+
         internal static AlphabetReadResponse GetAlphabetDictionary()
         {
             CheckIndex();
