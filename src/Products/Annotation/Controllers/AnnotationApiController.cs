@@ -562,7 +562,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             LoadOptions loadOptions = new LoadOptions
             {
                 Password = password,
-                ImportAnnotations = importAnnotations
+                //ImportAnnotations = importAnnotations
             };
 
             return loadOptions;
