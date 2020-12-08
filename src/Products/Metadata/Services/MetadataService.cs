@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using GroupDocs.Total.MVC.Products.Metadata.Config;
 using GroupDocs.Total.MVC.Products.Metadata.Context;
 using GroupDocs.Total.MVC.Products.Metadata.DTO;
 using GroupDocs.Total.MVC.Products.Metadata.Model;
@@ -12,8 +10,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 {
     public class MetadataService
     {
-        private readonly MetadataConfiguration metadataConfiguration;
-
         private readonly HashSet<PropertyType> arrayTypes = new HashSet<PropertyType>
         {
             PropertyType.PropertyValueArray,
@@ -24,15 +20,17 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             PropertyType.LongArray,
         };
 
-        public MetadataService(MetadataConfiguration metadataConfiguration)
+        private readonly FileService fileService;
+
+        public MetadataService(FileService fileService)
         {
-            this.metadataConfiguration = metadataConfiguration;
+            this.fileService = fileService;
         }
 
         public IEnumerable<ExtractedPackageDto> GetPackages(PostedDataDto postedData)
         {
-            using(Stream fileStream = File.Open(metadataConfiguration.GetAbsolutePath(postedData.guid), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (MetadataContext context = new MetadataContext(fileStream, postedData.password))
+            using (var inputStream = fileService.GetFileInputStream(postedData.guid))
+            using (MetadataContext context = new MetadataContext(inputStream, postedData.password))
             {
                 var packages = new List<ExtractedPackageDto>();
                 foreach (var package in context.GetPackages())
@@ -81,61 +79,50 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             }
         }
 
-        public void SaveProperties(PostedDataDto postedData)
-        {
-            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
-            var tempFilePath = GetTempPath(filePath);
-            using (MetadataContext context = new MetadataContext(filePath, postedData.password))
-            {
-                foreach (var packageInfo in postedData.packages)
-                {
-                    context.UpdateProperties(packageInfo.id, packageInfo.properties.Select(p => new Property(p.name, (PropertyType)p.type, p.value)));
-                }
-                context.Save(tempFilePath);
-            }
-
-            DirectoryUtils.MoveFile(tempFilePath, filePath);
-        }
-
-        public void RemoveProperties(PostedDataDto postedData)
-        {
-            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
-            var tempFilePath = GetTempPath(filePath);
-            using (MetadataContext context = new MetadataContext(filePath, postedData.password))
-            {
-                foreach (var packageInfo in postedData.packages)
-                {
-                    context.RemoveProperties(packageInfo.id, packageInfo.properties.Select(p => p.name));
-                }
-                context.Save(tempFilePath);
-            }
-            DirectoryUtils.MoveFile(tempFilePath, filePath);
-        }
-
-        public void CleanMetadata(PostedDataDto postedData)
-        {
-            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
-            var tempFilePath = GetTempPath(filePath);
-            using (MetadataContext context = new MetadataContext(filePath, postedData.password))
-            {
-                context.Sanitize();
-                context.Save(tempFilePath);
-            }
-            DirectoryUtils.MoveFile(tempFilePath, filePath);
-        }
-
         public byte[] ExportMetadata(PostedDataDto postedData)
         {
-            using (MetadataContext context = new MetadataContext(metadataConfiguration.GetAbsolutePath(postedData.guid), postedData.password))
+            using (var inputStream = fileService.GetFileInputStream(postedData.guid))
+            using (MetadataContext context = new MetadataContext(inputStream, postedData.password))
             {
                 return context.ExportProperties();
             }
         }
 
-        private static string GetTempPath(string filePath)
+        public void SaveProperties(PostedDataDto postedData)
         {
-            string tempFilename = Path.GetFileNameWithoutExtension(filePath) + "_tmp";
-            return Path.Combine(Path.GetDirectoryName(filePath), tempFilename + Path.GetExtension(filePath));
+            UpdateMetadata(postedData, (context) =>
+            {
+                foreach (var packageInfo in postedData.packages)
+                {
+                    context.UpdateProperties(packageInfo.id, packageInfo.properties.Select(p => new Property(p.name, (PropertyType)p.type, p.value)));
+                }
+            });
+        }
+
+        public void RemoveProperties(PostedDataDto postedData)
+        {
+            UpdateMetadata(postedData, (context) =>
+            {
+                foreach (var packageInfo in postedData.packages)
+                {
+                    context.RemoveProperties(packageInfo.id, packageInfo.properties.Select(p => p.name));
+                }
+            });
+        }
+
+        public void CleanMetadata(PostedDataDto postedData)
+        {
+            UpdateMetadata(postedData, (context) => context.Sanitize());
+        }
+
+        private void UpdateMetadata(PostedDataDto postedData, Action<MetadataContext> updateMethod)
+        {
+            using (var inputStream = fileService.GetFileInputStream(postedData.guid))
+            using (MetadataContext context = new MetadataContext(inputStream, postedData.password))
+            {
+                updateMethod(context);
+                fileService.SaveContextToFile(context, postedData.guid);
+            }
         }
     }
 }

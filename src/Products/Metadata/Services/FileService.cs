@@ -1,15 +1,6 @@
-﻿using GroupDocs.Metadata.Common;
-using GroupDocs.Metadata.Options;
-using GroupDocs.Total.MVC.Products.Common.Entity.Web;
-using GroupDocs.Total.MVC.Products.Common.Resources;
-using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
-using GroupDocs.Total.MVC.Products.Metadata.Config;
-using GroupDocs.Total.MVC.Products.Metadata.DTO;
-using System;
-using System.Collections.Generic;
+﻿using GroupDocs.Total.MVC.Products.Metadata.Config;
+using GroupDocs.Total.MVC.Products.Metadata.Context;
 using System.IO;
-using System.Net;
-using System.Web;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Services
 {
@@ -22,166 +13,34 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             this.metadataConfiguration = metadataConfiguration;
         }
 
-        public IEnumerable<FileDescriptionEntity> LoadFileTree()
+        public Stream GetSourceFileStream(string relativePath)
         {
-            List<FileDescriptionEntity> fileList = new List<FileDescriptionEntity>();
-            if (!string.IsNullOrEmpty(metadataConfiguration.GetFilesDirectory()))
-            {
-                var currentPath = metadataConfiguration.GetFilesDirectory();
-                List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
-                allFiles.AddRange(Directory.GetDirectories(currentPath));
-
-                // TODO: get temp directory name
-                string tempDirectoryName = "temp";
-
-                allFiles.Sort(new FileNameComparator());
-                allFiles.Sort(new FileDateComparator());
-
-                foreach (string file in allFiles)
-                {
-                    FileInfo fileInfo = new FileInfo(file);
-                    // check if current file/folder is hidden
-                    if (!(tempDirectoryName.Equals(Path.GetFileName(file)) ||
-                        fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                        fileInfo.Name.StartsWith(".") ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(metadataConfiguration.GetFilesDirectory()))))
-                    {
-                        FileDescriptionEntity fileDescription = new FileDescriptionEntity();
-                        fileDescription.guid = Path.GetFileName(file);
-                        fileDescription.name = Path.GetFileName(file);
-                        // set is directory true/false
-                        fileDescription.isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory);
-                        // set file size
-                        if (!fileDescription.isDirectory)
-                        {
-                            fileDescription.size = fileInfo.Length;
-                        }
-                        // add object to array list
-                        fileList.Add(fileDescription);
-                    }
-                }
-            }
-            return fileList;
+            string filePath = metadataConfiguration.GetInputFilePath(relativePath);
+            return File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public LoadDocumentEntity LoadDocument(PostedDataDto postedData)
+        public Stream GetFileInputStream(string relativePath)
         {
-            // get/set parameters
-            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
-            string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
-            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-
-            // set password for protected document
-            var loadOptions = new LoadOptions
+            var outputPath = metadataConfiguration.GetOutputFilePath(relativePath);
+            if (File.Exists(outputPath))
             {
-                Password = password
-            };
-
-            using(Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(fileStream, loadOptions))
-            {
-                GroupDocs.Metadata.Common.IReadOnlyList<PageInfo> pages = metadata.GetDocumentInfo().Pages;
-
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    PreviewOptions previewOptions = new PreviewOptions(pageNumber => stream, (pageNumber, pageStream) => { });
-                    previewOptions.PreviewFormat = PreviewOptions.PreviewFormats.PNG;
-
-                    int pageCount = pages.Count;
-                    if (metadataConfiguration.GetPreloadPageCount() > 0)
-                    {
-                        pageCount = metadataConfiguration.GetPreloadPageCount();
-                    }
-                    for (int i = 0; i < pageCount; i++)
-                    {
-                        previewOptions.PageNumbers = new[] { i + 1 };
-                        try
-                        {
-                            metadata.GeneratePreview(previewOptions);
-                        }
-                        catch (NotSupportedException)
-                        {
-                            continue;
-                        }
-
-                        PageDescriptionEntity pageData = GetPageDescriptionEntities(pages[i]);
-                        string encodedImage = Convert.ToBase64String(stream.ToArray());
-                        pageData.SetData(encodedImage);
-                        loadDocumentEntity.SetPages(pageData);
-                        stream.SetLength(0);
-                    }
-                }
+                return File.Open(outputPath, FileMode.Open, FileAccess.ReadWrite);
             }
-
-            loadDocumentEntity.SetGuid(postedData.guid);
-
-            // return document description
-            return loadDocumentEntity;
+            var inputPath = metadataConfiguration.GetInputFilePath(relativePath);
+            return File.Open(inputPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public UploadedDocumentEntity UploadDocument(HttpRequest request)
+        public void SaveContextToFile(MetadataContext context, string relativePath)
         {
-            string url = request.Form["url"];
-            // get documents storage path
-            string documentStoragePath = metadataConfiguration.GetFilesDirectory();
-            bool rewrite = bool.Parse(request.Form["rewrite"]);
-            string fileSavePath = string.Empty;
-            if (string.IsNullOrEmpty(url))
+            var outputPath = metadataConfiguration.GetOutputFilePath(relativePath);
+            if (File.Exists(outputPath))
             {
-                // Get the uploaded document from the Files collection
-                var httpPostedFile = request.Files["file"];
-                if (httpPostedFile == null || Path.IsPathRooted(httpPostedFile.FileName))
-                {
-                    throw new ArgumentException("Could not upload the file");
-                }
-                if (rewrite)
-                {
-                    // Get the complete file path
-                    fileSavePath = Path.Combine(documentStoragePath, httpPostedFile.FileName);
-                }
-                else
-                {
-                    fileSavePath = Resources.GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
-                }
-
-                // Save the uploaded file to "UploadedFiles" folder
-                httpPostedFile.SaveAs(fileSavePath);
-
+                context.Save();
             }
             else
             {
-                using (WebClient client = new WebClient())
-                {
-                    // get file name from the URL
-                    Uri uri = new Uri(url);
-                    string fileName = Path.GetFileName(uri.LocalPath);
-                    if (rewrite)
-                    {
-                        // Get the complete file path
-                        fileSavePath = Path.Combine(documentStoragePath, fileName);
-                    }
-                    else
-                    {
-                        fileSavePath = Resources.GetFreeFileName(documentStoragePath, fileName);
-                    }
-                    // Download the Web resource and save it into the current filesystem folder.
-                    client.DownloadFile(url, fileSavePath);
-                }
+                context.Save(outputPath);
             }
-
-            UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-            uploadedDocument.guid = Path.GetFileName(fileSavePath);
-
-            return uploadedDocument;
-        }
-
-        private PageDescriptionEntity GetPageDescriptionEntities(PageInfo page)
-        {
-            PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
-            pageDescriptionEntity.number = page.PageNumber;
-            pageDescriptionEntity.height = page.Height;
-            pageDescriptionEntity.width = page.Width;
-            return pageDescriptionEntity;
         }
     }
 }

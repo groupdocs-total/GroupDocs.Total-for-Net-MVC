@@ -24,6 +24,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
 
         private readonly MetadataService metadataService;
 
+        private readonly PreviewService previewService;
+
         private readonly FileService fileService;
 
         /// <summary>
@@ -32,8 +34,9 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         public MetadataApiController()
         {
             globalConfiguration = new Common.Config.GlobalConfiguration();
-            metadataService = new MetadataService(globalConfiguration.GetMetadataConfiguration());
             fileService = new FileService(globalConfiguration.GetMetadataConfiguration());
+            metadataService = new MetadataService(fileService);
+            previewService = new PreviewService(globalConfiguration.GetMetadataConfiguration(), fileService);
         }
 
         /// <summary>
@@ -61,7 +64,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             }
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadFileTree());
+                return Request.CreateResponse(HttpStatusCode.OK, previewService.LoadFileTree());
             }
             catch (Exception ex)
             {
@@ -161,7 +164,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             try
             {
                 // return document description
-                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadDocument(postedData));
+                return Request.CreateResponse(HttpStatusCode.OK, previewService.LoadDocument(postedData));
             }
             catch (DocumentProtectedException ex)
             {
@@ -184,17 +187,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         {
             if (!string.IsNullOrEmpty(path))
             {
-                string absolutePath = globalConfiguration.GetMetadataConfiguration().GetAbsolutePath(path);
-                if (File.Exists(absolutePath))
-                {
-                    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                    var fileStream = new FileStream(absolutePath, FileMode.Open);
-                    response.Content = new StreamContent(fileStream);
-                    response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(absolutePath);
-                    return response;
-                }
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+                var fileStream = fileService.GetFileInputStream(path);
+                response.Content = new StreamContent(fileStream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                response.Content.Headers.ContentDisposition.FileName = Path.GetFileName(path);
+                return response;
             }
 
             return new HttpResponseMessage(HttpStatusCode.NotFound);
@@ -236,7 +235,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             }
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, fileService.UploadDocument(HttpContext.Current.Request));
+                return Request.CreateResponse(HttpStatusCode.OK, previewService.UploadDocument(HttpContext.Current.Request));
             }
             catch (Exception ex)
             {

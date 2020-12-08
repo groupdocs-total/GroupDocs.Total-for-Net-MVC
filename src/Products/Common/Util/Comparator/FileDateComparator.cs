@@ -7,7 +7,7 @@ namespace GroupDocs.Total.MVC.Products.Common.Util.Comparator
     /// <summary>
     /// FileDateComparator.
     /// </summary>
-    public class FileDateComparator : IComparer<string>
+    public class FileDateComparator : IComparer<string> 
     {
         /// <summary>
         /// Compare file creation dates.

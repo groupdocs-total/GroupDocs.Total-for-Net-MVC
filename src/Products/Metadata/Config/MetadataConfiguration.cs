@@ -14,6 +14,10 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
     {
         private string filesDirectory = "DocumentSamples/Metadata";
 
+        private string outputDirectory = "DocumentSamples/Metadata/Output";
+
+        private int previewTimeLimit;
+
         [JsonProperty]
         private string defaultDocument = "";
 
@@ -37,16 +41,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
 
             // get Metadata configuration section from the web.config
             filesDirectory = valuesGetter.GetStringPropertyValue("filesDirectory", filesDirectory);
-            if (!DirectoryUtils.IsFullPath(filesDirectory))
-            {
-                filesDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filesDirectory);
-                if (!Directory.Exists(filesDirectory))
-                {
-                    Directory.CreateDirectory(filesDirectory);
-                }
-            }
+            filesDirectory = InitDirectory(filesDirectory);
+            
+            outputDirectory = valuesGetter.GetStringPropertyValue("outputDirectory", outputDirectory);
+            outputDirectory = InitDirectory(outputDirectory);
+
             defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
             preloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", preloadPageCount);
+            previewTimeLimit = valuesGetter.GetIntegerPropertyValue("previewTimeLimit", previewTimeLimit);
             htmlMode = valuesGetter.GetBooleanPropertyValue("htmlMode", htmlMode);
             cache = valuesGetter.GetBooleanPropertyValue("cache", cache);
             browse = valuesGetter.GetBooleanPropertyValue("browse", browse);
@@ -83,9 +85,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             return preloadPageCount;
         }
 
+        public int GetPreviewTimeLimit()
+        {
+            return previewTimeLimit;
+        }
+
         public void SetIsHtmlMode(bool isHtmlMode)
         {
-            this.htmlMode = isHtmlMode;
+            htmlMode = isHtmlMode;
         }
 
         public bool GetIsHtmlMode()
@@ -103,22 +110,37 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             return cache;
         }
 
-        public string GetAbsolutePath(string filePath)
+        public string GetInputFilePath(string relativePath)
         {
-            if (!Path.IsPathRooted(filePath))
+            return GetAbsolutePath(filesDirectory, relativePath);
+        }
+
+        public string GetOutputFilePath(string relativePath)
+        {
+            return GetAbsolutePath(outputDirectory, relativePath);
+        }
+
+        private string GetAbsolutePath(string baseDirectory, string relativePath)
+        {
+            if (Path.IsPathRooted(relativePath))
             {
-                return Path.Combine(GetFilesDirectory(), filePath);
+                throw new ArgumentException("Couldn't find the specified file", nameof(relativePath));
             }
-            string absolutePath = Path.GetFullPath(filePath);
-            string fileDirectory = Path.GetFullPath(GetFilesDirectory());
-            if (!fileDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            return Path.Combine(baseDirectory, relativePath);
+        }
+
+        private string InitDirectory(string path)
+        {
+            string absolutePath = path;
+            if (!Path.IsPathRooted(path))
             {
-                fileDirectory += Path.DirectorySeparatorChar;
+                absolutePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
             }
-            if (!absolutePath.StartsWith(fileDirectory))
+            if (!Directory.Exists(absolutePath))
             {
-                throw new ArgumentException("Invalid file path");
+                Directory.CreateDirectory(absolutePath);
             }
+
             return absolutePath;
         }
     }

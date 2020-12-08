@@ -18,11 +18,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
 
         private bool disposedValue;
 
-        public MetadataContext(string filePath, string password) : this()
-        {
-            metadata = new GroupDocs.Metadata.Metadata(filePath, CreateLoadOptions(password));
-        }
-
         public MetadataContext(Stream fileStream, string password) : this()
         {
             metadata = new GroupDocs.Metadata.Metadata(fileStream, CreateLoadOptions(password));
@@ -114,6 +109,11 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
         public void Save(string filePath)
         {
             metadata.Save(filePath);
+        }
+
+        public void Save()
+        {
+            metadata.Save();
         }
 
         public void Sanitize()
