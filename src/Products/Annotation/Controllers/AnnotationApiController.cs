@@ -156,7 +156,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 if (loadAllPages)
                 {
-                    pagesContent = GetAllPagesContent(password, documentGuid, info);
+                    pagesContent = GetAllPagesContent(annotator, password, documentGuid, info);
                 }
 
                 for (int i = 0; i < info.PageCount; i++)
@@ -209,7 +209,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(documentGuid, GetLoadOptions(password)))
                 {
-                    using (var memoryStream = RenderPageToMemoryStream(pageNumber, documentGuid, password))
+                    using (var memoryStream = RenderPageToMemoryStream(annotator, pageNumber, documentGuid, password))
                     {
                         bytes = memoryStream.ToArray();
                     }
@@ -240,7 +240,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             }
         }
 
-        private static List<string> GetAllPagesContent(string password, string documentGuid, IDocumentInfo pages)
+        private static List<string> GetAllPagesContent(GroupDocs.Annotation.Annotator annotator, string password, string documentGuid, IDocumentInfo pages)
         {
             List<string> allPages = new List<string>();
 
@@ -248,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             for (int i = 0; i < pages.PageCount; i++)
             {
                 byte[] bytes;
-                using (var memoryStream = RenderPageToMemoryStream(i + 1, documentGuid, password))
+                using (var memoryStream = RenderPageToMemoryStream(annotator, i + 1, documentGuid, password))
                 {
                     bytes = memoryStream.ToArray();
                 }
@@ -260,24 +260,18 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             return allPages;
         }
 
-        static MemoryStream RenderPageToMemoryStream(int pageNumberToRender, string documentGuid, string password)
+        static MemoryStream RenderPageToMemoryStream(GroupDocs.Annotation.Annotator annotator, int pageNumberToRender, string documentGuid, string password)
         {
             MemoryStream result = new MemoryStream();
 
-            using (FileStream outputStream = File.OpenRead(documentGuid))
+            PreviewOptions previewOptions = new PreviewOptions(pageNumber => result)
             {
-                using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(outputStream, GetLoadOptions(password)))
-                {
-                    PreviewOptions previewOptions = new PreviewOptions(pageNumber => result)
-                    {
-                        PreviewFormat = PreviewFormats.PNG,
-                        PageNumbers = new[] { pageNumberToRender },
-                        RenderComments = false
-                    };
+                PreviewFormat = PreviewFormats.PNG,
+                PageNumbers = new[] { pageNumberToRender },
+                RenderComments = false
+            };
 
-                    annotator.Document.GeneratePreview(previewOptions);
-                }
-            }
+            annotator.Document.GeneratePreview(previewOptions);
 
             return result;
         }
@@ -503,7 +497,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(outputStream, GetLoadOptions(password)))
                     {
                         IDocumentInfo info = annotator.Document.GetDocumentInfo();
-                        List<string> pagesContent = GetAllPagesContent(password, documentGuid, info);
+                        List<string> pagesContent = GetAllPagesContent(annotator, password, documentGuid, info);
 
                         for (int i = 0; i < info.PageCount; i++)
                         {
@@ -562,7 +556,6 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             LoadOptions loadOptions = new LoadOptions
             {
                 Password = password,
-                //ImportAnnotations = importAnnotations
             };
 
             return loadOptions;
