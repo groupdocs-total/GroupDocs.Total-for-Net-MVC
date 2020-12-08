@@ -156,7 +156,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 if (loadAllPages)
                 {
-                    pagesContent = GetAllPagesContent(annotator, password, documentGuid, info);
+                    pagesContent = GetAllPagesContent(annotator, info);
                 }
 
                 for (int i = 0; i < info.PageCount; i++)
@@ -240,7 +240,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             }
         }
 
-        private static List<string> GetAllPagesContent(GroupDocs.Annotation.Annotator annotator, string password, string documentGuid, IDocumentInfo pages)
+        private static List<string> GetAllPagesContent(GroupDocs.Annotation.Annotator annotator, IDocumentInfo pages)
         {
             List<string> allPages = new List<string>();
 
@@ -497,7 +497,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(outputStream, GetLoadOptions(password)))
                     {
                         IDocumentInfo info = annotator.Document.GetDocumentInfo();
-                        List<string> pagesContent = GetAllPagesContent(annotator, password, documentGuid, info);
+                        List<string> pagesContent = GetAllPagesContent(annotator, info);
 
                         for (int i = 0; i < info.PageCount; i++)
                         {
