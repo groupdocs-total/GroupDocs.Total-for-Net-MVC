@@ -209,7 +209,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                 using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(documentGuid, GetLoadOptions(password)))
                 {
-                    using (var memoryStream = RenderPageToMemoryStream(annotator, pageNumber, documentGuid, password))
+                    using (var memoryStream = RenderPageToMemoryStream(annotator, pageNumber))
                     {
                         bytes = memoryStream.ToArray();
                     }
@@ -248,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             for (int i = 0; i < pages.PageCount; i++)
             {
                 byte[] bytes;
-                using (var memoryStream = RenderPageToMemoryStream(annotator, i + 1, documentGuid, password))
+                using (var memoryStream = RenderPageToMemoryStream(annotator, i + 1))
                 {
                     bytes = memoryStream.ToArray();
                 }
@@ -260,7 +260,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             return allPages;
         }
 
-        static MemoryStream RenderPageToMemoryStream(GroupDocs.Annotation.Annotator annotator, int pageNumberToRender, string documentGuid, string password)
+        static MemoryStream RenderPageToMemoryStream(GroupDocs.Annotation.Annotator annotator, int pageNumberToRender)
         {
             MemoryStream result = new MemoryStream();
 
@@ -529,7 +529,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             {
                 using (Stream inputStream = File.Open(documentGuid, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                 {
-                    using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(inputStream, GetLoadOptions(password, true)))
+                    using (GroupDocs.Annotation.Annotator annotator = new GroupDocs.Annotation.Annotator(inputStream, GetLoadOptions(password)))
                     {
                         annotator.Save(tempPath, new SaveOptions { AnnotationTypes = AnnotationType.None });
                     }
@@ -551,7 +551,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             return tempPath;
         }
 
-        private static LoadOptions GetLoadOptions(string password, bool importAnnotations = false)
+        private static LoadOptions GetLoadOptions(string password)
         {
             LoadOptions loadOptions = new LoadOptions
             {
