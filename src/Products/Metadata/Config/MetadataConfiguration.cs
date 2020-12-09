@@ -16,6 +16,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
 
         private string outputDirectory = "DocumentSamples/Metadata/Output";
 
+        private string tempDirectory = "DocumentSamples/Metadata/Temp";
+
+        private int fileOperationTimeout;
+
+        private int fileOperationRetryCount;
+
         private int previewTimeLimit;
 
         [JsonProperty]
@@ -46,6 +52,9 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             outputDirectory = valuesGetter.GetStringPropertyValue("outputDirectory", outputDirectory);
             outputDirectory = InitDirectory(outputDirectory);
 
+            tempDirectory = valuesGetter.GetStringPropertyValue("tempDirectory", tempDirectory);
+            tempDirectory = InitDirectory(tempDirectory);
+
             defaultDocument = valuesGetter.GetStringPropertyValue("defaultDocument", defaultDocument);
             preloadPageCount = valuesGetter.GetIntegerPropertyValue("preloadPageCount", preloadPageCount);
             previewTimeLimit = valuesGetter.GetIntegerPropertyValue("previewTimeLimit", previewTimeLimit);
@@ -53,6 +62,8 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             cache = valuesGetter.GetBooleanPropertyValue("cache", cache);
             browse = valuesGetter.GetBooleanPropertyValue("browse", browse);
             upload = valuesGetter.GetBooleanPropertyValue("upload", upload);
+            fileOperationTimeout = valuesGetter.GetIntegerPropertyValue("fileOperationTimeout", fileOperationTimeout);
+            fileOperationRetryCount = valuesGetter.GetIntegerPropertyValue("fileOperationRetryCount", fileOperationRetryCount);
         }
 
         public void SetFilesDirectory(string filesDirectory)
@@ -90,6 +101,16 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             return previewTimeLimit;
         }
 
+        public int GetFileOperationTimeout()
+        {
+            return fileOperationTimeout;
+        }
+
+        public int GetFileOperationRetryCount()
+        {
+            return fileOperationRetryCount;
+        }
+
         public void SetIsHtmlMode(bool isHtmlMode)
         {
             htmlMode = isHtmlMode;
@@ -102,12 +123,17 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
 
         public void SetCache(bool Cache)
         {
-            this.cache = Cache;
+            cache = Cache;
         }
 
         public bool GetCache()
         {
             return cache;
+        }
+
+        public string GetTempFilePath()
+        {
+            return Path.Combine(tempDirectory, Guid.NewGuid().ToString());
         }
 
         public string GetInputFilePath(string relativePath)
@@ -124,7 +150,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
         {
             if (Path.IsPathRooted(relativePath))
             {
-                throw new ArgumentException("Couldn't find the specified file", nameof(relativePath));
+                throw new ArgumentException("Couldn't find the specified file path", nameof(relativePath));
             }
             return Path.Combine(baseDirectory, relativePath);
         }

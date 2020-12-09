@@ -64,7 +64,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             }
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, previewService.LoadFileTree());
+                return Request.CreateResponse(HttpStatusCode.OK, fileService.LoadFileTree());
             }
             catch (Exception ex)
             {
@@ -235,7 +235,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             }
             try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, previewService.UploadDocument(HttpContext.Current.Request));
+                return Request.CreateResponse(HttpStatusCode.OK, fileService.UploadDocument(HttpContext.Current.Request));
             }
             catch (Exception ex)
             {
