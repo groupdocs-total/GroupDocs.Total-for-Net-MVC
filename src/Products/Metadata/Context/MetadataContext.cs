@@ -7,6 +7,7 @@ using GroupDocs.Total.MVC.Products.Metadata.Model;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories;
 using GroupDocs.Metadata.Export;
 using System.IO;
+using GroupDocs.Metadata.Exceptions;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Context
 {
@@ -21,6 +22,10 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
         public MetadataContext(Stream fileStream, string password) : this()
         {
             metadata = new GroupDocs.Metadata.Metadata(fileStream, CreateLoadOptions(password));
+            if (metadata.FileFormat == FileFormat.Unknown)
+            {
+                throw new InvalidFormatException("Couldn't recognize the file format");
+            }
         }
 
         private MetadataContext()

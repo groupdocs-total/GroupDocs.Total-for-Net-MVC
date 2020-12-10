@@ -29,7 +29,21 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 var inputDirectory = new DirectoryInfo(currentPath);
                 var allFiles = inputDirectory.GetFiles();
 
-                Array.Sort(allFiles, (x, y) => DateTime.Compare(y.LastWriteTime, x.LastWriteTime));
+                const int newFileTimeFrameMin = -10;
+                var newFileBorder = DateTime.Now.AddMinutes(newFileTimeFrameMin);
+                Array.Sort(allFiles, (x, y) =>
+                {
+                    if (x.LastAccessTime >= newFileBorder && y.LastAccessTime >= newFileBorder)
+                    {
+                        return DateTime.Compare(y.LastAccessTime, x.LastAccessTime);
+                    }
+                    if (x.LastAccessTime < newFileBorder && y.LastAccessTime < newFileBorder)
+                    {
+                        return string.Compare(x.Name, y.Name);
+                    }
+
+                    return x.LastAccessTime >= newFileBorder ? -1 : 1;
+                });
 
                 foreach (var file in allFiles)
                 {
@@ -84,16 +98,23 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 }
             }
 
-            if (rewrite)
+            try
             {
-                string filePath = metadataConfiguration.GetInputFilePath(fileName);
-                RemoveFile(filePath);
-                RemoveFile(metadataConfiguration.GetOutputFilePath(fileName));
-                File.Move(tempFilePath, filePath);
+                if (rewrite)
+                {
+                    string filePath = metadataConfiguration.GetInputFilePath(fileName);
+                    RemoveFile(filePath);
+                    RemoveFile(metadataConfiguration.GetOutputFilePath(fileName));
+                    File.Move(tempFilePath, filePath);
+                }
+                else
+                {
+                    File.Move(tempFilePath, Resources.GetFreeFileName(metadataConfiguration.GetFilesDirectory(), fileName));
+                }
             }
-            else
+            finally
             {
-                File.Move(tempFilePath, Resources.GetFreeFileName(metadataConfiguration.GetFilesDirectory(), fileName));
+                File.Delete(tempFilePath);
             }
 
             UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
@@ -108,28 +129,25 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             return File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public Stream GetFileInputStream(string relativePath)
+        public Stream GetFileStream(string relativePath, bool readOnly = true)
         {
+            var inputPath = metadataConfiguration.GetInputFilePath(relativePath);
             var outputPath = metadataConfiguration.GetOutputFilePath(relativePath);
             if (File.Exists(outputPath))
             {
                 return File.Open(outputPath, FileMode.Open, FileAccess.ReadWrite);
             }
-            var inputPath = metadataConfiguration.GetInputFilePath(relativePath);
+            if (!readOnly)
+            {
+                using (var sourceStream = File.Open(inputPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var destStream = File.Open(outputPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    sourceStream.CopyTo(destStream);
+                    destStream.Position = 0;
+                    return destStream;
+                }
+            }
             return File.Open(inputPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        }
-
-        public void SaveContextToFile(MetadataContext context, string relativePath)
-        {
-            var outputPath = metadataConfiguration.GetOutputFilePath(relativePath);
-            if (File.Exists(outputPath))
-            {
-                context.Save();
-            }
-            else
-            {
-                context.Save(outputPath);
-            }
         }
 
         private void RemoveFile(string filePath)

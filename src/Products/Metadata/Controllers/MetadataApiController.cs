@@ -85,6 +85,10 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.OK, metadataService.GetPackages(postedData));
             }
+            catch (DocumentProtectedException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex));
+            }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
@@ -160,7 +164,6 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
         [Route("metadata/loadDocumentDescription")]
         public HttpResponseMessage LoadDocumentDescription(PostedDataDto postedData)
         {
-            string password = "";
             try
             {
                 // return document description
@@ -168,7 +171,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             }
             catch (DocumentProtectedException ex)
             {
-                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex, password));
+                return Request.CreateResponse(HttpStatusCode.Forbidden, new Resources().GenerateException(ex));
             }
             catch (Exception ex)
             {
@@ -188,7 +191,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Controllers
             if (!string.IsNullOrEmpty(path))
             {
                 HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-                var fileStream = fileService.GetFileInputStream(path);
+                var fileStream = fileService.GetFileStream(path);
                 response.Content = new StreamContent(fileStream);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");

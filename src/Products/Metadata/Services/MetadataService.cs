@@ -29,7 +29,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 
         public IEnumerable<ExtractedPackageDto> GetPackages(PostedDataDto postedData)
         {
-            using (var inputStream = fileService.GetFileInputStream(postedData.guid))
+            using (var inputStream = fileService.GetFileStream(postedData.guid))
             using (MetadataContext context = new MetadataContext(inputStream, postedData.password))
             {
                 var packages = new List<ExtractedPackageDto>();
@@ -81,7 +81,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 
         public byte[] ExportMetadata(PostedDataDto postedData)
         {
-            using (var inputStream = fileService.GetFileInputStream(postedData.guid))
+            using (var inputStream = fileService.GetFileStream(postedData.guid))
             using (MetadataContext context = new MetadataContext(inputStream, postedData.password))
             {
                 return context.ExportProperties();
@@ -117,11 +117,11 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
 
         private void UpdateMetadata(PostedDataDto postedData, Action<MetadataContext> updateMethod)
         {
-            using (var inputStream = fileService.GetFileInputStream(postedData.guid))
+            using (var inputStream = fileService.GetFileStream(postedData.guid, false))
             using (MetadataContext context = new MetadataContext(inputStream, postedData.password))
             {
                 updateMethod(context);
-                fileService.SaveContextToFile(context, postedData.guid);
+                context.Save();
             }
         }
     }

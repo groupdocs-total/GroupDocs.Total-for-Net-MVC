@@ -5,6 +5,7 @@ using GroupDocs.Total.MVC.Products.Metadata.Config;
 using GroupDocs.Total.MVC.Products.Metadata.DTO;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Services
@@ -32,26 +33,29 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 Password = password
             };
 
-            using (Stream fileStream = fileService.GetSourceFileStream(postedData.guid))
-            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(fileStream, loadOptions))
+
+            bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(metadataConfiguration.GetPreviewTimeLimit()), cancelationToken =>
             {
-                IReadOnlyList<PageInfo> pages = metadata.GetDocumentInfo().Pages;
-
-                using (MemoryStream stream = new MemoryStream())
+                using (Stream fileStream = fileService.GetSourceFileStream(postedData.guid))
+                using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(fileStream, loadOptions))
                 {
-                    PreviewOptions previewOptions = new PreviewOptions(pageNumber => stream, (pageNumber, pageStream) => { });
-                    previewOptions.PreviewFormat = PreviewOptions.PreviewFormats.PNG;
+                    cancelationToken.ThrowIfCancellationRequested();
+                    IReadOnlyList<PageInfo> pages = metadata.GetDocumentInfo().Pages;
 
-                    int pageCount = pages.Count;
-                    if (metadataConfiguration.GetPreloadPageCount() > 0)
+                    using (MemoryStream stream = new MemoryStream())
                     {
-                        pageCount = metadataConfiguration.GetPreloadPageCount();
-                    }
+                        PreviewOptions previewOptions = new PreviewOptions(pageNumber => stream, (pageNumber, pageStream) => { });
+                        previewOptions.PreviewFormat = PreviewOptions.PreviewFormats.PNG;
 
-                    bool completed = ExecuteWithTimeLimit(TimeSpan.FromMilliseconds(metadataConfiguration.GetPreviewTimeLimit()), () =>
-                    {
+                        int pageCount = pages.Count;
+                        if (metadataConfiguration.GetPreloadPageCount() > 0)
+                        {
+                            pageCount = metadataConfiguration.GetPreloadPageCount();
+                        }
+
                         for (int i = 0; i < pageCount; i++)
                         {
+                            cancelationToken.ThrowIfCancellationRequested();
                             previewOptions.PageNumbers = new[] { i + 1 };
                             try
                             {
@@ -68,29 +72,37 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                             documentPreview.SetPages(pageData);
                             stream.SetLength(0);
                         }
-                    });
-
-                    documentPreview.SetTimeLimitExceeded(!completed);
+                    }
                 }
-            }
+            });
 
+            documentPreview.SetTimeLimitExceeded(!completed);
             documentPreview.SetGuid(postedData.guid);
 
             // return document description
             return documentPreview;
+
         }
 
-        private bool ExecuteWithTimeLimit(TimeSpan timeSpan, Action codeBlock)
+        private bool ExecuteWithTimeLimit(TimeSpan timeSpan, Action<CancellationToken> codeBlock)
         {
-            try
+            using (var cancellationTokenSource = new CancellationTokenSource())
             {
-                Task task = Task.Factory.StartNew(() => codeBlock());
-                task.Wait(timeSpan);
-                return task.IsCompleted;
-            }
-            catch (AggregateException ae)
-            {
-                throw ae.InnerExceptions[0];
+                cancellationTokenSource.CancelAfter(timeSpan);
+                try
+                {
+                    Task task = Task.Run(() => codeBlock(cancellationTokenSource.Token), cancellationTokenSource.Token);
+                    task.Wait(cancellationTokenSource.Token);
+                    return true;
+                }
+                catch (OperationCanceledException)
+                {
+                    return false;
+                }
+                catch (AggregateException e)
+                {
+                    throw e.InnerExceptions[0];
+                }
             }
         }
 
