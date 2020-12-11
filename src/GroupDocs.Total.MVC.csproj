@@ -330,11 +330,13 @@
     <Compile Include="Products\Search\Config\SearchConfiguration.cs" />
     <Compile Include="Products\Search\Controllers\SearchApiController.cs" />
     <Compile Include="Products\Search\Entity\Web\IndexedFileDescriptionEntity.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\AddToIndexRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\AlphabetUpdateRequest.cs" />
     <Compile Include="Products\Common\Entity\Web\Request\HighlightTermsRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\CharacterReplacementsUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\DocumentPasswordsUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\HomophonesUpdateRequest.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\SearchBaseRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SpellingCorrectorUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\StopWordsUpdateRequest.cs" />

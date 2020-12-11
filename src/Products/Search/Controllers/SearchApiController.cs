@@ -50,7 +50,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
 
         [HttpPost]
         [Route("search/getUploadedFiles")]
-        public IndexedFileDescriptionEntity[] GetUploadedFiles()
+        public IndexedFileDescriptionEntity[] GetUploadedFiles(SearchBaseRequest request)
         {
             var directory = globalConfiguration.GetSearchConfiguration().GetFilesDirectory();
             var files = Directory.GetFiles(directory)
@@ -72,7 +72,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
 
         [HttpPost]
         [Route("search/getIndexedFiles")]
-        public IndexedFileDescriptionEntity[] GetIndexedFiles()
+        public IndexedFileDescriptionEntity[] GetIndexedFiles(SearchBaseRequest request)
         {
             var directory = globalConfiguration.GetSearchConfiguration().GetIndexedFilesDirectory();
             var files = Directory.GetFiles(directory)
@@ -180,11 +180,11 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <returns>HttpResponseMessage.</returns>
         [HttpPost]
         [Route("search/addFilesToIndex")]
-        public HttpResponseMessage AddFilesToIndex(PostedDataEntity[] postedData)
+        public HttpResponseMessage AddFilesToIndex(AddToIndexRequest request)
         {
             try
             {
-                SearchService.AddFilesToIndex(postedData, this.globalConfiguration);
+                SearchService.AddFilesToIndex(request.Files, this.globalConfiguration);
                 return this.Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
@@ -278,7 +278,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <returns>The index properties.</returns>
         [HttpPost]
         [Route("search/getIndexProperties")]
-        public HttpResponseMessage GetIndexProperties()
+        public HttpResponseMessage GetIndexProperties(SearchBaseRequest request)
         {
             try
             {
