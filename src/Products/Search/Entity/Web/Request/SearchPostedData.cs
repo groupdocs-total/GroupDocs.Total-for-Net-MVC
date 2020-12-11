@@ -9,6 +9,9 @@ namespace GroupDocs.Total.MVC.Products.Search.Entity.Web.Request
         public string Query { get; set; }
 
         [JsonProperty()]
+        public string SearchType { get; set; }
+
+        [JsonProperty()]
         public bool CaseSensitiveSearch { get; set; }
 
         [JsonProperty()]

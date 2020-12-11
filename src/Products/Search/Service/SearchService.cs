@@ -54,8 +54,6 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
             }
 
             var searchQuery = searchRequest.Query;
-            SearchResult result;
-
             var alphabet = index.Dictionaries.Alphabet;
             var containedSeparators = new HashSet<char>();
             foreach (char c in searchQuery)
@@ -73,12 +71,25 @@ namespace GroupDocs.Total.MVC.Products.Search.Service
                 {
                     searchQuery = searchQuery.Replace(specialChar, ' ');
                 }
-                result = index.Search("\"" + searchQuery + "\"", searchOptions);
             }
-            else
+
+            switch (searchRequest.SearchType)
             {
-                result = index.Search(searchQuery, searchOptions);
+                case "SearchAll":
+                    searchQuery = searchQuery.Replace(" ", " AND ");
+                    break;
+                case "SearchAny":
+                    searchQuery = searchQuery.Replace(" ", " OR ");
+                    break;
+                default:
+                    if (searchQuery.Contains(' '))
+                    {
+                        searchQuery = "\"" + searchQuery + "\"";
+                    }
+                    break;
             }
+
+            var result = index.Search(searchQuery, searchOptions);
 
             SummarySearchResult summaryResult = new SummarySearchResult();
             List<SearchDocumentResult> foundFiles = new List<SearchDocumentResult>();
