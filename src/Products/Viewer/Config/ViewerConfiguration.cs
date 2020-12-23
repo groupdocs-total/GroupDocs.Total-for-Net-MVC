@@ -52,6 +52,9 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         private bool printAllowed = true;
 
         [JsonProperty]
+        private bool showGridLines = true;
+
+        [JsonProperty]
         private string cacheFolderName = "cache";
 
         /// <summary>
@@ -96,6 +99,7 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
             this.saveRotateState = valuesGetter.GetBooleanPropertyValue("saveRotateState", this.saveRotateState);
             this.watermarkText = valuesGetter.GetStringPropertyValue("watermarkText", this.watermarkText);
             this.printAllowed = valuesGetter.GetBooleanPropertyValue("printAllowed", this.printAllowed);
+            this.showGridLines = valuesGetter.GetBooleanPropertyValue("showGridLines", this.showGridLines);
         }
 
         private static bool IsFullPath(string path)
@@ -244,6 +248,16 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Config
         public bool GetPrintAllowed()
         {
             return this.printAllowed;
+        }
+
+        public void SetShowGridLines(bool showGridLines)
+        {
+            this.showGridLines = showGridLines;
+        }
+
+        public bool GetShowGridLines()
+        {
+            return this.showGridLines;
         }
     }
 }
