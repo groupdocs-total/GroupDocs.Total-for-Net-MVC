@@ -12,17 +12,17 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
     /// </summary>
     public class MetadataConfiguration : CommonConfiguration
     {
-        private string filesDirectory = "DocumentSamples/Metadata";
+        private readonly string filesDirectory = "DocumentSamples/Metadata";
 
-        private string outputDirectory = "DocumentSamples/Metadata/Output";
+        private readonly string outputDirectory = "DocumentSamples/Metadata/Output";
 
-        private string tempDirectory = "DocumentSamples/Metadata/Temp";
+        private readonly string tempDirectory = "DocumentSamples/Metadata/Temp";
 
-        private int fileOperationTimeout;
+        private readonly int fileOperationTimeout;
 
-        private int fileOperationRetryCount;
+        private readonly int fileOperationRetryCount;
 
-        private int previewTimeLimit;
+        private readonly int previewTimeLimit;
 
         [JsonProperty]
         private string defaultDocument = "";

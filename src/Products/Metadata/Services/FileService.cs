@@ -1,9 +1,9 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
 using GroupDocs.Total.MVC.Products.Metadata.Config;
-using GroupDocs.Total.MVC.Products.Metadata.Context;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -39,7 +39,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                     }
                     if (x.LastAccessTime < newFileBorder && y.LastAccessTime < newFileBorder)
                     {
-                        return string.Compare(x.Name, y.Name);
+                        return string.Compare(x.Name, y.Name, CultureInfo.InvariantCulture, CompareOptions.None);
                     }
 
                     return x.LastAccessTime >= newFileBorder ? -1 : 1;
@@ -129,7 +129,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             return File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
-        public Stream GetFileStream(string relativePath, bool readOnly = true)
+        public Stream GetFileStream(string relativePath)
+        {
+            return GetFileStream(relativePath, true);
+        }
+
+        public Stream GetFileStream(string relativePath, bool readOnly)
         {
             var inputPath = metadataConfiguration.GetInputFilePath(relativePath);
             var outputPath = metadataConfiguration.GetOutputFilePath(relativePath);
