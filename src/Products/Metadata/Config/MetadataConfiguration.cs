@@ -148,11 +148,13 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
 
         private string GetAbsolutePath(string baseDirectory, string relativePath)
         {
-            if (Path.IsPathRooted(relativePath))
+            var absolutePath = Path.GetFullPath(Path.Combine(baseDirectory, relativePath));
+            if (!absolutePath.StartsWith(baseDirectory))
             {
                 throw new ArgumentException("Couldn't find the specified file path", nameof(relativePath));
             }
-            return Path.Combine(baseDirectory, relativePath);
+
+            return absolutePath;
         }
 
         private string InitDirectory(string path)
@@ -160,14 +162,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
             string absolutePath = path;
             if (!Path.IsPathRooted(path))
             {
-                absolutePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+                absolutePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path));
             }
             if (!Directory.Exists(absolutePath))
             {
                 Directory.CreateDirectory(absolutePath);
             }
 
-            return absolutePath;
+            return absolutePath.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         }
     }
 }

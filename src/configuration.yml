@@ -229,12 +229,15 @@ metadata:
   # Output directory path
   # Absolute path to Output directory
   outputDirectory: 'DocumentSamples/Metadata/Output'
+  # Temp directory path
+  # Absolute path to directory for temporary files
+  tempDirectory: 'DocumentSamples/Metadata/Temp'
   # Default document
   # Absolute path to default document
   defaultDocument: ''
   # Time limit for preview generation (in milliseconds)
   # Preview generation will be canceled if the time limit exceeded
-  previewTimeLimit: 50000
+  previewTimeLimit: 5000
   # Pages preload
   # How many pages from a document should be loaded
   # Set 0 to load all pages
