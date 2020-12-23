@@ -1,6 +1,5 @@
 ﻿using GroupDocs.Total.MVC.Products.Common.Config;
 using GroupDocs.Total.MVC.Products.Common.Util.Parser;
-using GroupDocs.Total.MVC.Products.Metadata.Util;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -12,7 +11,7 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Config
     /// </summary>
     public class MetadataConfiguration : CommonConfiguration
     {
-        private readonly string filesDirectory = "DocumentSamples/Metadata";
+        private string filesDirectory = "DocumentSamples/Metadata";
 
         private readonly string outputDirectory = "DocumentSamples/Metadata/Output";
 
