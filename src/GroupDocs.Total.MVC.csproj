@@ -335,6 +335,8 @@
     <Compile Include="Products\Common\Entity\Web\Request\HighlightTermsRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\CharacterReplacementsUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\DocumentPasswordsUpdateRequest.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\FilesDeleteRequest.cs" />
+    <Compile Include="Products\Search\Entity\Web\Request\FileStatusGetRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\HomophonesUpdateRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchBaseRequest.cs" />
     <Compile Include="Products\Search\Entity\Web\Request\SearchPostedData.cs" />
@@ -349,6 +351,7 @@
     <Compile Include="Products\Search\Entity\Web\Response\HomophonesReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\IndexPropertiesResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\KeyPasswordPair.cs" />
+    <Compile Include="Products\Search\Entity\Web\Response\LicenseRestrictionResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SearchDocumentResult.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\SpellingCorrectorReadResponse.cs" />
     <Compile Include="Products\Search\Entity\Web\Response\StopWordsReadResponse.cs" />

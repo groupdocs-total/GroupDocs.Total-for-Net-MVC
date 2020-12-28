@@ -14,6 +14,7 @@ using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Search.Config;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web;
 using GroupDocs.Total.MVC.Products.Search.Entity.Web.Request;
+using GroupDocs.Total.MVC.Products.Search.Entity.Web.Response;
 using GroupDocs.Total.MVC.Products.Search.Service;
 
 namespace GroupDocs.Total.MVC.Products.Search.Controllers
@@ -113,7 +114,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
 
                 // get documents storage path
                 string documentStoragePath = this.globalConfiguration.GetSearchConfiguration().GetFilesDirectory();
-                bool rewrite = bool.Parse(HttpContext.Current.Request.Form["rewrite"]);
+                bool rewrite = this.globalConfiguration.GetSearchConfiguration().rewrite;
                 string fileSavePath = string.Empty;
                 if (string.IsNullOrEmpty(url))
                 {
@@ -173,6 +174,27 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("search/deleteFiles")]
+        public HttpResponseMessage DeleteFiles(FilesDeleteRequest request)
+        {
+            try
+            {
+                var documentStoragePath = this.globalConfiguration.GetSearchConfiguration().GetFilesDirectory();
+                foreach (var file in request.Files)
+                {
+                    var fileSavePath = Path.Combine(documentStoragePath, file.guid);
+                    File.Delete(fileSavePath);
+                }
+
+                return this.Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex));
+            }
+        }
+
         /// <summary>
         /// Adds files to index.
         /// </summary>
@@ -185,7 +207,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             try
             {
                 SearchService.AddFilesToIndex(request.Files, this.globalConfiguration);
-                return this.Request.CreateResponse(HttpStatusCode.OK);
+                return this.Request.CreateResponse(HttpStatusCode.OK, LicenseRestrictionResponse.CreateNonRestricted());
             }
             catch (Exception ex)
             {
@@ -226,7 +248,7 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
             {
                 SearchService.RemoveFileFromIndex(postedData.guid);
 
-                return this.Request.CreateResponse(HttpStatusCode.OK);
+                return this.Request.CreateResponse(HttpStatusCode.OK, LicenseRestrictionResponse.CreateNonRestricted());
             }
             catch (Exception ex)
             {
@@ -241,11 +263,11 @@ namespace GroupDocs.Total.MVC.Products.Search.Controllers
         /// <returns>Indexed files list with current status.</returns>
         [HttpPost]
         [Route("search/getFileStatus")]
-        public HttpResponseMessage GetFileStatus(PostedDataEntity[] postedData)
+        public HttpResponseMessage GetFileStatus(FileStatusGetRequest request)
         {
             var indexingFilesList = new List<IndexedFileDescriptionEntity>();
 
-            foreach (var file in postedData)
+            foreach (var file in request.Files)
             {
                 var indexingFile = new IndexedFileDescriptionEntity();
 
