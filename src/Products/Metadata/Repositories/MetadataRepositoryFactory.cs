@@ -4,8 +4,10 @@ using GroupDocs.Metadata.Formats.BusinessCard;
 using GroupDocs.Metadata.Formats.Font;
 using GroupDocs.Metadata.Formats.Video;
 using GroupDocs.Metadata.Standards.Exif;
+using GroupDocs.Metadata.Standards.Exif.MakerNote;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Asf;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Fonts;
+using GroupDocs.Total.MVC.Products.Metadata.Repositories.MakerNote;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories.Matroska;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
@@ -22,6 +24,14 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Repositories
                     if (branchPackage is ExifPackage)
                     {
                         return new ExifMetadataRepository(branchPackage);
+                    }
+                    else if (branchPackage is CanonMakerNotePackage)
+                    {
+                        return new CanonMakerNoteRepository(branchPackage);
+                    }
+                    else if (branchPackage is MakerNotePackage)
+                    {
+                        return new MakerNoteRepository(branchPackage);
                     }
                     return new OneLevelMetadataRepository(branchPackage);
                 case MetadataType.Iptc:

@@ -230,13 +230,26 @@ metadata:
   # Files directory path
   # Absolute path to files directory
   filesDirectory: 'DocumentSamples/Metadata'
+  # Output directory path
+  # Absolute path to Output directory
+  outputDirectory: 'DocumentSamples/Metadata/Output'
+  # Temp directory path
+  # Absolute path to directory for temporary files
+  tempDirectory: 'DocumentSamples/Metadata/Temp'
   # Default document
   # Absolute path to default document
   defaultDocument: ''
+  # Time limit for preview generation (in milliseconds)
+  # Preview generation will be canceled if the time limit exceeded
+  previewTimeLimit: 5000
   # Pages preload
-  # How many pages from a document should be loaded, remaining pages will be loaded on page scrolling
-  # Set 0 to load all pages at once
+  # How many pages from a document should be loaded
+  # Set 0 to load all pages
   preloadPageCount: 0
+  # The number of retries to complete a file operation if the file is being used by another process
+  fileOperationRetryCount: 5
+  # The timeout before each retry to complete a file operation if the file is being used by another process
+  fileOperationTimeout: 1000
   # HTML rendering mode
   # Set false for image mode
   # Set true for HTML mode

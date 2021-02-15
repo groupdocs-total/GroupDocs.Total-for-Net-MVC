@@ -60,8 +60,8 @@
     <Reference Include="GroupDocs.Editor, Version=20.8.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Editor.20.8.0\lib\net20\GroupDocs.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="GroupDocs.Metadata, Version=20.9.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
-      <HintPath>..\packages\GroupDocs.Metadata.20.9.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
+    <Reference Include="GroupDocs.Metadata, Version=20.11.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\GroupDocs.Metadata.20.11.0\lib\net20\GroupDocs.Metadata.dll</HintPath>
     </Reference>
     <Reference Include="GroupDocs.Signature, Version=20.4.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\GroupDocs.Signature.20.4.0\lib\net20\GroupDocs.Signature.dll</HintPath>
@@ -266,6 +266,7 @@
     <Compile Include="Products\Metadata\Context\MetadataContext.cs" />
     <Compile Include="Products\Metadata\Context\MetadataPathConfig.cs" />
     <Compile Include="Products\Metadata\Context\NestedPackageInfo.cs" />
+    <Compile Include="Products\Metadata\DTO\DocumentPreviewDto.cs" />
     <Compile Include="Products\Metadata\DTO\ExtractedPackageDto.cs" />
     <Compile Include="Products\Metadata\DTO\MetadataPropertyDto.cs" />
     <Compile Include="Products\Common\Entity\Web\LoadDocumentEntity.cs" />
@@ -313,6 +314,8 @@
     <Compile Include="Products\Metadata\Repositories\Fonts\OpenTypeRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\ID3V2TagRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\IptcMetadataRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\MakerNote\CanonMakerNoteRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\MakerNote\MakerNoteRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Matroska\MatroskaTagRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Matroska\MatroskaTrackRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\MetadataPackageRepository.cs" />
@@ -321,6 +324,7 @@
     <Compile Include="Products\Metadata\Repositories\VCardRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\XmpMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Services\FileService.cs" />
+    <Compile Include="Products\Metadata\Services\PreviewService.cs" />
     <Compile Include="Products\Metadata\Services\MetadataService.cs" />
     <Compile Include="Products\Metadata\Util\ArrayUtil.cs" />
     <Compile Include="Products\Metadata\Util\DirectoryUtils.cs" />

@@ -7,6 +7,7 @@ using GroupDocs.Total.MVC.Products.Metadata.Model;
 using GroupDocs.Total.MVC.Products.Metadata.Repositories;
 using GroupDocs.Metadata.Export;
 using System.IO;
+using GroupDocs.Metadata.Exceptions;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Context
 {
@@ -18,14 +19,17 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
 
         private bool disposedValue;
 
-        public MetadataContext(string filePath, string password)
+        public MetadataContext(Stream fileStream, string password) : this()
         {
-            var loadOptions = new LoadOptions
+            metadata = new GroupDocs.Metadata.Metadata(fileStream, CreateLoadOptions(password));
+            if (metadata.FileFormat == FileFormat.Unknown)
             {
-                Password = password == string.Empty ? null : password
-            };
+                throw new InvalidFormatException("Couldn't recognize the file format");
+            }
+        }
 
-            metadata = new GroupDocs.Metadata.Metadata(filePath, loadOptions);
+        private MetadataContext()
+        {
             metadataPathConfig = new MetadataPathConfig();
         }
 
@@ -112,9 +116,20 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             metadata.Save(filePath);
         }
 
+        public void Save()
+        {
+            metadata.Save();
+        }
+
         public void Sanitize()
         {
             metadata.Sanitize();
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -129,10 +144,12 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Context
             }
         }
 
-        public void Dispose()
+        private LoadOptions CreateLoadOptions(string password)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            return new LoadOptions
+            {
+                Password = password == string.Empty ? null : password
+            };
         }
     }
 }
