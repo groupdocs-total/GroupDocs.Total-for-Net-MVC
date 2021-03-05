@@ -46,6 +46,8 @@ namespace GroupDocs.Total.MVC.Products.Viewer.Cache
                 createdPngViewOptions.RotatePage(passedPageNumber, rotationAngle);
             }
 
+            createdPngViewOptions.SpreadsheetOptions.RenderHeadings = true;
+
             SetWatermarkOptions(createdPngViewOptions);
 
             return createdPngViewOptions;
