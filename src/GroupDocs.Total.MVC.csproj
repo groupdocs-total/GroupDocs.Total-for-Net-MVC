@@ -266,6 +266,7 @@
     <Compile Include="Products\Metadata\Context\MetadataContext.cs" />
     <Compile Include="Products\Metadata\Context\MetadataPathConfig.cs" />
     <Compile Include="Products\Metadata\Context\NestedPackageInfo.cs" />
+    <Compile Include="Products\Metadata\DTO\DocumentPreviewDto.cs" />
     <Compile Include="Products\Metadata\DTO\ExtractedPackageDto.cs" />
     <Compile Include="Products\Metadata\DTO\MetadataPropertyDto.cs" />
     <Compile Include="Products\Common\Entity\Web\LoadDocumentEntity.cs" />
@@ -313,6 +314,8 @@
     <Compile Include="Products\Metadata\Repositories\Fonts\OpenTypeRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\ID3V2TagRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\IptcMetadataRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\MakerNote\CanonMakerNoteRepository.cs" />
+    <Compile Include="Products\Metadata\Repositories\MakerNote\MakerNoteRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Matroska\MatroskaTagRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\Matroska\MatroskaTrackRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\MetadataPackageRepository.cs" />
@@ -321,6 +324,7 @@
     <Compile Include="Products\Metadata\Repositories\VCardRepository.cs" />
     <Compile Include="Products\Metadata\Repositories\XmpMetadataRepository.cs" />
     <Compile Include="Products\Metadata\Services\FileService.cs" />
+    <Compile Include="Products\Metadata\Services\PreviewService.cs" />
     <Compile Include="Products\Metadata\Services\MetadataService.cs" />
     <Compile Include="Products\Metadata\Util\ArrayUtil.cs" />
     <Compile Include="Products\Metadata\Util\DirectoryUtils.cs" />
@@ -484,8 +488,8 @@
   <Target Name="BeforeBuild" DependsOnTargets="PrepareForBuild">
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js update" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install" Condition=" '$(OS)' == 'Windows_NT' " />
-    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js run build  --scripts-prepend-node-path" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js install --scripts-prepend-node-path" Condition=" '$(OS)' == 'Windows_NT' " />
+    <Exec WorkingDirectory="client\" Command="..\..\packages\Node-Kit.11.1.0.1\node\win\node.exe ..\..\packages\Node-Kit.11.1.0.1\npm\bin\npm-cli.js run build --scripts-prepend-node-path" Condition=" '$(OS)' == 'Windows_NT' " />
     <Exec Command="..\packages\Node-Kit.11.1.0.1\node\win\node.exe .\node_modules\gulp\bin\gulp.js copy" Condition=" '$(OS)' == 'Windows_NT' " />
   </Target>
   <Target Name="AfterBuild">

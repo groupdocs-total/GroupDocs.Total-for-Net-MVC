@@ -1,14 +1,12 @@
-﻿using GroupDocs.Metadata.Common;
-using GroupDocs.Metadata.Options;
-using GroupDocs.Total.MVC.Products.Common.Entity.Web;
+﻿using GroupDocs.Total.MVC.Products.Common.Entity.Web;
 using GroupDocs.Total.MVC.Products.Common.Resources;
-using GroupDocs.Total.MVC.Products.Common.Util.Comparator;
 using GroupDocs.Total.MVC.Products.Metadata.Config;
-using GroupDocs.Total.MVC.Products.Metadata.DTO;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Web;
 
 namespace GroupDocs.Total.MVC.Products.Metadata.Services
@@ -28,103 +26,52 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
             if (!string.IsNullOrEmpty(metadataConfiguration.GetFilesDirectory()))
             {
                 var currentPath = metadataConfiguration.GetFilesDirectory();
-                List<string> allFiles = new List<string>(Directory.GetFiles(currentPath));
-                allFiles.AddRange(Directory.GetDirectories(currentPath));
+                var inputDirectory = new DirectoryInfo(currentPath);
+                var allFiles = inputDirectory.GetFiles();
 
-                // TODO: get temp directory name
-                string tempDirectoryName = "temp";
-
-                allFiles.Sort(new FileNameComparator());
-                allFiles.Sort(new FileDateComparator());
-
-                foreach (string file in allFiles)
+                const int newFileTimeFrameMin = -10;
+                var newFileBorder = DateTime.Now.AddMinutes(newFileTimeFrameMin);
+                Array.Sort(allFiles, (x, y) =>
                 {
-                    FileInfo fileInfo = new FileInfo(file);
-                    // check if current file/folder is hidden
-                    if (!(tempDirectoryName.Equals(Path.GetFileName(file)) ||
-                        fileInfo.Attributes.HasFlag(FileAttributes.Hidden) ||
-                        fileInfo.Name.StartsWith(".") ||
-                        Path.GetFileName(file).Equals(Path.GetFileName(metadataConfiguration.GetFilesDirectory()))))
+                    if (x.LastAccessTime >= newFileBorder && y.LastAccessTime >= newFileBorder)
                     {
-                        FileDescriptionEntity fileDescription = new FileDescriptionEntity();
-                        fileDescription.guid = Path.GetFileName(file);
-                        fileDescription.name = Path.GetFileName(file);
-                        // set is directory true/false
-                        fileDescription.isDirectory = fileInfo.Attributes.HasFlag(FileAttributes.Directory);
-                        // set file size
-                        if (!fileDescription.isDirectory)
-                        {
-                            fileDescription.size = fileInfo.Length;
-                        }
+                        return DateTime.Compare(y.LastAccessTime, x.LastAccessTime);
+                    }
+                    if (x.LastAccessTime < newFileBorder && y.LastAccessTime < newFileBorder)
+                    {
+                        return string.Compare(x.Name, y.Name, CultureInfo.InvariantCulture, CompareOptions.None);
+                    }
+
+                    return x.LastAccessTime >= newFileBorder ? -1 : 1;
+                });
+
+                foreach (var file in allFiles)
+                {
+                    // check if current file/folder is hidden
+                    if (!file.Attributes.HasFlag(FileAttributes.Hidden) &&
+                        !file.Name.StartsWith(".") &&
+                        !file.Attributes.HasFlag(FileAttributes.Directory))
+                    {
                         // add object to array list
-                        fileList.Add(fileDescription);
+                        fileList.Add(new FileDescriptionEntity
+                        {
+                            guid = file.Name,
+                            name = file.Name,
+                            size = file.Length,
+                        });
                     }
                 }
             }
             return fileList;
         }
 
-        public LoadDocumentEntity LoadDocument(PostedDataDto postedData)
-        {
-            // get/set parameters
-            string filePath = metadataConfiguration.GetAbsolutePath(postedData.guid);
-            string password = string.IsNullOrEmpty(postedData.password) ? null : postedData.password;
-            LoadDocumentEntity loadDocumentEntity = new LoadDocumentEntity();
-
-            // set password for protected document
-            var loadOptions = new LoadOptions
-            {
-                Password = password
-            };
-
-            using (GroupDocs.Metadata.Metadata metadata = new GroupDocs.Metadata.Metadata(filePath, loadOptions))
-            {
-                GroupDocs.Metadata.Common.IReadOnlyList<PageInfo> pages = metadata.GetDocumentInfo().Pages;
-
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    PreviewOptions previewOptions = new PreviewOptions(pageNumber => stream, (pageNumber, pageStream) => { });
-                    previewOptions.PreviewFormat = PreviewOptions.PreviewFormats.PNG;
-
-                    int pageCount = pages.Count;
-                    if (metadataConfiguration.GetPreloadPageCount() > 0)
-                    {
-                        pageCount = metadataConfiguration.GetPreloadPageCount();
-                    }
-                    for (int i = 0; i < pageCount; i++)
-                    {
-                        previewOptions.PageNumbers = new[] { i + 1 };
-                        try
-                        {
-                            metadata.GeneratePreview(previewOptions);
-                        }
-                        catch (NotSupportedException)
-                        {
-                            continue;
-                        }
-
-                        PageDescriptionEntity pageData = GetPageDescriptionEntities(pages[i]);
-                        string encodedImage = Convert.ToBase64String(stream.ToArray());
-                        pageData.SetData(encodedImage);
-                        loadDocumentEntity.SetPages(pageData);
-                        stream.SetLength(0);
-                    }
-                }
-            }
-
-            loadDocumentEntity.SetGuid(postedData.guid);
-
-            // return document description
-            return loadDocumentEntity;
-        }
-
         public UploadedDocumentEntity UploadDocument(HttpRequest request)
         {
             string url = request.Form["url"];
             // get documents storage path
-            string documentStoragePath = metadataConfiguration.GetFilesDirectory();
             bool rewrite = bool.Parse(request.Form["rewrite"]);
-            string fileSavePath = string.Empty;
+            string fileName;
+            string tempFilePath = metadataConfiguration.GetTempFilePath();
             if (string.IsNullOrEmpty(url))
             {
                 // Get the uploaded document from the Files collection
@@ -133,19 +80,10 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 {
                     throw new ArgumentException("Could not upload the file");
                 }
-                if (rewrite)
-                {
-                    // Get the complete file path
-                    fileSavePath = Path.Combine(documentStoragePath, httpPostedFile.FileName);
-                }
-                else
-                {
-                    fileSavePath = Resources.GetFreeFileName(documentStoragePath, httpPostedFile.FileName);
-                }
+                fileName = httpPostedFile.FileName;
 
                 // Save the uploaded file to "UploadedFiles" folder
-                httpPostedFile.SaveAs(fileSavePath);
-
+                httpPostedFile.SaveAs(tempFilePath);
             }
             else
             {
@@ -153,34 +91,96 @@ namespace GroupDocs.Total.MVC.Products.Metadata.Services
                 {
                     // get file name from the URL
                     Uri uri = new Uri(url);
-                    string fileName = Path.GetFileName(uri.LocalPath);
-                    if (rewrite)
-                    {
-                        // Get the complete file path
-                        fileSavePath = Path.Combine(documentStoragePath, fileName);
-                    }
-                    else
-                    {
-                        fileSavePath = Resources.GetFreeFileName(documentStoragePath, fileName);
-                    }
+                    fileName = Path.GetFileName(uri.LocalPath);
+
                     // Download the Web resource and save it into the current filesystem folder.
-                    client.DownloadFile(url, fileSavePath);
+                    client.DownloadFile(url, tempFilePath);
                 }
             }
 
+            try
+            {
+                if (rewrite)
+                {
+                    string filePath = metadataConfiguration.GetInputFilePath(fileName);
+                    RemoveFile(filePath);
+                    RemoveFile(metadataConfiguration.GetOutputFilePath(fileName));
+                    File.Move(tempFilePath, filePath);
+                }
+                else
+                {
+                    File.Move(tempFilePath, Resources.GetFreeFileName(metadataConfiguration.GetFilesDirectory(), fileName));
+                }
+            }
+            finally
+            {
+                File.Delete(tempFilePath);
+            }
+
             UploadedDocumentEntity uploadedDocument = new UploadedDocumentEntity();
-            uploadedDocument.guid = Path.GetFileName(fileSavePath);
+            uploadedDocument.guid = Path.GetFileName(fileName);
 
             return uploadedDocument;
         }
 
-        private PageDescriptionEntity GetPageDescriptionEntities(PageInfo page)
+        public Stream GetSourceFileStream(string relativePath)
         {
-            PageDescriptionEntity pageDescriptionEntity = new PageDescriptionEntity();
-            pageDescriptionEntity.number = page.PageNumber;
-            pageDescriptionEntity.height = page.Height;
-            pageDescriptionEntity.width = page.Width;
-            return pageDescriptionEntity;
+            string filePath = metadataConfiguration.GetInputFilePath(relativePath);
+            return File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+
+        public Stream GetFileStream(string relativePath)
+        {
+            return GetFileStream(relativePath, true);
+        }
+
+        public Stream GetFileStream(string relativePath, bool readOnly)
+        {
+            var inputPath = metadataConfiguration.GetInputFilePath(relativePath);
+            var outputPath = metadataConfiguration.GetOutputFilePath(relativePath);
+            if (File.Exists(outputPath))
+            {
+                return File.Open(outputPath, FileMode.Open, FileAccess.ReadWrite);
+            }
+            if (!readOnly)
+            {
+                using (var sourceStream = File.Open(inputPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var destStream = File.Open(outputPath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    sourceStream.CopyTo(destStream);
+                    destStream.Position = 0;
+                    return destStream;
+                }
+            }
+            return File.Open(inputPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        }
+
+        private void RemoveFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                int maxReties = metadataConfiguration.GetFileOperationRetryCount();
+                int timeout = metadataConfiguration.GetFileOperationTimeout();
+                for (int i = 1; i <= maxReties; i++)
+                {
+                    try
+                    {
+                        File.Delete(filePath);
+                        break;
+                    }
+                    catch (IOException)
+                    {
+                        if (i < maxReties)
+                        {
+                            Thread.Sleep(timeout);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
         }
     }
 }
