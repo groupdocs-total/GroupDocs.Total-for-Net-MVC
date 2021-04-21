@@ -159,7 +159,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     pagesContent = GetAllPagesContent(annotator, info);
                 }
 
-                for (int i = 0; i < info.PageCount; i++)
+                for (int i = 0; i < info.PagesInfo.Count; i++)
                 {
                     PageDataDescriptionEntity page = new PageDataDescriptionEntity
                     {
@@ -381,7 +381,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         /// <param name="path">string</param>
         /// <param name="annotated">bool</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         [Route("annotation/downloadAnnotated")]
         public HttpResponseMessage DownloadAnnotated(string path)
         {
@@ -499,7 +499,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                         IDocumentInfo info = annotator.Document.GetDocumentInfo();
                         List<string> pagesContent = GetAllPagesContent(annotator, info);
 
-                        for (int i = 0; i < info.PageCount; i++)
+                        for (int i = 0; i < info.PagesInfo.Count; i++)
                         {
                             PageDataDescriptionEntity page = new PageDataDescriptionEntity();
 
