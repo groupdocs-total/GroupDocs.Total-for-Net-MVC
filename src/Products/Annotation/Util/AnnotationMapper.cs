@@ -23,7 +23,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Util
         /// <param name="annotations">AnnotationInfo[]</param>
         /// <param name="pageNumber">int</param>
         /// <returns></returns>
-        public static AnnotationDataEntity[] MapForPage(AnnotationBase[] annotations, int pageNumber, PageInfo pageInfo)
+        public static AnnotationDataEntity[] MapForPage(AnnotationBase[] annotations, int pageNumber, PageInfo pageInfo, string documentType)
         {
             // initiate annotations data array
             IList<AnnotationDataEntity> pageAnnotations = new List<AnnotationDataEntity>();
@@ -34,7 +34,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Util
                 AnnotationBase annotationInfo = annotations[n];
                 if (pageNumber == annotationInfo.PageNumber + 1)
                 {
-                    AnnotationDataEntity annotation = MapAnnotationDataEntity(annotationInfo, pageInfo);
+                    AnnotationDataEntity annotation = MapAnnotationDataEntity(annotationInfo, pageInfo, documentType);
                     pageAnnotations.Add(annotation);
                 }
             }
@@ -47,7 +47,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Util
         /// </summary>
         /// <param name="annotationInfo">AnnotationInfo</param>
         /// <returns>AnnotationDataEntity</returns>
-        public static AnnotationDataEntity MapAnnotationDataEntity(AnnotationBase annotationInfo, PageInfo pageInfo)
+        public static AnnotationDataEntity MapAnnotationDataEntity(AnnotationBase annotationInfo, PageInfo pageInfo, string documentType)
         {
             string annotationTypeName = Enum.GetName(typeof(AnnotationType), annotationInfo.Type);
             float maxY = 0, minY = 0, maxX = 0, minX = 0;
@@ -82,17 +82,17 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Util
 
             AnnotationDataEntity annotation = new AnnotationDataEntity();
             annotation.font = annotationInfo is IFontFamily ? ((IFontFamily)annotationInfo).FontFamily : "";
-            double fontSize = annotationInfo is IFontSize ? Convert.ToDouble((((IFontSize)annotationInfo).FontSize == null) ? 0 : ((IFontSize)annotationInfo).FontSize) : 0;
+            double fontSize = annotationInfo is IFontSize ? Convert.ToDouble((((IFontSize)annotationInfo).FontSize == null) ? 0 : ((IFontSize)annotationInfo).FontSize) : (annotationInfo is ITextToReplace ? 10 : 0);
             annotation.fontSize = (float)fontSize;
             annotation.fontColor = annotationInfo is IFontColor ? ((((IFontColor)annotationInfo).FontColor == null) ? 0 : (int)((IFontColor)annotationInfo).FontColor) : 0;
             annotation.height = annotationInfo is IBox ? boxHeight : (annotationInfo is IPoints ? (maxY - minY) : 0);
             annotation.left = annotationInfo is IBox ? boxX : (annotationInfo is IPoints ? minX : 0);
             annotation.pageNumber = (int)annotationInfo.PageNumber + 1;
             annotation.svgPath = annotationInfo is ISvgPath ? (((ISvgPath)annotationInfo).SvgPath?.Replace("l", "L")) : svgPath;
-            string text = annotationInfo is IText ? (((IText)annotationInfo).Text ?? (annotationInfo is ITextToReplace ? ((ITextToReplace)annotationInfo).TextToReplace : "")) : "";
+            string text = annotationInfo is IText ? ((IText)annotationInfo).Text : (annotationInfo is ITextToReplace ? ((ITextToReplace)annotationInfo).TextToReplace : "");
             annotation.text = text;
             // TODO: remove comment after check all annotations types on main formats
-            annotation.top = annotationInfo is IBox ? boxY : (annotationInfo is IPoints ? pageInfo.Height - maxY : 0);
+            annotation.top = annotationInfo is IBox ? boxY : (annotationInfo is IPoints ? (!documentType.Equals("image") ? pageInfo.Height - maxY : minY) : 0);
             annotation.type = char.ToLowerInvariant(annotationTypeName[0]) + annotationTypeName.Substring(1);
             annotation.width = annotationInfo is IBox ? boxWidth : (annotationInfo is IPoints ? (maxX - minX) : 0);
             //  each reply data

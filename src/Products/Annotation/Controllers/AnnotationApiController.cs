@@ -137,18 +137,8 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
             {
                 IDocumentInfo info = annotator.Document.GetDocumentInfo();
                 AnnotationBase[] annotations = annotator.Get().ToArray();
-
                 description.guid = loadDocumentRequest.guid;
-
-                string documentType = string.Empty;
-                if (info.FileType != null)
-                {
-                    documentType = SupportedImageFormats.Contains(info.FileType.Extension) ? "image" : info.FileType.ToString();
-                }
-                else
-                {
-                    documentType = "Portable Document Format";
-                }
+                string documentType = getDocumentType(info);
 
                 description.supportedAnnotations = new SupportedAnnotations().GetSupportedAnnotations(documentType);
 
@@ -159,7 +149,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                     pagesContent = GetAllPagesContent(annotator, info);
                 }
 
-                for (int i = 0; i < info.PageCount; i++)
+                for (int i = 0; i < info.PagesInfo.Count; i++)
                 {
                     PageDataDescriptionEntity page = new PageDataDescriptionEntity
                     {
@@ -170,7 +160,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                     if (annotations != null && annotations.Length > 0)
                     {
-                        page.SetAnnotations(AnnotationMapper.MapForPage(annotations, i + 1, info.PagesInfo[i]));
+                        page.SetAnnotations(AnnotationMapper.MapForPage(annotations, i + 1, info.PagesInfo[i], documentType));
                     }
 
                     if (pagesContent.Count > 0)
@@ -216,10 +206,11 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
 
                     IDocumentInfo info = annotator.Document.GetDocumentInfo();
                     AnnotationBase[] annotations = annotator.Get().ToArray();
+                    string documentType = getDocumentType(info);
 
                     if (annotations != null && annotations.Length > 0)
                     {
-                        loadedPage.SetAnnotations(AnnotationMapper.MapForPage(annotations, pageNumber, info.PagesInfo[pageNumber - 1]));
+                        loadedPage.SetAnnotations(AnnotationMapper.MapForPage(annotations, pageNumber, info.PagesInfo[pageNumber - 1], documentType));
                     }
 
                     string encodedImage = Convert.ToBase64String(bytes);
@@ -238,6 +229,21 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // set exception message
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new Resources().GenerateException(ex, password));
             }
+        }
+
+        private string getDocumentType(IDocumentInfo info)
+        {
+            string documentType = string.Empty;
+            if (info.FileType != null)
+            {
+                documentType = SupportedImageFormats.Contains(info.FileType.Extension) ? "image" : info.FileType.ToString();
+            }
+            else
+            {
+                documentType = "Portable Document Format";
+            }
+
+            return documentType;
         }
 
         private static List<string> GetAllPagesContent(GroupDocs.Annotation.Annotator annotator, IDocumentInfo pages)
@@ -381,7 +387,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
         /// <param name="path">string</param>
         /// <param name="annotated">bool</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         [Route("annotation/downloadAnnotated")]
         public HttpResponseMessage DownloadAnnotated(string path)
         {
@@ -416,7 +422,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                 // get/set parameters
                 string documentGuid = annotateDocumentRequest.guid;
                 string password = annotateDocumentRequest.password;
-                string documentType = SupportedImageFormats.Contains(Path.GetExtension(annotateDocumentRequest.guid)) ? "image" : annotateDocumentRequest.documentType;
+                string documentType = SupportedImageFormats.Contains(Path.GetExtension(annotateDocumentRequest.guid).ToLowerInvariant()) ? "image" : annotateDocumentRequest.documentType;
                 string tempPath = GetTempPath(documentGuid);
 
                 AnnotationDataEntity[] annotationsData = annotateDocumentRequest.annotationsData;
@@ -499,7 +505,7 @@ namespace GroupDocs.Total.MVC.Products.Annotation.Controllers
                         IDocumentInfo info = annotator.Document.GetDocumentInfo();
                         List<string> pagesContent = GetAllPagesContent(annotator, info);
 
-                        for (int i = 0; i < info.PageCount; i++)
+                        for (int i = 0; i < info.PagesInfo.Count; i++)
                         {
                             PageDataDescriptionEntity page = new PageDataDescriptionEntity();
 
