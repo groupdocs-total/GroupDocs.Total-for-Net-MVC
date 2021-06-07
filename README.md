@@ -235,7 +235,7 @@ For all methods above you can adjust settings in `configuration.yml`. By default
 **Note:**: currently baseURL is fetched from address bar
 In order to set custom baseURL add forRoot parameter at app.module.ts
 
-**Note:**: _ViewerModule.forRoot("http://localhost:8080)]_
+**Example:**: _ViewerModule.forRoot("http://localhost:8080)]_
 
 ## License
 The MIT License (MIT). 
