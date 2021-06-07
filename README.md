@@ -232,10 +232,9 @@ For all methods above you can adjust settings in `configuration.yml`. By default
 
 ## Troubleshooting
 ### How to set custom baseURL
-**Note:**: currently baseURL is fetched from address bar
-In order to set custom baseURL add forRoot parameter at [app.module.ts](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/blob/master/src/client/apps/viewer/src/app/app.module.ts#L9)
+BaseURL is fetched from address bar however you can set custom baseURL by adding *forRoot* parameter at [app.module.ts](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/blob/master/src/client/apps/viewer/src/app/app.module.ts#L9)
 
-**Example:**: ```ViewerModule.forRoot("http://localhost:8080)```
+**Example:** ```ViewerModule.forRoot("http://localhost:8080)```
 
 ## License
 The MIT License (MIT). 
