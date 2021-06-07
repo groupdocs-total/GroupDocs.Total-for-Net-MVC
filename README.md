@@ -204,7 +204,7 @@ Coming soon
 
 You can run this sample by one of following methods
 
-#### Build from source
+### Build from source
 
 Download [source code](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/archive/master.zip) from github or clone this repository.
 
@@ -217,7 +217,7 @@ Update common parameters in `web.config` and example related properties in the `
 
 Open http://localhost:8080/ in your favorite browser
 
-#### Docker image
+### Docker image
 Use [docker image](https://hub.docker.com/u/groupdocs).
 
 ```bash
@@ -227,7 +227,7 @@ docker run -p 8080:8080 --env application.hostAddress=localhost -v `pwd`/Documen
 ## Open http://localhost:8080/ in your favorite browser.
 ```
 
-#### Configuration
+### Configuration
 For all methods above you can adjust settings in `configuration.yml`. By default in this sample will lookup for license file in `./Licenses` folder, so you can simply put your license file in that folder or specify relative/absolute path by setting `licensePath` value in `configuration.yml`. 
 
 ## Troubleshooting
