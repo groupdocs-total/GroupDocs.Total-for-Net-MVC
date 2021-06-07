@@ -234,7 +234,10 @@ For all methods above you can adjust settings in `configuration.yml`. By default
 ### How to set custom baseURL
 BaseURL is fetched from address bar however you can set custom baseURL by adding *forRoot* parameter at [app.module.ts](https://github.com/groupdocs-total/GroupDocs.Total-for-NET-MVC/blob/master/src/client/apps/viewer/src/app/app.module.ts#L9)
 
-**Example:** ```ViewerModule.forRoot("http://localhost:8080)```
+**Example:**
+```js
+ViewerModule.forRoot("http://localhost:8080)
+```
 
 ## License
 The MIT License (MIT). 
