@@ -236,7 +236,7 @@ BaseURL is fetched from address bar however you can set custom baseURL by adding
 
 **Example:**
 ```js
-ViewerModule.forRoot("http://localhost:8080)
+ViewerModule.forRoot("http://localhost:8080")
 ```
 
 ## License
